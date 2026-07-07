@@ -1,16 +1,23 @@
-import { Clock, MapPin } from "lucide-react"
 import type { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 import { notFound } from "next/navigation"
 
-import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { Separator } from "@/components/ui/separator"
 import { getDefaultLocation } from "@/server/actions/location/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 import HoursForm from "@/app/dashboard/settings/locations/hours-form"
 import LocationForm from "@/app/dashboard/settings/locations/location-form"
+import {
+  LocationContactHeader,
+  LocationHoursHeader
+} from "@/app/dashboard/settings/locations/location-page-headers"
 
-export const metadata: Metadata = {
-  title: "Sucursal"
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("dashboard.settings.location")
+
+  return {
+    title: t("metaTitle")
+  }
 }
 
 export default async function LocationPage() {
@@ -24,22 +31,10 @@ export default async function LocationPage() {
 
   return (
     <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
-      <PageSubtitle>
-        <PageSubtitle.Icon icon={MapPin} />
-        <PageSubtitle.Title>Sucursal</PageSubtitle.Title>
-        <PageSubtitle.Description>
-          Información de contacto
-        </PageSubtitle.Description>
-      </PageSubtitle>
+      <LocationContactHeader />
       <LocationForm data={data} enabled />
       <Separator className="my-8" />
-      <PageSubtitle>
-        <PageSubtitle.Icon icon={Clock} />
-        <PageSubtitle.Title>Horarios de atención</PageSubtitle.Title>
-        <PageSubtitle.Description>
-          Horarios de atención al público
-        </PageSubtitle.Description>
-      </PageSubtitle>
+      <LocationHoursHeader />
       <HoursForm data={data} />
     </div>
   )

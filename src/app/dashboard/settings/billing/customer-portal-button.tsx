@@ -3,6 +3,7 @@
 import React, { useState, useTransition } from "react"
 import toast from "react-hot-toast"
 import { Loader } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 
 import { Button } from "@/components/ui/button"
@@ -10,6 +11,7 @@ import { createStripePortal } from "@/server/actions/subscriptions/mutations"
 
 export function CustomerPortalButton({ referenceId }: { referenceId: string }) {
   const router = useRouter()
+  const t = useTranslations("dashboard.settings.billing")
   const [isSubmitting, setisSubmitting] = useState(false)
   const [isPending, startTransition] = useTransition()
 
@@ -17,7 +19,7 @@ export function CustomerPortalButton({ referenceId }: { referenceId: string }) {
     setisSubmitting(true)
     const redirectUrl = await createStripePortal(referenceId)
     if (!redirectUrl) {
-      toast.error("No se pudo redirigir al portal de clientes")
+      toast.error(t("portalError"))
       setisSubmitting(false)
     } else {
       setisSubmitting(false)
@@ -36,7 +38,7 @@ export function CustomerPortalButton({ referenceId }: { referenceId: string }) {
       {isSubmitting || isPending ? (
         <Loader className="size-4 animate-spin" />
       ) : (
-        "Ir a Portal Clientes"
+        t("portal")
       )}
     </Button>
   )

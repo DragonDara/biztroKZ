@@ -7,6 +7,7 @@ import {
   ImageUp,
   Ruler
 } from "lucide-react"
+import { useLocale, useTranslations } from "next-intl"
 import Image from "next/image"
 
 import { Badge } from "@/components/ui/badge"
@@ -52,6 +53,8 @@ export function MediaDetailsDialog({
   onReplace?: () => void
 }) {
   const isMobile = useIsMobile()
+  const t = useTranslations("dashboard.settings.media")
+  const locale = useLocale()
 
   const formatBytes = (bytes: number | null) => {
     if (!bytes) return "N/A"
@@ -61,7 +64,10 @@ export function MediaDetailsDialog({
   }
 
   const formatDate = (date: Date) => {
-    return new Intl.DateTimeFormat("es-MX", {
+    const localeTag =
+      locale === "es" ? "es-MX" : locale === "ru" ? "ru-RU" : "en-US"
+
+    return new Intl.DateTimeFormat(localeTag, {
       year: "numeric",
       month: "long",
       day: "numeric",
@@ -73,29 +79,29 @@ export function MediaDetailsDialog({
   const getEntityTypeLabel = (entityType: string) => {
     switch (entityType) {
       case "MENU_ITEM":
-        return "Producto"
+        return t("entityMenuItem")
       case "ORGANIZATION":
-        return "Organización"
+        return t("entityOrganization")
       case "PROMO":
-        return "Promoción"
+        return t("entityPromo")
       default:
         return entityType
     }
   }
 
   const getScopeLabel = (scope: string | null) => {
-    if (!scope) return "Otro"
+    if (!scope) return t("scopeOther")
     switch (scope) {
       case "MENU_ITEM_IMAGE":
-        return "Imagen de producto"
+        return t("scopeMenuItemImage")
       case "ORG_LOGO":
-        return "Logo de organización"
+        return t("scopeOrgLogo")
       case "ORG_BANNER":
-        return "Banner de organización"
+        return t("scopeOrgBanner")
       case "PROMO":
-        return "Promoción"
+        return t("scopePromo")
       case "OTHER":
-        return "Otro"
+        return t("scopeOther")
       default:
         return scope
     }
@@ -109,7 +115,7 @@ export function MediaDetailsDialog({
       >
         <Image
           src={asset.url}
-          alt="Preview"
+          alt={t("previewAlt")}
           fill
           sizes="(max-width: 768px) 100vw, 32rem"
           className="object-contain"
@@ -121,7 +127,7 @@ export function MediaDetailsDialog({
         <div className="flex items-center gap-3">
           <FileType className="text-muted-foreground size-4" />
           <div>
-            <p className="text-sm font-medium">Tipo</p>
+            <p className="text-sm font-medium">{t("type")}</p>
             <p className="text-muted-foreground text-sm">
               {getScopeLabel(asset.scope)}
             </p>
@@ -132,9 +138,9 @@ export function MediaDetailsDialog({
           <div className="flex items-center gap-3">
             <Ruler className="text-muted-foreground size-4" />
             <div>
-              <p className="text-sm font-medium">Dimensiones</p>
+              <p className="text-sm font-medium">{t("dimensions")}</p>
               <p className="text-muted-foreground text-sm">
-                {asset.width} × {asset.height} píxeles
+                {t("pixels", { width: asset.width, height: asset.height })}
               </p>
             </div>
           </div>
@@ -143,7 +149,7 @@ export function MediaDetailsDialog({
         <div className="flex items-center gap-3">
           <ImageIcon className="text-muted-foreground size-4" />
           <div>
-            <p className="text-sm font-medium">Tamaño</p>
+            <p className="text-sm font-medium">{t("size")}</p>
             <p className="text-muted-foreground text-sm">
               {formatBytes(asset.bytes)}
             </p>
@@ -153,7 +159,7 @@ export function MediaDetailsDialog({
         <div className="flex items-center gap-3">
           <Calendar className="text-muted-foreground size-4" />
           <div>
-            <p className="text-sm font-medium">Subida</p>
+            <p className="text-sm font-medium">{t("uploaded")}</p>
             <p className="text-muted-foreground text-sm">
               {formatDate(asset.createdAt)}
             </p>
@@ -163,8 +169,7 @@ export function MediaDetailsDialog({
 
       <div>
         <h3 className="mb-3 text-sm font-medium">
-          Usado en {asset.usageCount}{" "}
-          {asset.usageCount === 1 ? "lugar" : "lugares"}
+          {t("usedIn", { count: asset.usageCount })}
         </h3>
         {asset.usages.length > 0 ? (
           <div className="space-y-2">
@@ -188,9 +193,7 @@ export function MediaDetailsDialog({
             ))}
           </div>
         ) : (
-          <p className="text-muted-foreground text-sm">
-            Esta imagen no está siendo utilizada
-          </p>
+          <p className="text-muted-foreground text-sm">{t("notUsed")}</p>
         )}
       </div>
     </div>
@@ -199,7 +202,7 @@ export function MediaDetailsDialog({
   const replaceButton = onReplace ? (
     <Button size="sm" variant="secondary" onClick={onReplace}>
       <ImageUp className="mr-2 size-4" />
-      Reemplazar
+      {t("replace")}
     </Button>
   ) : null
 
@@ -209,7 +212,7 @@ export function MediaDetailsDialog({
         <DrawerContent
           className="max-h-[85vh] space-y-4 overflow-y-auto px-4 pb-6"
         >
-          <DrawerTitle>Detalles de la imagen</DrawerTitle>
+          <DrawerTitle>{t("detailsTitle")}</DrawerTitle>
 
           <div>{detailsContent}</div>
           {replaceButton}
@@ -223,7 +226,7 @@ export function MediaDetailsDialog({
       <DialogContent className="max-w-2xl">
         <div className="flex items-start justify-between gap-3">
           <DialogHeader>
-            <DialogTitle>Detalles de la imagen</DialogTitle>
+            <DialogTitle>{t("detailsTitle")}</DialogTitle>
           </DialogHeader>
         </div>
         {detailsContent}

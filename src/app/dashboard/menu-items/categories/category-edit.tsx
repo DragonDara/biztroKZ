@@ -5,6 +5,7 @@ import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import { usePostHog } from "posthog-js/react"
 import { TextMorph } from "torph/react"
@@ -45,7 +46,11 @@ export default function CategoryEdit({
   action: ActionType
 }) {
   const isMobile = useIsMobile()
+  const t = useTranslations("dashboard.menuItems.categories")
   const [open, setOpen] = useState(false)
+
+  const dialogDescription =
+    action === ActionType.CREATE ? t("dialogCreate") : t("dialogEdit")
 
   if (isMobile) {
     return (
@@ -53,10 +58,8 @@ export default function CategoryEdit({
         <DrawerTrigger asChild>{children}</DrawerTrigger>
         <DrawerContent>
           <DrawerHeader className="text-left">
-            <DrawerTitle>Categoría</DrawerTitle>
-            <DrawerDescription>
-              {action === ActionType.CREATE ? "Agregar" : "Editar"} categoría
-            </DrawerDescription>
+            <DrawerTitle>{t("dialogTitle")}</DrawerTitle>
+            <DrawerDescription>{dialogDescription}</DrawerDescription>
           </DrawerHeader>
           <div className="px-4 pb-4">
             <CategoryEditForm
@@ -75,10 +78,8 @@ export default function CategoryEdit({
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Categoría</DialogTitle>
-          <DialogDescription>
-            {action === ActionType.CREATE ? "Agregar" : "Editar"} categoría
-          </DialogDescription>
+          <DialogTitle>{t("dialogTitle")}</DialogTitle>
+          <DialogDescription>{dialogDescription}</DialogDescription>
         </DialogHeader>
         <CategoryEditForm
           category={category}
@@ -99,6 +100,10 @@ function CategoryEditForm({
   action: ActionType
   onClose: (open: boolean) => void
 }) {
+  const t = useTranslations("dashboard.menuItems.categories")
+  const tCommon = useTranslations("dashboard.common")
+  const tProducts = useTranslations("dashboard.menuItems.products")
+
   const form = useForm({
     resolver: zodResolver(categorySchema),
     defaultValues: {
@@ -121,7 +126,7 @@ function CategoryEditForm({
   } = useAction(createCategory, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        toast.success("Categoría agregada")
+        toast.success(t("created"))
 
         // Track category creation
         posthog.capture("category_created", {
@@ -138,7 +143,7 @@ function CategoryEditForm({
       resetInsert()
     },
     onError: () => {
-      toast.error("No se pudo agregar la categoría")
+      toast.error(t("createError"))
       resetInsert()
     }
   })
@@ -151,10 +156,10 @@ function CategoryEditForm({
     onSuccess: ({ data }) => {
       if (data?.success) {
         const syncMeta = data.success.sync
-        toast.success("Categoría actualizada")
+        toast.success(t("updated"))
 
         if (syncMeta?.publishedUpdated) {
-          toast.success("Menú publicado actualizado")
+          toast.success(tProducts("publishedMenuUpdated"))
         }
 
         if (syncMeta?.needsPublishedDecision) {
@@ -174,7 +179,7 @@ function CategoryEditForm({
       resetUpdate()
     },
     onError: () => {
-      toast.error("No se pudo actualizar la categoría")
+      toast.error(t("updateError"))
     }
   })
 
@@ -185,7 +190,7 @@ function CategoryEditForm({
   } = useAction(syncMenusAfterCatalogChange, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        toast.success("Menú actualizado")
+        toast.success(tProducts("menuUpdated"))
       } else if (data?.failure?.reason) {
         toast.error(data.failure.reason)
       }
@@ -193,7 +198,7 @@ function CategoryEditForm({
       setSyncPrompt(prev => ({ ...prev, open: false, rememberChoice: false }))
     },
     onError: () => {
-      toast.error("No se pudo actualizar los menús")
+      toast.error(tProducts("menuUpdateError"))
       setSyncPrompt(prev => ({ ...prev, open: false }))
     }
   })
@@ -232,8 +237,8 @@ function CategoryEditForm({
         control={form.control}
         render={({ field, fieldState }) => (
           <Field>
-            <FieldLabel htmlFor={field.name}>Categoría</FieldLabel>
-            <Input {...field} placeholder="Nombre" />
+            <FieldLabel htmlFor={field.name}>{t("nameLabel")}</FieldLabel>
+            <Input {...field} placeholder={t("namePlaceholder")} />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
         )}
@@ -248,8 +253,8 @@ function CategoryEditForm({
         )}
         <TextMorph>
           {statusInsert === "executing" || statusUpdate === "executing"
-            ? "Guardando..."
-            : "Guardar"}
+            ? t("saving")
+            : tCommon("save")}
         </TextMorph>
       </Button>
       <MenuSyncDialog
@@ -264,7 +269,7 @@ function CategoryEditForm({
         onCancel={() => handleSyncChoice(false)}
         onConfirm={() => handleSyncChoice(true)}
         isLoading={statusSyncMenus === "executing"}
-        description="Se detectaron cambios en las categorías. ¿Quieres aplicar los cambios al menú publicado?"
+        description={t("syncDescription")}
         checkboxId="remember-published-choice-category"
       />
     </form>

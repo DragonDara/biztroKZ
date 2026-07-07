@@ -1,4 +1,5 @@
 import { Images } from "lucide-react"
+import { getTranslations } from "next-intl/server"
 
 import {
   Empty,
@@ -11,7 +12,10 @@ import { getAllMediaAssets } from "@/server/actions/media/queries"
 import { MediaCard } from "./media-card"
 
 export async function MediaGrid() {
-  const assets = await getAllMediaAssets()
+  const [assets, t] = await Promise.all([
+    getAllMediaAssets(),
+    getTranslations("dashboard.settings.media")
+  ])
 
   if (assets.length === 0) {
     return (
@@ -20,11 +24,8 @@ export async function MediaGrid() {
           <EmptyMedia variant="icon">
             <Images className="size-5" />
           </EmptyMedia>
-          <EmptyTitle>No hay imágenes</EmptyTitle>
-          <EmptyDescription>
-            Sube imágenes desde los productos o la configuración de tu
-            organización
-          </EmptyDescription>
+          <EmptyTitle>{t("emptyTitle")}</EmptyTitle>
+          <EmptyDescription>{t("emptyDescription")}</EmptyDescription>
         </EmptyHeader>
       </Empty>
     )

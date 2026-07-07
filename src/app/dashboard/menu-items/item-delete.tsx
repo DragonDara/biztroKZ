@@ -2,6 +2,7 @@
 
 import toast from "react-hot-toast"
 import type { MenuItem } from "@/generated/prisma-client/client"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 
 import {
@@ -27,9 +28,12 @@ export default function ItemDelete({
   open: boolean
   setOpen: (open: boolean) => void
 }) {
+  const t = useTranslations("dashboard.menuItems.products")
+  const tCommon = useTranslations("dashboard.common")
+
   const { execute, reset } = useAction(deleteItem, {
     onExecute: () => {
-      toast("Eliminando Producto...", { icon: "🗑️" })
+      toast(t("deleting"), { icon: "🗑️" })
     },
     onSuccess: ({ data }) => {
       if (data?.failure?.reason) {
@@ -42,7 +46,7 @@ export default function ItemDelete({
     },
     onError: () => {
       toast.dismiss()
-      toast.error("Algo salió mal")
+      toast.error(tCommon("genericError"))
       reset()
     }
   })
@@ -55,15 +59,14 @@ export default function ItemDelete({
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Eliminar Producto</AlertDialogTitle>
+          <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
           <AlertDialogDescription>
-            ¿Estás seguro de eliminar este producto? Esta acción no se puede
-            deshacer
+            {t("deleteDescription")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={event => event.stopPropagation()}>
-            Cancelar
+            {tCommon("cancel")}
           </AlertDialogCancel>
           <AlertDialogAction
             className={cn(buttonVariants({ variant: "destructive" }))}
@@ -72,7 +75,7 @@ export default function ItemDelete({
               onDeleteItem()
             }}
           >
-            Eliminar
+            {tCommon("delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

@@ -1,15 +1,16 @@
 "use client"
 
-import { Fragment, useEffect, useState } from "react"
+import { Fragment, useEffect, useMemo, useState } from "react"
 import { type TimeValue } from "react-aria"
 import { Controller, useFieldArray, useForm, useWatch } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { parseTime } from "@internationalized/date"
 import { Info, Loader } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import { TextMorph } from "torph/react"
-import type { z } from "zod/v4"
+import { z, type z as zType } from "zod/v4"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
@@ -27,7 +28,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { updateHours } from "@/server/actions/location/mutations"
 import type { getDefaultLocation } from "@/server/actions/location/queries"
-import { hoursSchema } from "@/lib/types/location"
 import { cn } from "@/lib/utils"
 
 type DayOfWeek =
@@ -49,25 +49,7 @@ const DAYS: DayOfWeek[] = [
   "SUNDAY"
 ]
 
-const DAY_SHORT: Record<DayOfWeek, string> = {
-  MONDAY: "Lu",
-  TUESDAY: "Ma",
-  WEDNESDAY: "Mi",
-  THURSDAY: "Ju",
-  FRIDAY: "Vi",
-  SATURDAY: "Sá",
-  SUNDAY: "Do"
-}
-
-const DAY_FULL: Record<DayOfWeek, string> = {
-  MONDAY: "Lunes",
-  TUESDAY: "Martes",
-  WEDNESDAY: "Miércoles",
-  THURSDAY: "Jueves",
-  FRIDAY: "Viernes",
-  SATURDAY: "Sábado",
-  SUNDAY: "Domingo"
-}
+type DayLabels = Record<DayOfWeek, { short: string; full: string }>
 
 type HourItem = {
   id?: string
@@ -116,6 +98,49 @@ export default function HoursForm({
   secondaryAction?: React.ReactNode
   className?: string
 }) {
+  const t = useTranslations("dashboard.settings.location.hours")
+  const dayLabels = (t as { raw: (key: string) => unknown }).raw(
+    "days"
+  ) as DayLabels
+
+  const hoursSchema = useMemo(
+    () =>
+      z.object({
+        locationId: z.string().optional(),
+        items: z.array(
+          z
+            .object({
+              id: z.string().optional(),
+              day: z.enum([
+                "MONDAY",
+                "TUESDAY",
+                "WEDNESDAY",
+                "THURSDAY",
+                "FRIDAY",
+                "SATURDAY",
+                "SUNDAY"
+              ]),
+              startTime: z.string().optional(),
+              endTime: z.string().optional(),
+              allDay: z.boolean()
+            })
+            .refine(
+              data => {
+                if (data.allDay) {
+                  return data.startTime && data.endTime
+                }
+                return true
+              },
+              {
+                path: ["allDay"],
+                error: t("validationTime")
+              }
+            )
+        )
+      }),
+    [t]
+  )
+
   const initialItems = fromData(data)
   const initialOpen = initialItems.filter(h => h.allDay)
   const initialFirst = initialOpen[0]
@@ -134,8 +159,7 @@ export default function HoursForm({
     initialFirst?.endTime
   )
 
-  // Advanced mode form — kept in sync when switching tabs
-  const form = useForm<z.infer<typeof hoursSchema>>({
+  const form = useForm<zType.infer<typeof hoursSchema>>({
     resolver: zodResolver(hoursSchema),
     mode: "onSubmit",
     defaultValues: { locationId: data?.id, items: initialItems }
@@ -148,7 +172,7 @@ export default function HoursForm({
   const { execute, status, reset } = useAction(updateHours, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        toast.success("Horario actualizado")
+        toast.success(t("updated"))
         onSuccess?.()
       } else if (data?.failure.reason) {
         toast.error(data.failure.reason)
@@ -156,7 +180,7 @@ export default function HoursForm({
       reset()
     },
     onError: () => {
-      toast.error("No se pudo actualizar el horario")
+      toast.error(t("updateError"))
       reset()
     }
   })
@@ -165,7 +189,6 @@ export default function HoursForm({
     const tab = value as "basic" | "advanced"
 
     if (tab === "basic") {
-      // Derive basic state from current advanced form
       const current = form.getValues("items")
       const open = current.filter(h => h.allDay)
       const first = open[0]
@@ -174,7 +197,6 @@ export default function HoursForm({
       setBasicEnd(first?.endTime)
       setShowMixedWarning(!isUniformSchedule(current))
     } else {
-      // Sync advanced form from current basic state
       setShowMixedWarning(false)
       form.setValue(
         "items",
@@ -193,7 +215,7 @@ export default function HoursForm({
   function onSubmit() {
     if (activeTab === "basic") {
       if (selectedDays.length > 0 && (!basicStart || !basicEnd)) {
-        toast.error("Ingresa el horario de apertura y cierre")
+        toast.error(t("timeRequired"))
         return
       }
       execute({
@@ -244,26 +266,24 @@ export default function HoursForm({
         className="flex w-full flex-col"
       >
         <TabsList className="mb-6 w-fit" variant="line">
-          <TabsTrigger value="basic">Básico</TabsTrigger>
-          <TabsTrigger value="advanced">Avanzado</TabsTrigger>
+          <TabsTrigger value="basic">{t("basicTab")}</TabsTrigger>
+          <TabsTrigger value="advanced">{t("advancedTab")}</TabsTrigger>
         </TabsList>
 
-        {/* ── Basic mode ── */}
         <TabsContent value="basic">
           <FieldSet disabled={disabled}>
             <FieldGroup>
-              {showMixedWarning && (
+              {showMixedWarning ? (
                 <Alert variant="warning">
                   <Info className="size-4" />
-                  <AlertTitle>Horario mixto detectado</AlertTitle>
+                  <AlertTitle>{t("mixedWarningTitle")}</AlertTitle>
                   <AlertDescription>
-                    Al guardar en modo básico, se aplicará el mismo horario a
-                    todos los días seleccionados.
+                    {t("mixedWarningDescription")}
                   </AlertDescription>
                 </Alert>
-              )}
+              ) : null}
               <Field>
-                <FieldLabel>Días de atención</FieldLabel>
+                <FieldLabel>{t("openDays")}</FieldLabel>
                 <ToggleGroup
                   type="multiple"
                   variant="outline"
@@ -275,21 +295,19 @@ export default function HoursForm({
                     <ToggleGroupItem
                       key={day}
                       value={day}
-                      aria-label={DAY_FULL[day]}
+                      aria-label={dayLabels[day].full}
                       className="data-[state=on]:bg-primary/10
                         data-[state=on]:border-primary min-w-10 px-3"
                     >
-                      {DAY_SHORT[day]}
+                      {dayLabels[day].short}
                     </ToggleGroupItem>
                   ))}
                 </ToggleGroup>
-                <FieldDescription>
-                  Selecciona los días en que tu negocio está abierto.
-                </FieldDescription>
+                <FieldDescription>{t("openDaysHint")}</FieldDescription>
               </Field>
               <div className="flex flex-col gap-4 sm:flex-row sm:items-end">
                 <Field className="sm:w-40">
-                  <FieldLabel>Desde</FieldLabel>
+                  <FieldLabel>{t("from")}</FieldLabel>
                   <TimeField
                     isDisabled={disabled || selectedDays.length === 0}
                     value={basicStart ? parseTime(basicStart) : undefined}
@@ -299,7 +317,7 @@ export default function HoursForm({
                   />
                 </Field>
                 <Field className="sm:w-40">
-                  <FieldLabel>Hasta</FieldLabel>
+                  <FieldLabel>{t("to")}</FieldLabel>
                   <TimeField
                     isDisabled={disabled || selectedDays.length === 0}
                     value={basicEnd ? parseTime(basicEnd) : undefined}
@@ -313,7 +331,6 @@ export default function HoursForm({
           </FieldSet>
         </TabsContent>
 
-        {/* ── Advanced mode ── */}
         <TabsContent value="advanced">
           <FieldSet disabled={disabled}>
             <FieldGroup>
@@ -323,13 +340,13 @@ export default function HoursForm({
                   gap-y-2"
               >
                 <div className="text-muted-foreground pb-1 text-xs font-medium">
-                  Día
+                  {t("dayColumn")}
                 </div>
                 <div className="text-muted-foreground pb-1 text-xs font-medium">
-                  Desde
+                  {t("from")}
                 </div>
                 <div className="text-muted-foreground pb-1 text-xs font-medium">
-                  Hasta
+                  {t("to")}
                 </div>
                 {fields.map((field, index) => (
                   <Fragment key={field.id}>
@@ -352,11 +369,11 @@ export default function HoursForm({
                               htmlFor={`items.${index}.allDay`}
                               className="cursor-pointer text-sm font-medium"
                             >
-                              {DAY_FULL[field.day as DayOfWeek]}
+                              {dayLabels[field.day as DayOfWeek].full}
                             </FieldLabel>
-                            {fieldState.invalid && (
+                            {fieldState.invalid ? (
                               <FieldError errors={[fieldState.error]} />
-                            )}
+                            ) : null}
                           </Field>
                         )}
                       />
@@ -368,9 +385,13 @@ export default function HoursForm({
                         <Field
                           className="flex flex-row items-center gap-2 space-y-0"
                         >
-                          <FieldLabel className="sr-only">Desde</FieldLabel>
+                          <FieldLabel className="sr-only">
+                            {t("from")}
+                          </FieldLabel>
                           <TimeField
-                            isDisabled={disabled || !watchedItems?.[index]?.allDay}
+                            isDisabled={
+                              disabled || !watchedItems?.[index]?.allDay
+                            }
                             value={
                               ctlField.value
                                 ? parseTime(ctlField.value)
@@ -380,9 +401,9 @@ export default function HoursForm({
                               ctlField.onChange(value?.toString() ?? "")
                             }}
                           />
-                          {fieldState.invalid && (
+                          {fieldState.invalid ? (
                             <FieldError errors={[fieldState.error]} />
-                          )}
+                          ) : null}
                         </Field>
                       )}
                     />
@@ -393,9 +414,11 @@ export default function HoursForm({
                         <Field
                           className="flex flex-row items-center gap-2 space-y-0"
                         >
-                          <FieldLabel className="sr-only">Hasta</FieldLabel>
+                          <FieldLabel className="sr-only">{t("to")}</FieldLabel>
                           <TimeField
-                            isDisabled={disabled || !watchedItems?.[index]?.allDay}
+                            isDisabled={
+                              disabled || !watchedItems?.[index]?.allDay
+                            }
                             value={
                               ctlField.value
                                 ? parseTime(ctlField.value)
@@ -405,9 +428,9 @@ export default function HoursForm({
                               ctlField.onChange(value?.toString() ?? "")
                             }}
                           />
-                          {fieldState.invalid && (
+                          {fieldState.invalid ? (
                             <FieldError errors={[fieldState.error]} />
-                          )}
+                          ) : null}
                         </Field>
                       )}
                     />
@@ -430,11 +453,13 @@ export default function HoursForm({
               disabled={isExecuting || disabled}
               onClick={onSubmit}
             >
-              {isExecuting && <Loader className="mr-2 size-4 animate-spin" />}
+              {isExecuting ? (
+                <Loader className="mr-2 size-4 animate-spin" />
+              ) : null}
               <TextMorph>
                 {isExecuting
-                  ? "Guardando..."
-                  : (submitLabel ?? "Actualizar horario")}
+                  ? t("saving")
+                  : (submitLabel ?? t("updateSchedule"))}
               </TextMorph>
             </Button>
           </div>

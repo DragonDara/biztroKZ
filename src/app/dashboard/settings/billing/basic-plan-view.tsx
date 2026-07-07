@@ -4,6 +4,7 @@ import { useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
 import { Gauge } from "@suyalcinkaya/gauge"
+import { useTranslations } from "next-intl"
 import { useTheme } from "next-themes"
 import { TextMorph } from "torph/react"
 
@@ -24,6 +25,7 @@ import { Plan, Tiers } from "@/lib/types/billing"
 
 export function BasicPlanView({ itemCount }: { itemCount: number }) {
   const theme = useTheme()
+  const t = useTranslations("dashboard.settings.billing")
   const [billingInterval, setBillingInterval] = useState<"monthly" | "yearly">(
     "monthly"
   )
@@ -49,15 +51,15 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
           billingInterval
         }
       })
-      toast.error("Error al iniciar el proceso de pago. Inténtalo de nuevo.")
+      toast.error(t("checkoutError"))
     }
   }
 
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Plan</CardTitle>
-        <CardDescription>Básico</CardDescription>
+        <CardTitle>{t("plan")}</CardTitle>
+        <CardDescription>{t("basic")}</CardDescription>
       </CardHeader>
       <CardContent>
         <div className="mt-2 flex flex-row gap-4">
@@ -74,12 +76,10 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
             <p
               className="text-sm font-semibold text-gray-600 dark:text-gray-300"
             >
-              Has consumido {itemCount} de los {appConfig.itemLimit} productos
-              disponibles en tu plan
+              {t("usage", { count: itemCount, limit: appConfig.itemLimit })}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-400">
-              Actualiza tu plan para agregar más productos a tu menú y disfrutar
-              de más beneficios.
+              {t("usageHint")}
             </p>
           </div>
         </div>
@@ -99,20 +99,20 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
                 className="w-1/2 text-sm data-[state=on]:bg-indigo-600
                   data-[state=on]:text-white"
               >
-                Mensual
+                {t("monthly")}
               </ToggleGroupItem>
               <ToggleGroupItem
                 value="yearly"
                 className="w-1/2 text-sm data-[state=on]:bg-indigo-600
                   data-[state=on]:text-white"
               >
-                Anual
+                {t("yearly")}
                 <span
                   className="ml-1.5 rounded-full bg-green-100 px-2 py-0.5
                     text-xs font-medium text-green-600 dark:bg-green-900
                     dark:text-green-300"
                 >
-                  -20%
+                  {t("yearlyDiscount")}
                 </span>
               </ToggleGroupItem>
             </ToggleGroup>
@@ -129,16 +129,18 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
               <CardHeader>
                 <div>
                   <CardTitle className="text-sm">
-                    {`Plan ${tier.name}`}
+                    {`${t("plan")} ${tier.name}`}
                   </CardTitle>
                   {tier.id === Plan.PRO ? (
                     <div className="mt-1 text-sm">
                       {billingInterval === "monthly"
-                        ? `${new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(tier.priceMonthly)} MXN/mes`
-                        : `${new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(tier.priceYearly)} MXN/año`}
+                        ? `${new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(tier.priceMonthly)} ${t("perMonth")}`
+                        : `${new Intl.NumberFormat("es-MX", { style: "currency", currency: "MXN" }).format(tier.priceYearly)} ${t("perYear")}`}
                     </div>
                   ) : (
-                    <div className="mt-1 text-sm text-gray-500">Gratis</div>
+                    <div className="mt-1 text-sm text-gray-500">
+                      {t("free")}
+                    </div>
                   )}
                 </div>
               </CardHeader>
@@ -158,8 +160,8 @@ export function BasicPlanView({ itemCount }: { itemCount: number }) {
         <Button onClick={handleStripeCheckout} className="w-full sm:w-auto">
           <TextMorph>
             {billingInterval === "monthly"
-              ? "Obtener Pro Mensual"
-              : "Obtener Pro Anual"}
+              ? t("upgradeMonthly")
+              : t("upgradeYearly")}
           </TextMorph>
         </Button>
       </CardFooter>

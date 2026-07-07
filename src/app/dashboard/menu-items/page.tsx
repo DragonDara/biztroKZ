@@ -1,17 +1,19 @@
-import { ShoppingBag } from "lucide-react"
 import { type Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 import { notFound } from "next/navigation"
 
-import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { getCategories, getMenuItems } from "@/server/actions/item/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
-import ItemCreate from "@/app/dashboard/menu-items/item-create"
-import ItemImport from "@/app/dashboard/menu-items/item-import"
 import ItemTable from "@/app/dashboard/menu-items/item-table"
+import { MenuItemsPageHeader } from "@/app/dashboard/menu-items/menu-items-page-header"
 import { type MenuItemQueryFilter } from "@/lib/types/menu-item"
 
-export const metadata: Metadata = {
-  title: "Productos"
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("dashboard.menuItems.products")
+
+  return {
+    title: t("metaTitle")
+  }
 }
 
 export default async function ItemsPage(props: {
@@ -23,7 +25,7 @@ export default async function ItemsPage(props: {
   ])
 
   if (!currentOrg) {
-    notFound()
+    return notFound()
   }
 
   const filter: MenuItemQueryFilter = {}
@@ -41,19 +43,7 @@ export default async function ItemsPage(props: {
 
   return (
     <div className="mx-auto grow px-4 sm:px-6">
-      <PageSubtitle>
-        <PageSubtitle.Icon icon={ShoppingBag} />
-        <PageSubtitle.Title>Productos</PageSubtitle.Title>
-        <PageSubtitle.Description>
-          Administra los productos de tu menú
-        </PageSubtitle.Description>
-        <PageSubtitle.Actions>
-          <div className="flex gap-2">
-            <ItemImport />
-            <ItemCreate />
-          </div>
-        </PageSubtitle.Actions>
-      </PageSubtitle>
+      <MenuItemsPageHeader />
       <div className="mt-6">
         <ItemTable data={data} categories={categories} />
       </div>

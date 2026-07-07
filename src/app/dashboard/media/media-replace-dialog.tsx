@@ -3,6 +3,7 @@
 import { useMemo } from "react"
 import toast from "react-hot-toast"
 import { Info } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 
 import { FileUploader } from "@/components/dashboard/file-uploader"
@@ -92,6 +93,7 @@ export function MediaReplaceDialog({
 }) {
   const router = useRouter()
   const isMobile = useIsMobile()
+  const t = useTranslations("dashboard.settings.media")
 
   const target = useMemo(() => resolveReplaceTarget(asset), [asset])
 
@@ -102,22 +104,19 @@ export function MediaReplaceDialog({
       objectId={target.objectId}
       limitDimension={target.limitDimension}
       onUploadSuccess={() => {
-        toast.success("Imagen reemplazada")
+        toast.success(t("replaceSuccess"))
         onOpenChange(false)
         router.refresh()
       }}
       onUploadError={() => {
-        toast.error("No se pudo reemplazar la imagen")
+        toast.error(t("replaceError"))
       }}
     />
   ) : (
     <Alert variant="information">
       <Info className="size-4" />
-      <AlertTitle>No se puede reemplazar</AlertTitle>
-      <AlertDescription>
-        Esta imagen no tiene un destino válido (logo/banner/producto) o sus usos
-        están desactualizados.
-      </AlertDescription>
+      <AlertTitle>{t("replaceUnavailableTitle")}</AlertTitle>
+      <AlertDescription>{t("replaceUnavailableDescription")}</AlertDescription>
     </Alert>
   )
 
@@ -126,10 +125,8 @@ export function MediaReplaceDialog({
       <DrawerNested open={open} onOpenChange={onOpenChange}>
         <DrawerContent className="max-h-[85vh] overflow-y-auto">
           <DrawerHeader>
-            <DrawerTitle>Reemplazar imagen</DrawerTitle>
-            <DrawerDescription>
-              Esta acción reemplaza la imagen manteniendo sus usos actuales.
-            </DrawerDescription>
+            <DrawerTitle>{t("replaceTitle")}</DrawerTitle>
+            <DrawerDescription>{t("replaceDescription")}</DrawerDescription>
           </DrawerHeader>
           <div className="px-4 pb-6">{replaceContent}</div>
         </DrawerContent>
@@ -141,10 +138,8 @@ export function MediaReplaceDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-xl">
         <DialogHeader>
-          <DialogTitle>Reemplazar imagen</DialogTitle>
-          <DialogDescription>
-            Esta acción reemplaza la imagen manteniendo sus usos actuales.
-          </DialogDescription>
+          <DialogTitle>{t("replaceTitle")}</DialogTitle>
+          <DialogDescription>{t("replaceDescription")}</DialogDescription>
         </DialogHeader>
 
         {replaceContent}

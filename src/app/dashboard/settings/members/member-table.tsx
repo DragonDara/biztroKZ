@@ -3,7 +3,7 @@
 import { DataTable } from "@/components/data-table/data-table"
 import { useDataTable } from "@/hooks/use-data-table"
 import type { AuthMember } from "@/lib/auth"
-import { getColumns } from "./columns"
+import { useMemberColumns } from "./columns"
 
 export default function MemberTable({
   data,
@@ -12,7 +12,7 @@ export default function MemberTable({
   data: AuthMember[]
   canDeleteMember: boolean
 }) {
-  const cols = getColumns(canDeleteMember)
+  const cols = useMemberColumns(canDeleteMember)
 
   const { table, globalFilter, setGlobalFilter } = useDataTable({
     data,

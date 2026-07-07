@@ -4,6 +4,7 @@ import { useState, useTransition } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
 import { Loader, PlusCircle } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { usePostHog } from "posthog-js/react"
@@ -16,6 +17,7 @@ import { BasicPlanLimits } from "@/lib/types/billing"
 import { MenuItemStatus } from "@/lib/types/menu-item"
 
 export default function ItemCreate() {
+  const t = useTranslations("dashboard.menuItems.products")
   const [isPending, startTransition] = useTransition()
   const [showUpgrade, setShowUpgrade] = useState(false)
   const router = useRouter()
@@ -33,7 +35,6 @@ export default function ItemCreate() {
         return
       }
 
-      // Track item creation
       if (data?.success) {
         posthog.capture("item_created", {
           item_id: data.success.id,
@@ -53,7 +54,7 @@ export default function ItemCreate() {
       Sentry.captureException(error, {
         tags: { section: "item-create" }
       })
-      toast.error("No se pudo crear el producto")
+      toast.error(t("createError"))
       reset()
     }
   })
@@ -65,12 +66,12 @@ export default function ItemCreate() {
         disabled={status === "executing" || isPending}
         onClick={() =>
           execute({
-            name: "Nuevo producto",
+            name: t("defaultName"),
             status: MenuItemStatus.DRAFT,
             description: "",
             variants: [
               {
-                name: "Regular",
+                name: t("defaultVariant"),
                 price: 0
               }
             ]
@@ -82,13 +83,12 @@ export default function ItemCreate() {
         ) : (
           <PlusCircle className="size-4" />
         )}
-        Nuevo producto
+        {t("newProduct")}
       </Button>
 
       <UpgradeDialog
-        title="Obtén más con el plan Pro"
-        description={`Has alcanzado el límite de ${appConfig.itemLimit} productos en tu plan gratuito. 
-      Considera actualizar a Pro para seguir creando sin restricciones.`}
+        title={t("upgradeTitle")}
+        description={t("upgradeDescription", { limit: appConfig.itemLimit })}
         open={showUpgrade}
         onClose={() => setShowUpgrade(false)}
       />

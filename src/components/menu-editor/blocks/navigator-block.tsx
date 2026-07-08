@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useEffect, useRef, useState } from "react"
 import { useEditor, useNode } from "@craftjs/core"
 import type { RgbaColor } from "@uiw/react-color"
@@ -9,6 +11,7 @@ import {
   useScroll,
   useTransform
 } from "motion/react"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 
 import { useTranslation } from "@/components/menu-editor/translation-provider"
@@ -28,6 +31,7 @@ export type NavigatorBlockProps = {
 }
 
 export default function NavigatorBlock({ color }: NavigatorBlockProps) {
+  const t = useTranslations("menuEditor.blocks")
   const {
     connectors: { connect }
   } = useNode()
@@ -252,7 +256,7 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
               size="icon-sm"
               className="shrink-0 md:hidden"
               onClick={() => setIsDrawerOpen(true)}
-              aria-label="Abrir menú de navegación"
+              aria-label={t("navigator.openMenuAria")}
             >
               <Menu className="size-4" />
             </Button>

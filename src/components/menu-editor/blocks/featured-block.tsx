@@ -6,6 +6,7 @@ import { useEditor, useNode } from "@craftjs/core"
 import type { RgbaColor } from "@uiw/react-color"
 import Autoplay from "embla-carousel-autoplay"
 import { CircleAlert } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import FeaturedSettings from "@/components/menu-editor/blocks/featured-settings"
 import { ItemDetail } from "@/components/menu-editor/blocks/item-detail"
@@ -47,6 +48,7 @@ export default function FeaturedBlock({
   priceFontWeight = "400",
   autoPlay = true
 }: FeaturedBlockProps) {
+  const t = useTranslations("menuEditor.blocks")
   const {
     connectors: { connect }
   } = useNode()
@@ -72,7 +74,7 @@ export default function FeaturedBlock({
         className="flex items-center justify-center gap-2 text-gray-500"
       >
         <CircleAlert className="size-4" />
-        <span>No hay elementos recomendados</span>
+        <span>{t("featured.empty")}</span>
       </div>
     )
 
@@ -145,7 +147,8 @@ export default function FeaturedBlock({
                           className="flex flex-row gap-3"
                         >
                           <h3 className="text-lg font-semibold text-white">
-                            {translation?.getItemTranslation(item.id)?.name ?? item.name}
+                            {translation?.getItemTranslation(item.id)?.name ??
+                              item.name}
                           </h3>
                         </FontWrapper>
                       </div>
@@ -172,9 +175,12 @@ export default function FeaturedBlock({
         <ItemDetail
           item={{
             ...selectedItem,
-            name: translation?.getItemTranslation(selectedItem.id)?.name ?? selectedItem.name,
+            name:
+              translation?.getItemTranslation(selectedItem.id)?.name ??
+              selectedItem.name,
             description:
-              translation?.getItemTranslation(selectedItem.id)?.description !== undefined
+              translation?.getItemTranslation(selectedItem.id)?.description !==
+              undefined
                 ? translation.getItemTranslation(selectedItem.id)?.description
                 : selectedItem.description,
             variants: selectedItem.variants.map(v => ({

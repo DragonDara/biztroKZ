@@ -15,6 +15,7 @@ import {
 } from "lucide-react"
 import { useTranslations } from "next-intl"
 
+import { useResolveBlockDisplayName } from "@/components/menu-editor/resolve-block-display-name"
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,6 +32,7 @@ import { elementPropsAtom } from "@/lib/atoms"
 export const RenderNode = ({ render }: { render: ReactNode }) => {
   const t = useTranslations("menuEditor.canvas")
   const tCommon = useTranslations("dashboard.common")
+  const resolveBlockDisplayName = useResolveBlockDisplayName()
   const { id } = useNode()
   const { actions, query, isActive, nodes } = useEditor((_state, query) => ({
     isActive: query.getEvent("selected").contains(id),
@@ -161,7 +163,7 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
                   right: isMobile ? 10 : "auto"
                 }}
               >
-                <h2 className="flex">{name}</h2>
+                <h2 className="flex">{resolveBlockDisplayName(name)}</h2>
                 {moveable ? (
                   <span
                     className="hidden cursor-move sm:block"

@@ -6,6 +6,7 @@ import * as Sentry from "@sentry/nextjs"
 import type { ColumnDef } from "@tanstack/react-table"
 import { Loader, ShoppingBag } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 
 import { DataGrid } from "@/components/data-grid/data-grid"
@@ -238,6 +239,11 @@ export function MenuItemsDataGrid({
   isSaving,
   onManualSave
 }: MenuItemsDataGridProps) {
+  const t = useTranslations("menuEditor.dataGrid")
+  const tProducts = useTranslations("dashboard.menuItems.products")
+  const tUnsaved = useTranslations("menuEditor.unsavedChanges")
+  const tCommon = useTranslations("dashboard.common")
+
   // Flatten items into grid rows - this is the source of truth from props
   const initialData = React.useMemo(() => {
     const rows = flattenMenuItems(
@@ -300,11 +306,11 @@ export function MenuItemsDataGrid({
   // Status options
   const statusOptions: CellSelectOption[] = React.useMemo(
     () => [
-      { label: "Activo", value: "ACTIVE" },
-      { label: "Borrador", value: "DRAFT" },
-      { label: "Archivado", value: "ARCHIVED" }
+      { label: tProducts("statusActive"), value: "ACTIVE" },
+      { label: tProducts("statusDraft"), value: "DRAFT" },
+      { label: tProducts("statusArchived"), value: "ARCHIVED" }
     ],
-    []
+    [tProducts]
   )
 
   // Currency options
@@ -468,33 +474,33 @@ export function MenuItemsDataGrid({
       {
         id: "name",
         accessorKey: "name",
-        header: "Nombre",
+        header: tProducts("columnProduct"),
         size: 200,
         minSize: 150,
         meta: {
-          label: "Nombre",
+          label: tProducts("columnProduct"),
           cell: { variant: "short-text" as const }
         }
       },
       {
         id: "description",
         accessorKey: "description",
-        header: "Descripción",
+        header: tProducts("columnDescription"),
         size: 250,
         minSize: 150,
         meta: {
-          label: "Descripción",
+          label: tProducts("columnDescription"),
           cell: { variant: "long-text" as const }
         }
       },
       {
         id: "allergens",
         accessorKey: "allergens",
-        header: "Alérgenos",
+        header: t("columnAllergens"),
         size: 200,
         minSize: 140,
         meta: {
-          label: "Alérgenos",
+          label: t("columnAllergens"),
           cell: {
             variant: "multi-select" as const,
             options: allergenOptions
@@ -504,11 +510,11 @@ export function MenuItemsDataGrid({
       {
         id: "categoryId",
         accessorKey: "categoryId",
-        header: "Categoría",
+        header: tProducts("columnCategory"),
         size: 150,
         minSize: 100,
         meta: {
-          label: "Categoría",
+          label: tProducts("columnCategory"),
           cell: {
             variant: "select" as const,
             options: categoryOptions
@@ -518,11 +524,11 @@ export function MenuItemsDataGrid({
       {
         id: "status",
         accessorKey: "status",
-        header: "Estado",
+        header: tProducts("columnStatus"),
         size: 120,
         minSize: 100,
         meta: {
-          label: "Estado",
+          label: tProducts("columnStatus"),
           cell: {
             variant: "select" as const,
             options: statusOptions
@@ -532,22 +538,22 @@ export function MenuItemsDataGrid({
       {
         id: "featured",
         accessorKey: "featured",
-        header: "Destacado",
+        header: tProducts("recommended"),
         size: 100,
         minSize: 80,
         meta: {
-          label: "Destacado",
+          label: tProducts("recommended"),
           cell: { variant: "checkbox" as const }
         }
       },
       {
         id: "currency",
         accessorKey: "currency",
-        header: "Moneda",
+        header: t("columnCurrency"),
         size: 100,
         minSize: 80,
         meta: {
-          label: "Moneda",
+          label: t("columnCurrency"),
           cell: {
             variant: "select" as const,
             options: currencyOptions
@@ -557,11 +563,11 @@ export function MenuItemsDataGrid({
       {
         id: "price",
         accessorKey: "price",
-        header: "Precio",
+        header: tProducts("columnPrice"),
         size: 120,
         minSize: 100,
         meta: {
-          label: "Precio",
+          label: tProducts("columnPrice"),
           cell: {
             variant: "price" as const,
             min: 0,
@@ -570,7 +576,14 @@ export function MenuItemsDataGrid({
         }
       }
     ],
-    [categoryOptions, statusOptions, currencyOptions, allergenOptions]
+    [
+      allergenOptions,
+      categoryOptions,
+      currencyOptions,
+      statusOptions,
+      t,
+      tProducts
+    ]
   )
 
   const { table, ...dataGridProps } = useDataGrid({
@@ -599,7 +612,7 @@ export function MenuItemsDataGrid({
       <div className="py-2">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <h2 className="px-2 py-3">Editar Productos del menú</h2>
+            <h2 className="px-2 py-3">{t("title")}</h2>
             <AnimatePresence initial={true} mode="wait">
               {isSaving && (
                 <motion.span
@@ -610,7 +623,7 @@ export function MenuItemsDataGrid({
                     text-xs"
                 >
                   <Loader className="size-4 animate-spin" />
-                  Guardando...
+                  {t("saving")}
                 </motion.span>
               )}
             </AnimatePresence>
@@ -625,8 +638,7 @@ export function MenuItemsDataGrid({
                   className="flex items-center gap-2"
                 >
                   <span className="text-muted-foreground text-xs">
-                    {dirtyIds.size} cambio{dirtyIds.size > 1 ? "s" : ""} sin
-                    guardar
+                    {t("unsavedChanges", { count: dirtyIds.size })}
                   </span>
 
                   <Button
@@ -635,7 +647,7 @@ export function MenuItemsDataGrid({
                     disabled={dirtyIds.size === 0 || isSaving}
                     onClick={handleDiscardChanges}
                   >
-                    Descartar cambios
+                    {tUnsaved("discardChanges")}
                   </Button>
                   <Button
                     size="xs"
@@ -643,7 +655,7 @@ export function MenuItemsDataGrid({
                     disabled={dirtyIds.size === 0 || isSaving}
                     onClick={handleManualSave}
                   >
-                    Guardar
+                    {tCommon("save")}
                   </Button>
                 </motion.div>
               )}
@@ -672,15 +684,13 @@ export function MenuItemsDataGrid({
                     <EmptyMedia variant="icon">
                       <ShoppingBag className="size-5" />
                     </EmptyMedia>
-                    <EmptyTitle>Aún no hay productos</EmptyTitle>
-                    <EmptyDescription>
-                      Crea tu primer producto para empezar a editar el menú.
-                    </EmptyDescription>
+                    <EmptyTitle>{t("emptyTitle")}</EmptyTitle>
+                    <EmptyDescription>{t("emptyDescription")}</EmptyDescription>
                   </EmptyHeader>
                   <EmptyContent>
                     <Button asChild size="sm">
                       <Link href="/dashboard/menu-items" prefetch={false}>
-                        Crear producto
+                        {t("createProduct")}
                       </Link>
                     </Button>
                   </EmptyContent>
@@ -700,14 +710,14 @@ export function MenuItemsDataGrid({
         {!isEmpty && (
           <div className="px-2 py-1">
             <span className="text-muted-foreground text-xs">
-              Presiona <Kbd>Enter</Kbd> para iniciar cambios en una celda,{" "}
-              <Kbd>Esc</Kbd> para cancelar la edición.
+              {t("keyboardEditPrefix")} <Kbd>Enter</Kbd>{" "}
+              {t("keyboardEditMiddle")} <Kbd>Esc</Kbd> {t("keyboardEditCancel")}
               <br />
-              Presiona{" "}
+              {t("keyboardCommandsPrefix")}{" "}
               <KbdGroup>
                 <Kbd>{modKey}</Kbd> + <Kbd>/</Kbd>
               </KbdGroup>{" "}
-              para mostrar la lista completa de comandos.
+              {t("keyboardCommandsSuffix")}
             </span>
           </div>
         )}

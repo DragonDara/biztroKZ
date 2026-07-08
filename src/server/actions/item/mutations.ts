@@ -3,6 +3,7 @@
 import { Prisma } from "@/generated/prisma-client/client"
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import * as Sentry from "@sentry/nextjs"
+import { getTranslations } from "next-intl/server"
 import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
@@ -44,11 +45,12 @@ const R2 = new S3Client({
 export const parseMenuFile = authMemberActionClient
   .inputSchema(menuImportFileInputSchema)
   .action(async ({ parsedInput }) => {
+    const t = await getTranslations("dashboard.menuItems.import.errors")
+
     if (!parsedInput.simulateResponse && !env.AI_GATEWAY_API_KEY) {
       return {
         failure: {
-          reason:
-            "La funcionalidad de importar archivos requiere configurar una clave de API del AI Gateway"
+          reason: t("aiGatewayRequired")
         }
       }
     }
@@ -72,16 +74,14 @@ export const parseMenuFile = authMemberActionClient
       if (parsedInput.simulateResponse) {
         return {
           failure: {
-            reason:
-              "No se pudo simular la extracción del archivo. Intenta nuevamente."
+            reason: t("simulateFailed")
           }
         }
       }
 
       return {
         failure: {
-          reason:
-            "No se pudo procesar el archivo. Asegúrate de que sea un menú válido en PDF o imagen."
+          reason: t("parseFailed")
         }
       }
     }
@@ -229,12 +229,13 @@ export const createItem = authMemberActionClient
 export const bulkCreateItems = authMemberActionClient
   .inputSchema(bulkMenuItemSchema)
   .action(async ({ parsedInput: items, ctx: { member } }) => {
+    const t = await getTranslations("dashboard.menuItems.import.errors")
     const currentOrgId = member.organizationId
 
     if (!currentOrgId) {
       return {
         failure: {
-          reason: "No se pudo obtener la organización actual"
+          reason: t("noOrg")
         }
       }
     }
@@ -311,8 +312,7 @@ export const bulkCreateItems = authMemberActionClient
     if (!proMember && itemCount + groupedItems.length > itemLimit) {
       return {
         failure: {
-          reason:
-            "Excederías el límite de productos permitidos en el plan básico",
+          reason: t("limitExceeded"),
           code: BasicPlanLimits.ITEM_LIMIT_REACHED
         }
       }
@@ -418,13 +418,13 @@ export const bulkCreateItems = authMemberActionClient
       if (error instanceof Prisma.PrismaClientKnownRequestError) {
         switch (error.code) {
           case "P2002":
-            return { failure: { reason: "Entrada duplicada" } }
+            return { failure: { reason: t("duplicateEntry") } }
           case "P2003":
-            return { failure: { reason: "Referencia inválida" } }
+            return { failure: { reason: t("invalidReference") } }
           default:
             return {
               failure: {
-                reason: `Error: Verifique que productos no estén duplicados. ${error.code}`
+                reason: t("duplicateCheck", { code: error.code })
               }
             }
         }
@@ -432,8 +432,7 @@ export const bulkCreateItems = authMemberActionClient
 
       return {
         failure: {
-          reason:
-            "No se pudieron guardar los productos importados. Intenta nuevamente."
+          reason: t("bulkSaveRetry")
         }
       }
     }

@@ -1,14 +1,19 @@
 import { simulatePdfAi } from "@/flags"
 import { FileText } from "lucide-react"
 import type { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 import MenuImportForm from "@/app/dashboard/menu-items/menu-import/menu-import-form"
 
-export const metadata: Metadata = {
-  title: "Importar Productos desde Archivo"
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("dashboard.menuItems.import")
+
+  return {
+    title: t("metaTitle")
+  }
 }
 
 function getReturnTo(value: string | string[] | undefined) {
@@ -24,9 +29,10 @@ function getReturnTo(value: string | string[] | undefined) {
 export default async function PdfImportPage(props: {
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>
 }) {
-  const [currentOrg, searchParams] = await Promise.all([
+  const [currentOrg, searchParams, t] = await Promise.all([
     getCurrentOrganization(),
-    props.searchParams
+    props.searchParams,
+    getTranslations("dashboard.menuItems.import")
   ])
 
   if (!currentOrg) {
@@ -42,10 +48,9 @@ export default async function PdfImportPage(props: {
     <div className="mx-auto w-full min-w-0 grow px-4 sm:px-6">
       <PageSubtitle>
         <PageSubtitle.Icon icon={FileText} />
-        <PageSubtitle.Title>Importar desde PDF o imagen</PageSubtitle.Title>
+        <PageSubtitle.Title>{t("pageTitle")}</PageSubtitle.Title>
         <PageSubtitle.Description>
-          Sube un PDF o imagen de tu menú y extrae los productos automáticamente
-          con IA
+          {t("pageDescription")}
         </PageSubtitle.Description>
       </PageSubtitle>
       <div className="mt-10">

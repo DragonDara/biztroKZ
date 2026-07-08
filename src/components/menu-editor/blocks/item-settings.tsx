@@ -1,5 +1,8 @@
+"use client"
+
 import { useEditor, useNode } from "@craftjs/core"
 import { CaseSensitive, CaseUpper, Paintbrush } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { type ItemBlockProps } from "@/components/menu-editor/blocks/item-block"
 import SideSection from "@/components/menu-editor/side-section"
@@ -22,6 +25,7 @@ import {
 import { FONT_SIZES } from "@/lib/types/theme"
 
 export default function ItemSettings() {
+  const t = useTranslations("menuEditor.blocks")
   const {
     id,
     actions: { setProp },
@@ -74,10 +78,10 @@ export default function ItemSettings() {
 
   return (
     <>
-      <SideSection title="General">
+      <SideSection title={t("common.general")}>
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label size="xs">Fondo</Label>
+            <Label size="xs">{t("common.background")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -92,20 +96,24 @@ export default function ItemSettings() {
               <SelectTrigger
                 className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
-                <SelectValue placeholder="Selecciona" />
+                <SelectValue placeholder={t("common.select")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Ninguno</SelectItem>
-                <SelectItem value="custom">Personalizado</SelectItem>
+                <SelectItem value="none">
+                  {t("common.backgroundNone")}
+                </SelectItem>
+                <SelectItem value="custom">
+                  {t("common.backgroundCustom")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </dd>
         </div>
       </SideSection>
-      <SideSection title="Producto">
+      <SideSection title={t("common.product")}>
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label size="xs">Tamaño</Label>
+            <Label size="xs">{t("common.size")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -120,7 +128,7 @@ export default function ItemSettings() {
               <SelectTrigger
                 className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
-                <SelectValue placeholder="Selecciona" />
+                <SelectValue placeholder={t("common.select")} />
               </SelectTrigger>
               <SelectContent>
                 {FONT_SIZES.map(size => (
@@ -132,7 +140,7 @@ export default function ItemSettings() {
             </Select>
           </dd>
           <dt>
-            <Label size="xs">Estilo</Label>
+            <Label size="xs">{t("common.style")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -146,18 +154,26 @@ export default function ItemSettings() {
               <SelectTrigger
                 className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
-                <SelectValue placeholder="Selecciona" />
+                <SelectValue placeholder={t("common.select")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="300">Light</SelectItem>
-                <SelectItem value="400">Regular</SelectItem>
-                <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="700">Negrita</SelectItem>
+                <SelectItem value="300">
+                  {t("common.fontWeightLight")}
+                </SelectItem>
+                <SelectItem value="400">
+                  {t("common.fontWeightRegular")}
+                </SelectItem>
+                <SelectItem value="500">
+                  {t("common.fontWeightMedium")}
+                </SelectItem>
+                <SelectItem value="700">
+                  {t("common.fontWeightBold")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </dd>
           <dt>
-            <Label size="xs">Capitaliza</Label>
+            <Label size="xs">{t("common.capitalize")}</Label>
           </dt>
           <dd className="col-span-2">
             <Tabs
@@ -171,12 +187,15 @@ export default function ItemSettings() {
               }
             >
               <TabsList className="h-8 p-0.5">
-                <TabsTrigger value="none" aria-label="Capitalización normal">
+                <TabsTrigger
+                  value="none"
+                  aria-label={t("common.capitalizeNormalAria")}
+                >
                   <CaseSensitive className="size-3.5" />
                 </TabsTrigger>
                 <TabsTrigger
                   value="uppercase"
-                  aria-label="Capitalización en mayúsculas"
+                  aria-label={t("common.capitalizeUpperAria")}
                 >
                   <CaseUpper className="size-3.5" />
                 </TabsTrigger>
@@ -185,10 +204,10 @@ export default function ItemSettings() {
           </dd>
         </div>
       </SideSection>
-      <SideSection title="Precio">
+      <SideSection title={t("common.price")}>
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label size="xs">Tamaño</Label>
+            <Label size="xs">{t("common.size")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -203,7 +222,7 @@ export default function ItemSettings() {
               <SelectTrigger
                 className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
-                <SelectValue placeholder="Selecciona" />
+                <SelectValue placeholder={t("common.select")} />
               </SelectTrigger>
               <SelectContent>
                 {FONT_SIZES.map(size => (
@@ -215,7 +234,7 @@ export default function ItemSettings() {
             </Select>
           </dd>
           <dt>
-            <Label size="xs">Estilo</Label>
+            <Label size="xs">{t("common.style")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -229,22 +248,30 @@ export default function ItemSettings() {
               <SelectTrigger
                 className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
-                <SelectValue placeholder="Selecciona" />
+                <SelectValue placeholder={t("common.select")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="300">Light</SelectItem>
-                <SelectItem value="400">Regular</SelectItem>
-                <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="700">Negrita</SelectItem>
+                <SelectItem value="300">
+                  {t("common.fontWeightLight")}
+                </SelectItem>
+                <SelectItem value="400">
+                  {t("common.fontWeightRegular")}
+                </SelectItem>
+                <SelectItem value="500">
+                  {t("common.fontWeightMedium")}
+                </SelectItem>
+                <SelectItem value="700">
+                  {t("common.fontWeightBold")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </dd>
         </div>
       </SideSection>
-      <SideSection title="Imágen Producto">
+      <SideSection title={t("common.productImage")}>
         <div className="grid grid-cols-3 items-center gap-y-2">
           <dt>
-            <Label size="xs">Mostrar</Label>
+            <Label size="xs">{t("common.show")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Switch
@@ -270,11 +297,11 @@ export default function ItemSettings() {
               onClick={applyToAll}
             >
               <Paintbrush className="size-3.5" />
-              Aplicar a todos
+              {t("common.applyToAll")}
             </Button>
           </TooltipTrigger>
           <TooltipContent side="top">
-            <p>Propagar estas propiedades a todos los productos</p>
+            <p>{t("propagate.products")}</p>
           </TooltipContent>
         </Tooltip>
       </div>

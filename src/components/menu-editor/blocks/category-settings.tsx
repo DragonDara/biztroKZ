@@ -1,3 +1,6 @@
+"use client"
+
+import { useMemo } from "react"
 import { useEditor, useNode } from "@craftjs/core"
 import { Colorful, hexToHsva, Sketch } from "@uiw/react-color"
 import { useAtomValue } from "jotai"
@@ -9,6 +12,7 @@ import {
   CaseUpper,
   Paintbrush
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import {
   type CategoryBlockProps,
@@ -186,6 +190,8 @@ function ColorPickerControl({
 }
 
 export default function CategorySettings() {
+  const t = useTranslations("menuEditor.blocks")
+  const tTheme = useTranslations("menuEditor.theme")
   const {
     id,
     actions: { setProp },
@@ -266,20 +272,23 @@ export default function CategorySettings() {
   const selectedTheme = (colorList.find(theme => theme.id === colorThemeId) ??
     defaultTheme) as typeof defaultTheme
 
-  const colorPresets = [
-    { color: selectedTheme.surfaceColor, title: "Fondo" },
-    { color: selectedTheme.brandColor, title: "Marca" },
-    { color: selectedTheme.accentColor, title: "Acento" },
-    { color: selectedTheme.textColor, title: "Texto" },
-    { color: selectedTheme.mutedColor, title: "Tenue" }
-  ]
+  const colorPresets = useMemo(
+    () => [
+      { color: selectedTheme.surfaceColor, title: tTheme("colorSurface") },
+      { color: selectedTheme.brandColor, title: tTheme("colorBrand") },
+      { color: selectedTheme.accentColor, title: tTheme("colorAccent") },
+      { color: selectedTheme.textColor, title: tTheme("colorText") },
+      { color: selectedTheme.mutedColor, title: tTheme("colorMuted") }
+    ],
+    [selectedTheme, tTheme]
+  )
 
   return (
     <>
-      <SideSection title="Categoría">
+      <SideSection title={t("common.category")}>
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label size="xs">Tamaño</Label>
+            <Label size="xs">{t("common.size")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -294,7 +303,7 @@ export default function CategorySettings() {
               <SelectTrigger
                 className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
-                <SelectValue placeholder="Selecciona" />
+                <SelectValue placeholder={t("common.select")} />
               </SelectTrigger>
               <SelectContent>
                 {FONT_SIZES.map(size => (
@@ -306,7 +315,7 @@ export default function CategorySettings() {
             </Select>
           </dd>
           <dt>
-            <Label size="xs">Estilo</Label>
+            <Label size="xs">{t("common.style")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -321,18 +330,26 @@ export default function CategorySettings() {
               <SelectTrigger
                 className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
-                <SelectValue placeholder="Selecciona" />
+                <SelectValue placeholder={t("common.select")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="300">Light</SelectItem>
-                <SelectItem value="400">Regular</SelectItem>
-                <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="700">Negrita</SelectItem>
+                <SelectItem value="300">
+                  {t("common.fontWeightLight")}
+                </SelectItem>
+                <SelectItem value="400">
+                  {t("common.fontWeightRegular")}
+                </SelectItem>
+                <SelectItem value="500">
+                  {t("common.fontWeightMedium")}
+                </SelectItem>
+                <SelectItem value="700">
+                  {t("common.fontWeightBold")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </dd>
           <dt>
-            <Label size="xs">Alineación</Label>
+            <Label size="xs">{t("common.alignment")}</Label>
           </dt>
           <dd className="col-span-2">
             <Tabs
@@ -358,7 +375,7 @@ export default function CategorySettings() {
             </Tabs>
           </dd>
           <dt>
-            <Label size="xs">Capitaliza</Label>
+            <Label size="xs">{t("common.capitalize")}</Label>
           </dt>
           <dd className="col-span-2">
             <Tabs
@@ -372,12 +389,15 @@ export default function CategorySettings() {
               }
             >
               <TabsList className="h-8 p-0.5">
-                <TabsTrigger value="none" aria-label="Capitalización normal">
+                <TabsTrigger
+                  value="none"
+                  aria-label={t("common.capitalizeNormalAria")}
+                >
                   <CaseSensitive className="size-3.5" />
                 </TabsTrigger>
                 <TabsTrigger
                   value="uppercase"
-                  aria-label="Capitalización en mayúsculas"
+                  aria-label={t("common.capitalizeUpperAria")}
                 >
                   <CaseUpper className="size-3.5" />
                 </TabsTrigger>
@@ -385,15 +405,15 @@ export default function CategorySettings() {
             </Tabs>
           </dd>
           <dt>
-            <Label size="xs">Fondo título</Label>
+            <Label size="xs">{t("common.headingBackground")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <ColorPickerControl
               color={categoryHeadingBgColor}
               fallbackColor={selectedTheme.surfaceColor}
-              title="Color de fondo"
-              ariaLabel="Seleccionar color de fondo"
-              clearLabel="Sin color"
+              title={t("common.backgroundColor")}
+              ariaLabel={t("common.selectBackgroundColor")}
+              clearLabel={t("common.noColor")}
               colorPresets={colorPresets}
               isMobile={isMobile}
               onChange={color =>
@@ -411,7 +431,7 @@ export default function CategorySettings() {
             />
           </dd>
           <dt>
-            <Label size="xs">Forma título</Label>
+            <Label size="xs">{t("common.headingShape")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -426,28 +446,32 @@ export default function CategorySettings() {
               <SelectTrigger
                 className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
-                <SelectValue placeholder="Selecciona" />
+                <SelectValue placeholder={t("common.select")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="none">Ninguna</SelectItem>
-                <SelectItem value="rectangle">Rectángulo</SelectItem>
-                <SelectItem value="rounded">Redondeado</SelectItem>
-                <SelectItem value="pill">Cápsula</SelectItem>
-                <SelectItem value="slanted">Corte diagonal</SelectItem>
-                <SelectItem value="parallelogram">Banda inclinada</SelectItem>
-                <SelectItem value="chevron">Flecha</SelectItem>
-                <SelectItem value="tab">Pestaña</SelectItem>
-                <SelectItem value="scooped">Marco</SelectItem>
-                <SelectItem value="ribbon">Listón</SelectItem>
+                <SelectItem value="none">{t("shapes.none")}</SelectItem>
+                <SelectItem value="rectangle">
+                  {t("shapes.rectangle")}
+                </SelectItem>
+                <SelectItem value="rounded">{t("shapes.rounded")}</SelectItem>
+                <SelectItem value="pill">{t("shapes.pill")}</SelectItem>
+                <SelectItem value="slanted">{t("shapes.slanted")}</SelectItem>
+                <SelectItem value="parallelogram">
+                  {t("shapes.parallelogram")}
+                </SelectItem>
+                <SelectItem value="chevron">{t("shapes.chevron")}</SelectItem>
+                <SelectItem value="tab">{t("shapes.tab")}</SelectItem>
+                <SelectItem value="scooped">{t("shapes.scooped")}</SelectItem>
+                <SelectItem value="ribbon">{t("shapes.ribbon")}</SelectItem>
               </SelectContent>
             </Select>
           </dd>
         </div>
       </SideSection>
-      <SideSection title="Producto">
+      <SideSection title={t("common.product")}>
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label size="xs">Tamaño</Label>
+            <Label size="xs">{t("common.size")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -462,7 +486,7 @@ export default function CategorySettings() {
               <SelectTrigger
                 className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
-                <SelectValue placeholder="Selecciona" />
+                <SelectValue placeholder={t("common.select")} />
               </SelectTrigger>
               <SelectContent>
                 {FONT_SIZES.map(size => (
@@ -474,7 +498,7 @@ export default function CategorySettings() {
             </Select>
           </dd>
           <dt>
-            <Label size="xs">Estilo</Label>
+            <Label size="xs">{t("common.style")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -488,18 +512,26 @@ export default function CategorySettings() {
               <SelectTrigger
                 className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
-                <SelectValue placeholder="Selecciona" />
+                <SelectValue placeholder={t("common.select")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="300">Light</SelectItem>
-                <SelectItem value="400">Regular</SelectItem>
-                <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="700">Negrita</SelectItem>
+                <SelectItem value="300">
+                  {t("common.fontWeightLight")}
+                </SelectItem>
+                <SelectItem value="400">
+                  {t("common.fontWeightRegular")}
+                </SelectItem>
+                <SelectItem value="500">
+                  {t("common.fontWeightMedium")}
+                </SelectItem>
+                <SelectItem value="700">
+                  {t("common.fontWeightBold")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </dd>
           <dt>
-            <Label size="xs">Capitaliza</Label>
+            <Label size="xs">{t("common.capitalize")}</Label>
           </dt>
           <dd className="col-span-2">
             <Tabs
@@ -513,12 +545,15 @@ export default function CategorySettings() {
               }
             >
               <TabsList className="h-8 p-0.5">
-                <TabsTrigger value="none" aria-label="Capitalización normal">
+                <TabsTrigger
+                  value="none"
+                  aria-label={t("common.capitalizeNormalAria")}
+                >
                   <CaseSensitive className="size-3.5" />
                 </TabsTrigger>
                 <TabsTrigger
                   value="uppercase"
-                  aria-label="Capitalización en mayúsculas"
+                  aria-label={t("common.capitalizeUpperAria")}
                 >
                   <CaseUpper className="size-3.5" />
                 </TabsTrigger>
@@ -527,10 +562,10 @@ export default function CategorySettings() {
           </dd>
         </div>
       </SideSection>
-      <SideSection title="Precio">
+      <SideSection title={t("common.price")}>
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label size="xs">Tamaño</Label>
+            <Label size="xs">{t("common.size")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -545,7 +580,7 @@ export default function CategorySettings() {
               <SelectTrigger
                 className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
-                <SelectValue placeholder="Selecciona" />
+                <SelectValue placeholder={t("common.select")} />
               </SelectTrigger>
               <SelectContent>
                 {FONT_SIZES.map(size => (
@@ -557,7 +592,7 @@ export default function CategorySettings() {
             </Select>
           </dd>
           <dt>
-            <Label size="xs">Estilo</Label>
+            <Label size="xs">{t("common.style")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -571,22 +606,30 @@ export default function CategorySettings() {
               <SelectTrigger
                 className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
-                <SelectValue placeholder="Selecciona" />
+                <SelectValue placeholder={t("common.select")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="300">Light</SelectItem>
-                <SelectItem value="400">Regular</SelectItem>
-                <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="700">Negrita</SelectItem>
+                <SelectItem value="300">
+                  {t("common.fontWeightLight")}
+                </SelectItem>
+                <SelectItem value="400">
+                  {t("common.fontWeightRegular")}
+                </SelectItem>
+                <SelectItem value="500">
+                  {t("common.fontWeightMedium")}
+                </SelectItem>
+                <SelectItem value="700">
+                  {t("common.fontWeightBold")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </dd>
         </div>
       </SideSection>
-      <SideSection title="Imágen Producto">
+      <SideSection title={t("common.productImage")}>
         <div className="grid grid-cols-3 items-center gap-y-2">
           <dt>
-            <Label size="xs">Mostrar</Label>
+            <Label size="xs">{t("common.show")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Switch
@@ -612,11 +655,11 @@ export default function CategorySettings() {
               onClick={applyToAll}
             >
               <Paintbrush className="size-3.5" />
-              Aplicar a todos
+              {t("common.applyToAll")}
             </Button>
           </TooltipTrigger>
           <TooltipContent side="top">
-            <p>Propagar estas propiedades a todas las categorías</p>
+            <p>{t("propagate.categories")}</p>
           </TooltipContent>
         </Tooltip>
       </div>

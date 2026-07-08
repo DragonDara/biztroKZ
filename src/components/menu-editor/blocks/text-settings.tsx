@@ -1,5 +1,8 @@
+"use client"
+
 import { useEditor, useNode } from "@craftjs/core"
 import { AlignCenter, AlignLeft, AlignRight, Paintbrush } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { type TextElementProps } from "@/components/menu-editor/blocks/text-element"
 import SideSection from "@/components/menu-editor/side-section"
@@ -21,6 +24,7 @@ import {
 import { FONT_SIZES } from "@/lib/types/theme"
 
 export default function TextSettings() {
+  const t = useTranslations("menuEditor.blocks")
   const {
     id,
     actions: { setProp },
@@ -53,10 +57,10 @@ export default function TextSettings() {
 
   return (
     <>
-      <SideSection title="Texto">
+      <SideSection title={t("common.text")}>
         <div className="grid grid-cols-3 items-center gap-2">
           <dt>
-            <Label size="xs">Tamaño</Label>
+            <Label size="xs">{t("common.size")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -71,7 +75,7 @@ export default function TextSettings() {
               <SelectTrigger
                 className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
-                <SelectValue placeholder="Selecciona" />
+                <SelectValue placeholder={t("common.select")} />
               </SelectTrigger>
               <SelectContent>
                 {FONT_SIZES.map(size => (
@@ -83,7 +87,7 @@ export default function TextSettings() {
             </Select>
           </dd>
           <dt>
-            <Label size="xs">Estilo</Label>
+            <Label size="xs">{t("common.style")}</Label>
           </dt>
           <dd className="col-span-2 flex items-center">
             <Select
@@ -95,18 +99,26 @@ export default function TextSettings() {
               <SelectTrigger
                 className="focus:ring-transparent sm:h-7! sm:text-xs"
               >
-                <SelectValue placeholder="Selecciona" />
+                <SelectValue placeholder={t("common.select")} />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="300">Light</SelectItem>
-                <SelectItem value="400">Regular</SelectItem>
-                <SelectItem value="500">Medium</SelectItem>
-                <SelectItem value="700">Negrita</SelectItem>
+                <SelectItem value="300">
+                  {t("common.fontWeightLight")}
+                </SelectItem>
+                <SelectItem value="400">
+                  {t("common.fontWeightRegular")}
+                </SelectItem>
+                <SelectItem value="500">
+                  {t("common.fontWeightMedium")}
+                </SelectItem>
+                <SelectItem value="700">
+                  {t("common.fontWeightBold")}
+                </SelectItem>
               </SelectContent>
             </Select>
           </dd>
           <dt>
-            <Label size="xs">Alineación</Label>
+            <Label size="xs">{t("common.alignment")}</Label>
           </dt>
           <dd className="col-span-2">
             <Tabs
@@ -114,7 +126,6 @@ export default function TextSettings() {
               onValueChange={value =>
                 setProp((props: TextElementProps) => (props.textAlign = value))
               }
-              // className="text-center"
             >
               <TabsList className="h-8 p-0.5">
                 <TabsTrigger value="left">
@@ -141,11 +152,11 @@ export default function TextSettings() {
               onClick={applyToAll}
             >
               <Paintbrush className="size-3.5" />
-              Aplicar a todos
+              {t("common.applyToAll")}
             </Button>
           </TooltipTrigger>
           <TooltipContent side="top">
-            <p>Propagar estas propiedades a todos los textos</p>
+            <p>{t("propagate.texts")}</p>
           </TooltipContent>
         </Tooltip>
       </div>

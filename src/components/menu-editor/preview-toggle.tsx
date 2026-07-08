@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react"
 import IFrame, { FrameContextConsumer } from "react-frame-component"
 import { Monitor, Smartphone } from "lucide-react"
 import { motion } from "motion/react"
+import { useTranslations } from "next-intl"
 
 import CssStyles from "@/components/menu-editor/css-styles"
 import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
@@ -15,6 +16,7 @@ import { cn } from "@/lib/utils"
 type PreviewMode = "inline" | "iframe"
 
 export function PreviewToggle({ json }: { json?: string }) {
+  const t = useTranslations("menuEditor.preview")
   const [mode, setMode] = useState<PreviewMode>("inline")
   const [mounted, setMounted] = useState(false)
   const isMobile = useIsMobile()
@@ -46,7 +48,7 @@ export function PreviewToggle({ json }: { json?: string }) {
       }
       setIsHiddenByScroll(false)
     }
-    // "idle" → let the timer fire naturally
+
     return () => {
       if (hideTimerRef.current !== null) clearTimeout(hideTimerRef.current)
     }
@@ -116,19 +118,19 @@ export function PreviewToggle({ json }: { json?: string }) {
           >
             <ToggleGroupItem
               value="inline"
-              aria-label="Vista escritorio"
+              aria-label={t("desktopView")}
               className="gap-2"
             >
               <Monitor className="size-4" />
-              <span className="hidden sm:inline">Escritorio</span>
+              <span className="hidden sm:inline">{t("desktop")}</span>
             </ToggleGroupItem>
             <ToggleGroupItem
               value="iframe"
-              aria-label="Vista móvil"
+              aria-label={t("mobileView")}
               className="gap-2"
             >
               <Smartphone className="size-4" />
-              <span className="hidden sm:inline">Móvil</span>
+              <span className="hidden sm:inline">{t("mobile")}</span>
             </ToggleGroupItem>
           </ToggleGroup>
         </motion.div>

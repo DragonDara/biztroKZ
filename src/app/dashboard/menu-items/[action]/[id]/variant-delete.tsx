@@ -2,6 +2,7 @@
 
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 
 import {
@@ -28,9 +29,12 @@ export default function VariantDelete({
   variantId: string | undefined
   menuItemId: string | undefined
 }) {
+  const t = useTranslations("dashboard.menuItems.variants")
+  const tCommon = useTranslations("dashboard.common")
+
   const { execute, reset } = useAction(deleteVariant, {
     onExecute: () => {
-      toast.loading("Eliminando Variante...")
+      toast.loading(t("deleting"))
     },
     onSuccess: ({ data }) => {
       if (data?.failure?.reason) {
@@ -48,7 +52,7 @@ export default function VariantDelete({
         extra: { variantId, menuItemId }
       })
       toast.dismiss()
-      toast.error("Algo salió mal")
+      toast.error(tCommon("genericError"))
       reset()
     }
   })
@@ -65,19 +69,18 @@ export default function VariantDelete({
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Eliminar Variante</AlertDialogTitle>
+          <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
           <AlertDialogDescription>
-            ¿Estás seguro de eliminar esta variante? Esta acción no se puede
-            deshacer
+            {t("deleteDescription")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
           <AlertDialogAction
             className={cn(buttonVariants({ variant: "destructive" }))}
             onClick={() => onDeleteVariant()}
           >
-            Eliminar
+            {tCommon("delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

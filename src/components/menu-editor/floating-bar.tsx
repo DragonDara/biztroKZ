@@ -1,3 +1,5 @@
+"use client"
+
 import { useEffect, useState } from "react"
 import { useEditor } from "@craftjs/core"
 import { useAtom } from "jotai"
@@ -11,15 +13,19 @@ import {
   TabletSmartphone,
   Undo2
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
 import { useSetUnsavedChanges } from "@/components/dashboard/unsaved-changes-provider"
+import { useMenuEditorUnsavedCopy } from "@/components/menu-editor/use-menu-editor-unsaved"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { elementPropsAtom, frameSizeAtom } from "@/lib/atoms"
 import { FrameSize } from "@/lib/types/theme"
 
 export default function FloatingBar() {
+  const t = useTranslations("menuEditor.toolbar")
+  const unsavedCopy = useMenuEditorUnsavedCopy()
   const { enabled, canUndo, canRedo, actions, query, selectedNodeId, store } =
     useEditor((state, query) => ({
       enabled: state.options.enabled,
@@ -61,10 +67,7 @@ export default function FloatingBar() {
   useEffect(() => {
     if (canUndo && historyPointer >= 0) {
       setUnsavedChanges({
-        message:
-          "Tienes cambios sin guardar ¿Estás seguro de salir del Editor?",
-        dismissButtonLabel: "Cancelar",
-        proceedLinkLabel: "Descartar cambios",
+        ...unsavedCopy.editorLeave,
         proceedAction: () => {
           actions.history.clear()
         }
@@ -72,7 +75,14 @@ export default function FloatingBar() {
     } else {
       clearUnsavedChanges()
     }
-  }, [setUnsavedChanges, clearUnsavedChanges, canUndo, historyPointer])
+  }, [
+    setUnsavedChanges,
+    clearUnsavedChanges,
+    canUndo,
+    historyPointer,
+    actions.history,
+    unsavedCopy.editorLeave
+  ])
 
   const [frameSize, setFrameSize] = useAtom(frameSizeAtom)
 
@@ -83,7 +93,7 @@ export default function FloatingBar() {
         bg-gray-800 px-1 text-white shadow-lg sm:bottom-8 sm:min-w-[200px]
         dark:border dark:border-gray-700 dark:bg-gray-900"
     >
-      <TooltipHelper content="Deshacer">
+      <TooltipHelper content={t("undo")}>
         <Button
           disabled={!canUndo}
           variant="ghost"
@@ -94,7 +104,7 @@ export default function FloatingBar() {
           <Undo2 className="size-4" />
         </Button>
       </TooltipHelper>
-      <TooltipHelper content="Rehacer">
+      <TooltipHelper content={t("redo")}>
         <Button
           disabled={!canRedo}
           variant="ghost"
@@ -112,8 +122,8 @@ export default function FloatingBar() {
       <TooltipHelper
         content={
           frameSize === FrameSize.MOBILE
-            ? "Cambiar a vista Escritorio"
-            : "Cambiar a vista Móvil"
+            ? t("switchToDesktop")
+            : t("switchToMobile")
         }
       >
         <Button
@@ -139,7 +149,7 @@ export default function FloatingBar() {
         orientation="vertical"
         className="mx-1 hidden h-6! bg-gray-600 sm:inline-flex"
       />
-      <TooltipHelper content="Copiar estilo">
+      <TooltipHelper content={t("copyStyle")}>
         <Button
           variant="ghost"
           size="icon"
@@ -149,7 +159,7 @@ export default function FloatingBar() {
           <Clipboard className="size-4" />
         </Button>
       </TooltipHelper>
-      <TooltipHelper content="Pegar estilo">
+      <TooltipHelper content={t("pasteStyle")}>
         <Button
           disabled={Object.keys(propsCopy).length === 0}
           variant="ghost"
@@ -164,7 +174,7 @@ export default function FloatingBar() {
         orientation="vertical"
         className="mx-1 hidden h-6! bg-gray-600 sm:inline-flex"
       />
-      <TooltipHelper content="Restringir cambios">
+      <TooltipHelper content={enabled ? t("lockEditing") : t("unlockEditing")}>
         <Button
           variant="ghost"
           size="icon"

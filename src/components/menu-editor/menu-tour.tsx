@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react"
+"use client"
+
+import { useEffect, useMemo, useState } from "react"
 import {
   Joyride,
   type BeaconRenderProps,
@@ -7,81 +9,75 @@ import {
   type TooltipRenderProps
 } from "react-joyride"
 import { useAtom } from "jotai"
+import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"
 import { tourModeAtom } from "@/lib/atoms"
 
-const steps: Step[] = [
-  {
-    target: ".editor-categories",
-    title: "Categorías y Productos",
-    content:
-      "Aquí puedes ver las categorías y productos de tu menú. Puedes arrastrar y soltar elementos para reorganizarlos.",
-    placement: "right"
-  },
-  {
-    target: ".editor-elements",
-    title: "Elementos",
-    content:
-      "Puedes agregar a tu menú elementos como encabezados y texto libre.",
-    placement: "right"
-  },
-  {
-    target: ".editor-layers",
-    title: "Capas",
-    content:
-      "Las capas te permiten organizar los elementos de tu menú. Puedes cambiar el orden de las capas arrastrándolas arriba o abajo. Puedes renombrar las capas haciendo doble clic en el nombre.",
-    placement: "right"
-  },
-  {
-    target: ".editor-size",
-    title: "Vista previa",
-    content:
-      "Aquí puedes ver cómo se verá tu menú en un dispositivo móvil o escritorio. Puedes hacer clic en los elementos para editarlos.",
-    placement: "left",
-    beaconPlacement: "top"
-  },
-  {
-    target: ".editor-toolbar",
-    title: "Herramientas",
-    content:
-      "Aquí encontrarás herramientas para editar tu menú, como deshacer y rehacer cambios, copiar y pegar estilos, y más.",
-    placement: "top-end",
-    beaconPlacement: "top"
-  },
-  {
-    target: ".editor-theme",
-    title: "Tema",
-    content: (
-      <span>
-        Elige un tema de color y fuente para tu menú. Puedes elegir{" "}
-        <strong>Personalizar tema</strong> para escoger tu propia paleta de
-        colores.
-      </span>
-    ),
-    placement: "left",
-    beaconPlacement: "left-start"
-  },
-  {
-    target: ".editor-settings",
-    title: "Ajustes",
-    content:
-      "En esta sección puedes cambiar la configuración de tu menú, como el tamaño del texto y la alineación de los elementos.",
-    placement: "left",
-    beaconPlacement: "left-start"
-  },
-  {
-    target: ".editor-published",
-    title: "Publicar y generar tu código QR",
-    content:
-      "Una vez que hayas terminado de diseñar tu menú, puedes publicarlo y generar un código QR para que tus clientes puedan acceder a él.",
-    placement: "bottom-end"
-  }
-]
-
 export default function MenuTour() {
+  const t = useTranslations("menuEditor.tour")
   const [tourMode, setTourMode] = useAtom(tourModeAtom)
   const [isMounted, setIsMounted] = useState(false)
+
+  const steps = useMemo<Step[]>(
+    () => [
+      {
+        target: ".editor-categories",
+        title: t("steps.categories.title"),
+        content: t("steps.categories.content"),
+        placement: "right"
+      },
+      {
+        target: ".editor-elements",
+        title: t("steps.elements.title"),
+        content: t("steps.elements.content"),
+        placement: "right"
+      },
+      {
+        target: ".editor-layers",
+        title: t("steps.layers.title"),
+        content: t("steps.layers.content"),
+        placement: "right"
+      },
+      {
+        target: ".editor-size",
+        title: t("steps.preview.title"),
+        content: t("steps.preview.content"),
+        placement: "left",
+        beaconPlacement: "top"
+      },
+      {
+        target: ".editor-toolbar",
+        title: t("steps.toolbar.title"),
+        content: t("steps.toolbar.content"),
+        placement: "top-end",
+        beaconPlacement: "top"
+      },
+      {
+        target: ".editor-theme",
+        title: t("steps.theme.title"),
+        content: t.rich("steps.theme.content", {
+          strong: chunks => <strong>{chunks}</strong>
+        }),
+        placement: "left",
+        beaconPlacement: "left-start"
+      },
+      {
+        target: ".editor-settings",
+        title: t("steps.settings.title"),
+        content: t("steps.settings.content"),
+        placement: "left",
+        beaconPlacement: "left-start"
+      },
+      {
+        target: ".editor-published",
+        title: t("steps.publish.title"),
+        content: t("steps.publish.content"),
+        placement: "bottom-end"
+      }
+    ],
+    [t]
+  )
 
   useEffect(() => {
     setIsMounted(true)
@@ -106,17 +102,17 @@ export default function MenuTour() {
         buttons: ["back", "skip", "primary"]
       }}
       beaconComponent={Beacon}
-      tooltipComponent={Tooltip}
+      tooltipComponent={props => <Tooltip {...props} />}
       floatingOptions={{
         hideArrow: true
       }}
       locale={{
-        back: "Anterior",
-        close: "Cerrar",
-        last: "Último",
-        next: "Siguiente",
-        skip: "Saltar",
-        open: "Abre el cuadro de diálogo de ayuda"
+        back: t("back"),
+        close: t("close"),
+        last: t("last"),
+        next: t("next"),
+        skip: t("skip"),
+        open: t("openHelp")
       }}
     />
   )
@@ -132,6 +128,8 @@ function Tooltip({
   step,
   tooltipProps
 }: TooltipRenderProps) {
+  const t = useTranslations("menuEditor.tour")
+
   return (
     <div
       {...tooltipProps}
@@ -142,21 +140,21 @@ function Tooltip({
       <p className="text-sm text-gray-600 dark:text-gray-400">{step.content}</p>
       <div className="mt-8 flex items-center justify-between">
         <div className="text-xs text-gray-500">
-          {index + 1} de {size}
+          {t("progress", { current: index + 1, total: size })}
         </div>
         <div className="flex justify-end gap-x-2">
           {!isLastStep && (
             <Button {...skipProps} variant="ghost" size="xs">
-              Saltar
+              {t("skip")}
             </Button>
           )}
           {index > 0 && (
             <Button {...backProps} variant="outline" size="xs">
-              Anterior
+              {t("back")}
             </Button>
           )}
           <Button {...primaryProps} size="xs">
-            {isLastStep ? "Terminar" : "Siguiente"}
+            {isLastStep ? t("finish") : t("next")}
           </Button>
         </div>
       </div>

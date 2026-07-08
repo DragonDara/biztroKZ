@@ -374,7 +374,7 @@ export default function MenuPublish({
     <div className="editor-published flex h-8 justify-end gap-4 sm:gap-2">
       <TooltipHelper content={t("preview")}>
         <div>
-          <GuardLink href={`/menu-editor/${menu.id}/preview`}>
+          <GuardLink href={`/menu-editor/preview/${menu.id}`}>
             <Button size="xs" variant="ghost">
               <Play className="fill-foreground size-4" />
             </Button>

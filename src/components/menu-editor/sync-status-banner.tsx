@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useState } from "react"
 import toast from "react-hot-toast"
 import { useEditor } from "@craftjs/core"
 import { RefreshCcw } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"
 import type {
@@ -47,6 +48,7 @@ export default function SyncStatusBanner({
   persistedVersion?: number
   revertVersion?: number
 }) {
+  const t = useTranslations("menuEditor.sync")
   const { actions } = useEditor()
   const [syncReq, setSyncReq] = useState(false)
   const isMobile = useIsMobile()
@@ -82,7 +84,7 @@ export default function SyncStatusBanner({
       return false
     }
 
-    toast.success("Información actualizada")
+    toast.success(t("updated"))
     setSyncReq(false)
     return true
   }, [
@@ -92,7 +94,8 @@ export default function SyncStatusBanner({
     location,
     categories,
     featuredItems,
-    soloItems
+    soloItems,
+    t
   ])
 
   useEffect(() => {
@@ -201,8 +204,7 @@ export default function SyncStatusBanner({
                 className="hidden size-8 text-indigo-400 sm:size-4 @md:block"
               />
               <span className="text-sm text-indigo-700 dark:text-indigo-300">
-                La información del negocio o productos ha cambiado, sincroniza
-                para aplicar los cambios
+                {t("message")}
               </span>
             </div>
             <Button
@@ -211,7 +213,7 @@ export default function SyncStatusBanner({
               className="w-full text-indigo-700 @md:w-auto dark:text-indigo-300"
               onClick={runSyncState}
             >
-              Sincronizar
+              {t("sync")}
             </Button>
           </div>
         </div>

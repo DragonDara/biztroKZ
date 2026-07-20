@@ -13,7 +13,7 @@ import Spinner from "@/components/ui/spinner"
 import Providers from "@/app/providers"
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://biztro.co"),
+  metadataBase: new URL(`https://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`),
   title: {
     template: "%s | Biztro",
     default: "Biztro"

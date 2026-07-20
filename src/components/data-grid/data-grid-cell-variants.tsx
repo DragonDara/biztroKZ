@@ -549,7 +549,7 @@ export function NumberCell<TData>({
             ? formatPriceValue(
                 initialValue,
                 (cell.row.original as unknown as { currency?: string | null })
-                  ?.currency ?? "MXN"
+                  ?.currency ?? "KZT"
               )
             : value}
         </span>
@@ -584,7 +584,7 @@ function getRangeLabel<TData>(row: TData) {
 
   if (prices.length === 0) return "—"
 
-  const currency = (typedRow.currency as string | undefined) ?? "MXN"
+  const currency = (typedRow.currency as string | undefined) ?? "KZT"
   const min = Math.min(...prices)
   const max = Math.max(...prices)
 

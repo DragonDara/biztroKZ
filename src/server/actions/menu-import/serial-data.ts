@@ -34,7 +34,7 @@ export type SerializedMenuItem = {
   categoryId: string | null
   organizationId: string
   allergens: string | null
-  currency: "MXN" | "USD"
+  currency: "MXN" | "USD" | "KZT"
   variants: SerializedMenuVariant[]
 }
 

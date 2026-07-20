@@ -63,6 +63,7 @@ export const auth = betterAuth({
   // Adjust trusted origins for your deployment
   trustedOrigins: [
     process.env.BETTER_AUTH_URL ?? "",
+    `https://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`,
     "https://biztro.co",
     "https://preview.biztro.co",
     ...(process.env.NEXT_PUBLIC_VERCEL_URL &&
@@ -93,8 +94,7 @@ export const auth = betterAuth({
           // Normalise the payload into `data` and `ctx` objects.
           const data = (payload.data ?? payload) as Record<string, unknown>
           const ctx = (payload.ctx ?? payload.context ?? payload.request) as
-            | Record<string, unknown>
-            | undefined
+            Record<string, unknown> | undefined
 
           const emailFromData = data?.email as unknown
           const email =

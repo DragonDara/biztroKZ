@@ -36,6 +36,7 @@ import {
   createLocation,
   updateLocation
 } from "@/server/actions/location/mutations"
+import type { Currency } from "@/lib/currency"
 import { locationSchema } from "@/lib/types/location"
 
 export default function LocationForm({
@@ -69,7 +70,7 @@ export default function LocationForm({
       serviceTakeout: data?.serviceTakeout ?? false,
       serviceDineIn: data?.serviceDineIn ?? false,
       deliveryFee: data?.deliveryFee ?? 0,
-      currency: (data?.currency as "MXN" | "USD") ?? "MXN",
+      currency: (data?.currency as Currency) ?? "KZT",
       organizationId: data?.organizationId ?? undefined
     }
   })
@@ -100,7 +101,7 @@ export default function LocationForm({
           serviceTakeout: result.serviceTakeout ?? false,
           serviceDineIn: result.serviceDineIn ?? false,
           deliveryFee: result.deliveryFee ?? 0,
-          currency: (result.currency as "MXN" | "USD") ?? "MXN",
+          currency: (result.currency as Currency) ?? "KZT",
           organizationId: result.organizationId ?? undefined
         })
         onSuccess?.(result)
@@ -162,7 +163,7 @@ export default function LocationForm({
       serviceTakeout: data?.serviceTakeout ?? false,
       serviceDineIn: data?.serviceDineIn ?? false,
       deliveryFee: data?.deliveryFee ?? 0,
-      currency: (data?.currency as "MXN" | "USD") ?? "MXN",
+      currency: (data?.currency as Currency) ?? "KZT",
       organizationId: data?.organizationId ?? undefined
     })
   }, [data, form])
@@ -486,6 +487,7 @@ export default function LocationForm({
                       <SelectValue placeholder="Seleccionar moneda" />
                     </SelectTrigger>
                     <SelectContent>
+                      <SelectItem value={"KZT"}>KZT</SelectItem>
                       <SelectItem value={"MXN"}>MXN</SelectItem>
                       <SelectItem value={"USD"}>USD</SelectItem>
                     </SelectContent>

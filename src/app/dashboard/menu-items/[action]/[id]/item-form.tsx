@@ -104,6 +104,7 @@ import { translateMenuItemForLocale } from "@/server/actions/item/translations"
 import { syncMenusAfterCatalogChange } from "@/server/actions/menu/sync"
 import { VariantCreate } from "@/app/dashboard/menu-items/[action]/[id]/variant-create"
 import VariantForm from "@/app/dashboard/menu-items/[action]/[id]/variant-form"
+import type { Currency } from "@/lib/currency"
 import { ImageType } from "@/lib/types/media"
 import {
   Allergens,
@@ -322,7 +323,7 @@ export default function ItemForm({
         description: translation.description ?? ""
       })),
       allergens: item?.allergens ?? "",
-      currency: (item?.currency as "MXN" | "USD") ?? "MXN"
+      currency: (item?.currency as Currency) ?? "KZT"
     }
   })
   const [searchCategory, setSearchCategory] = useState<string>("")
@@ -332,8 +333,7 @@ export default function ItemForm({
     SupportedLocaleCode | ""
   >(() => {
     const itemLocale = item?.translations?.[0]?.locale as
-      | SupportedLocaleCode
-      | undefined
+      SupportedLocaleCode | undefined
     const variantLocale = item?.variants?.flatMap(
       variant => variant.translations ?? []
     )[0]?.locale as SupportedLocaleCode | undefined
@@ -897,8 +897,7 @@ export default function ItemForm({
         ? data.translations?.[selectedTranslationIndex]
         : undefined
     let selectedTranslationPayload:
-      | z.infer<typeof menuItemTranslationSchema>
-      | undefined
+      z.infer<typeof menuItemTranslationSchema> | undefined
     const selectedVariantTranslationPayloads = [] as Array<{
       variantIndex: number
       translation: z.infer<typeof variantTranslationSchema>
@@ -1350,8 +1349,9 @@ export default function ItemForm({
                                 <SelectValue placeholder="Seleccionar moneda" />
                               </SelectTrigger>
                               <SelectContent>
-                                <SelectItem value="MXN">MXN</SelectItem>
+                                <SelectItem value="KZT">KZT</SelectItem>
                                 <SelectItem value="USD">USD</SelectItem>
+                                <SelectItem value="MXN">MXN</SelectItem>
                               </SelectContent>
                             </Select>
                           </FieldSet>

@@ -37,6 +37,7 @@ import {
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { formatPrice } from "@/lib/currency"
+import type { Currency } from "@/lib/currency"
 import { getUILabels } from "@/lib/ui-labels"
 import {
   cn,
@@ -213,7 +214,7 @@ export default function LocationData({
                     ? t("free")
                     : formatPrice(
                         location.deliveryFee,
-                        location.currency as "MXN" | "USD"
+                        location.currency as Currency
                       )}
                 </span>
               </ItemTitle>

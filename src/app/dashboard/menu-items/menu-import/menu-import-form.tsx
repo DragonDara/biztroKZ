@@ -160,7 +160,7 @@ function toActionItems(items: EditableItem[]) {
       price: item.price,
       status: MenuItemStatus.ACTIVE,
       category: item.category || undefined,
-      currency: item.currency ?? "MXN"
+      currency: item.currency ?? "KZT"
     }))
 }
 
@@ -360,6 +360,7 @@ export default function MenuImportForm({
 
   const currencyOptions: CellSelectOption[] = useMemo(
     () => [
+      { label: "KZT", value: "KZT" },
       { label: "MXN", value: "MXN" },
       { label: "USD", value: "USD" }
     ],
@@ -373,7 +374,12 @@ export default function MenuImportForm({
         variantName: item.variantName ?? "Regular",
         description: item.description ?? "",
         category: item.category ?? "",
-        currency: item.currency === "USD" ? "USD" : "MXN",
+        currency:
+          item.currency === "USD"
+            ? "USD"
+            : item.currency === "MXN"
+              ? "MXN"
+              : "KZT",
         price:
           typeof item.price === "number" && !Number.isNaN(item.price)
             ? item.price
@@ -398,7 +404,7 @@ export default function MenuImportForm({
         description: "",
         price: 0,
         category: "",
-        currency: "MXN",
+        currency: "KZT",
         reliabilityScore: 1,
         needsReview: false,
         reviewReasons: [],

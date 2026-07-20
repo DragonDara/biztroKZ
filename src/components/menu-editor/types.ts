@@ -16,7 +16,7 @@ export interface MenuItemRow {
   categoryName: string | null
   status: "ACTIVE" | "DRAFT" | "ARCHIVED"
   featured: boolean
-  currency: "MXN" | "USD"
+  currency: "MXN" | "USD" | "KZT"
   // For single-variant items, we edit price directly; for multi-variant, show button
   price: number
   variantCount: number

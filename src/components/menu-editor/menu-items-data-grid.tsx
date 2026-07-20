@@ -24,6 +24,7 @@ import {
 import { Kbd, KbdGroup } from "@/components/ui/kbd"
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { useDataGrid } from "@/hooks/use-data-grid"
+import type { Currency } from "@/lib/currency"
 import { Allergens } from "@/lib/types/menu-item"
 import { cn } from "@/lib/utils"
 import type { MenuItemRow, MenuItemsDataGridProps } from "./types"
@@ -79,7 +80,7 @@ function flattenMenuItems(
       categoryName,
       status: item.status as "ACTIVE" | "DRAFT" | "ARCHIVED",
       featured: item.featured,
-      currency: (item.currency as "MXN" | "USD") ?? "MXN",
+      currency: (item.currency as Currency) ?? "KZT",
       price: item.variants[0]?.price ?? 0,
       variantCount: item.variants.length,
       variants: item.variants.map(v => ({
@@ -309,6 +310,7 @@ export function MenuItemsDataGrid({
   // Currency options
   const currencyOptions: CellSelectOption[] = React.useMemo(
     () => [
+      { label: "KZT", value: "KZT" },
       { label: "MXN", value: "MXN" },
       { label: "USD", value: "USD" }
     ],

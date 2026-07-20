@@ -78,7 +78,7 @@ export default function ItemImport() {
             descripcion: item.description ?? "",
             precio: validPrice.toFixed(2),
             categoria: item.category?.name,
-            moneda: item.currency ?? "MXN"
+            moneda: item.currency ?? "KZT"
           }
         })
       })

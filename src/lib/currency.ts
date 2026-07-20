@@ -1,7 +1,14 @@
-export type Currency = "MXN" | "USD"
+export type Currency = "MXN" | "USD" | "KZT"
 
 export function formatPrice(amount: number, currency: Currency): string {
-  const locale = currency === "MXN" ? "es-MX" : "en-US"
+  const locale =
+    currency === "MXN"
+      ? "es-MX"
+      : currency === "USD"
+        ? "en-US"
+        : currency === "KZT"
+          ? "kk-KZ"
+          : "en-US"
   const formatted = new Intl.NumberFormat(locale, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 2,
@@ -24,5 +31,6 @@ export function formatPriceRange(
 
 export function resolveCurrency(value?: unknown): Currency {
   if (typeof value === "string" && value.toUpperCase() === "USD") return "USD"
-  return "MXN"
+  if (typeof value === "string" && value.toUpperCase() === "MXN") return "MXN"
+  return "KZT"
 }

@@ -12,6 +12,7 @@ import { createImportNameAllocator } from "@/server/actions/menu-import/item-nam
 import { executeMenuSyncWithPreference } from "@/server/actions/menu/sync"
 import { isProMember } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
+import type { Currency } from "@/lib/currency"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
 import { BasicPlanLimits } from "@/lib/types/billing"
@@ -175,7 +176,7 @@ export const createItem = authMemberActionClient
           where: { organizationId: currentOrgId }
         })
         const itemCurrency =
-          currency ?? (defaultLocation?.currency as "MXN" | "USD") ?? "MXN"
+          currency ?? (defaultLocation?.currency as Currency) ?? "KZT"
         const item = await prisma.menuItem.create({
           data: {
             name,
@@ -245,7 +246,7 @@ export const bulkCreateItems = authMemberActionClient
         description?: string
         status?: string
         category?: string
-        currency?: "MXN" | "USD"
+        currency?: Currency
         variants: { name: string; price: number }[]
       }
     >()
@@ -389,8 +390,8 @@ export const bulkCreateItems = authMemberActionClient
                 status: item.status || MenuItemStatus.ACTIVE,
                 categoryId,
                 currency: item.currency
-                  ? (item.currency as "MXN" | "USD")
-                  : ((defaultLocation?.currency as "MXN" | "USD") ?? "MXN"),
+                  ? (item.currency as Currency)
+                  : ((defaultLocation?.currency as Currency) ?? "KZT"),
                 organizationId: currentOrgId,
                 variants: {
                   create: item.variants.map(variant => ({
@@ -523,7 +524,7 @@ export const updateItem = authMemberActionClient
             name,
             description,
             status,
-            currency: currency ?? "MXN",
+            currency: currency ?? "KZT",
             categoryId: categoryId === "" ? null : categoryId,
             featured,
             allergens,
@@ -691,7 +692,7 @@ export const bulkUpdateItems = authMemberActionClient
                 name: item.name,
                 description: item.description,
                 status: item.status,
-                currency: item.currency ?? "MXN",
+                currency: item.currency ?? "KZT",
                 categoryId: item.categoryId === "" ? null : item.categoryId,
                 featured: item.featured,
                 allergens: item.allergens,

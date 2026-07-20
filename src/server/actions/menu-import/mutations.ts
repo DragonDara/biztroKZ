@@ -17,6 +17,7 @@ import {
   getCurrentOrganization,
   isProMember
 } from "@/server/actions/user/queries"
+import type { Currency } from "@/lib/currency"
 import {
   normalizeMenuDescriptionText,
   normalizeMenuLabelCasing
@@ -43,7 +44,7 @@ type GroupedImportItem = {
   description?: string
   status?: string
   category: string
-  currency?: "MXN" | "USD"
+  currency?: Currency
   variants: { name: string; price: number }[]
 }
 
@@ -131,7 +132,7 @@ async function createImportedItems({
   tx: Prisma.TransactionClient
   organizationId: string
   items: GroupedImportItem[]
-  defaultCurrency: "MXN" | "USD"
+  defaultCurrency: Currency
 }) {
   const existingCategories = await tx.category.findMany({
     where: { organizationId }
@@ -347,9 +348,7 @@ export const createMenuFromImport = authMemberActionClient
       const menuColorThemeId = visualPackage.colorThemeId ?? generatedThemeId
 
       const defaultLocation = await getDefaultLocation(organizationId)
-      const defaultCurrency = (defaultLocation?.currency ?? "MXN") as
-        | "MXN"
-        | "USD"
+      const defaultCurrency = (defaultLocation?.currency ?? "KZT") as Currency
 
       const menu = await prisma.$transaction(async tx => {
         if (!visualPackage.colorThemeId) {

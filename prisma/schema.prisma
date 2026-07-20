@@ -11,6 +11,7 @@ datasource db {
 enum Currency {
   MXN
   USD
+  KZT
 }
 
 enum MediaAssetType {
@@ -54,7 +55,7 @@ model Location {
   // Delivery fee: 0 = free
   deliveryFee     Float          @default(0)
   // Default currency for this location
-  currency        Currency       @default(MXN)
+  currency        Currency       @default(KZT)
   createdAt       DateTime       @default(now())
   updatedAt       DateTime       @updatedAt
   organizationId  String
@@ -126,7 +127,7 @@ model MenuItem {
   category       Category?               @relation(fields: [categoryId], references: [id])
   variants       Variant[]
   allergens      String?
-  currency       Currency                @default(MXN)
+  currency       Currency                @default(KZT)
   translations   MenuItemTranslation[]
 
   @@unique([organizationId, name])

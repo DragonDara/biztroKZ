@@ -13,10 +13,17 @@ const RESERVED_SUBDOMAINS = new Set([
 ])
 
 function getSubdomainFromHost(hostname: string) {
-  if (hostname === "biztro.co" || hostname === "localhost") return null
+  if (
+    hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN ||
+    hostname === "localhost"
+  )
+    return null
 
-  if (hostname.endsWith(".biztro.co")) {
-    const subdomain = hostname.slice(0, -".biztro.co".length)
+  if (hostname.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)) {
+    const subdomain = hostname.slice(
+      0,
+      -`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`.length
+    )
     return RESERVED_SUBDOMAINS.has(subdomain) ? null : subdomain
   }
 

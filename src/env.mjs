@@ -50,7 +50,8 @@ export const env = createEnv({
     // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
     NEXT_PUBLIC_POSTHOG_KEY: z.string().min(1),
     NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY: z.string().min(1),
-    NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY: z.string().min(1)
+    NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY: z.string().min(1),
+    NEXT_PUBLIC_ROOT_DOMAIN: z.string().min(1)
   },
 
   /**
@@ -86,7 +87,8 @@ export const env = createEnv({
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
     POSTHOG_HOST: process.env.POSTHOG_HOST,
     POSTHOG_API_KEY: process.env.POSTHOG_API_KEY,
-    AI_GATEWAY_API_KEY: process.env.AI_GATEWAY_API_KEY
+    AI_GATEWAY_API_KEY: process.env.AI_GATEWAY_API_KEY,
+    NEXT_PUBLIC_ROOT_DOMAIN: process.env.NEXT_PUBLIC_ROOT_DOMAIN
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation.

@@ -36,10 +36,9 @@ export const variantSchema = z.object({
         description: z.string().optional()
       })
     )
-    .refine(
-      items => new Set(items.map(t => t.locale)).size === items.length,
-      { message: "Locale duplicado en traducciones de variante" }
-    )
+    .refine(items => new Set(items.map(t => t.locale)).size === items.length, {
+      message: "Locale duplicado en traducciones de variante"
+    })
     .optional()
 })
 
@@ -106,15 +105,14 @@ export const menuItemSchema = z.object({
   categoryId: z.string().optional(),
   organizationId: z.string().optional(),
   featured: z.boolean().prefault(false).optional(),
-  currency: z.enum(["MXN", "USD"]).default("MXN").optional(),
+  currency: z.enum(["MXN", "USD", "KZT"]).default("KZT").optional(),
   variants: z.tuple([variantSchema], variantSchema),
   allergens: z.string().optional(),
   translations: z
     .array(menuItemTranslationSchema)
-    .refine(
-      items => new Set(items.map(t => t.locale)).size === items.length,
-      { message: "Locale duplicado en traducciones" }
-    )
+    .refine(items => new Set(items.map(t => t.locale)).size === items.length, {
+      message: "Locale duplicado en traducciones"
+    })
     .optional(),
   updatePublishedMenus: z.boolean().optional(),
   rememberPublishedChoice: z.boolean().optional()
@@ -145,10 +143,9 @@ export const menuItemFormSchema = menuItemSchema.extend({
   ),
   translations: z
     .array(menuItemFormTranslationSchema)
-    .refine(
-      items => new Set(items.map(t => t.locale)).size === items.length,
-      { message: "Locale duplicado en traducciones" }
-    )
+    .refine(items => new Set(items.map(t => t.locale)).size === items.length, {
+      message: "Locale duplicado en traducciones"
+    })
     .optional()
 })
 
@@ -173,7 +170,7 @@ export type BulkMenuItem = {
   variantName?: string
   status?: string
   category?: string
-  currency?: "MXN" | "USD"
+  currency?: "MXN" | "USD" | "KZT"
 }
 
 export const bulkMenuItemSchema = z.array(
@@ -184,7 +181,7 @@ export const bulkMenuItemSchema = z.array(
     variantName: z.string().optional(),
     status: z.string().optional(),
     category: z.string().optional(),
-    currency: z.enum(["MXN", "USD"]).optional()
+    currency: z.enum(["MXN", "USD", "KZT"]).optional()
   })
 )
 

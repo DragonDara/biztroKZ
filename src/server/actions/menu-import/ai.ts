@@ -537,7 +537,7 @@ export async function extractMenuItemsFromFile(input: MenuImportFileInput) {
 - description: the item-specific description when visible; include smaller secondary text, ingredient blurbs, or explanatory copy that belongs to the item
 - price: the numeric price (just the number, no currency symbols)
 - category: the section or category the item belongs to (e.g., "Entradas", "Platos Principales", "Bebidas")
-- currency: if the currency is clearly stated use "MXN" or "USD", otherwise default to "MXN"
+- currency: if the currency is clearly stated use "MXN", "USD", or "KZT", otherwise default to "KZT"
 - reliabilityScore: a heuristic confidence score from 0 to 1
 - needsReview: true when a human should verify the row
 - reviewReasons: short Spanish reasons if needsReview is true

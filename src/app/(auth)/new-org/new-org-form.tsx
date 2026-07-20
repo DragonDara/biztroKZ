@@ -175,7 +175,9 @@ export default function NewOrgForm({
                 className="pl-1!"
               />
               <InputGroupAddon align="inline-end">
-                <InputGroupText>.biztro.co</InputGroupText>
+                <InputGroupText>
+                  .{process.env.NEXT_PUBLIC_ROOT_DOMAIN}
+                </InputGroupText>
               </InputGroupAddon>
             </InputGroup>
             <FieldDescription>

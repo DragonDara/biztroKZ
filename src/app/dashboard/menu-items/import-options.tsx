@@ -51,7 +51,7 @@ function getTemplateRows(): CSVRow[] {
       descripcion: "Descripcion del producto",
       precio: "100.00",
       categoria: "Categoria (opcional)",
-      moneda: "MXN"
+      moneda: "KZT"
     },
     {
       nombre: "Producto ejemplo",
@@ -59,7 +59,7 @@ function getTemplateRows(): CSVRow[] {
       descripcion: "Descripcion del producto",
       precio: "120.00",
       categoria: "Categoria (opcional)",
-      moneda: "MXN"
+      moneda: "KZT"
     }
   ]
 }
@@ -82,8 +82,8 @@ function validateRow(row: CSVRow): string[] {
 
   if (row.moneda) {
     const currency = row.moneda.trim().toUpperCase()
-    if (!(currency === "MXN" || currency === "USD")) {
-      errors.push("Moneda no válida. Usa MXN o USD.")
+    if (!["MXN", "USD", "KZT"].includes(currency)) {
+      errors.push("Moneda no válida. Usa MXN, USD o KZT.")
     }
   }
 
@@ -166,7 +166,7 @@ export default function MenuImportOptions({
             return
           }
 
-          const currency = (row.moneda ?? "MXN").trim().toUpperCase()
+          const currency = (row.moneda ?? "KZT").trim().toUpperCase()
 
           validItems.push({
             name: row.nombre,
@@ -175,7 +175,8 @@ export default function MenuImportOptions({
             price: parseFloat(row.precio),
             status: MenuItemStatus.ACTIVE,
             category: row.categoria,
-            currency: currency === "USD" ? "USD" : "MXN"
+            currency:
+              currency === "USD" ? "USD" : currency === "MXN" ? "MXN" : "KZT"
           })
         })
 

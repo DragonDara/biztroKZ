@@ -37,7 +37,7 @@ export const locationSchema = z.object({
   serviceTakeout: z.boolean().default(false).optional(),
   serviceDineIn: z.boolean().default(false).optional(),
   deliveryFee: z.number().min(0).default(0).optional(),
-  currency: z.enum(["MXN", "USD"]).default("MXN").optional()
+  currency: z.enum(["MXN", "USD", "KZT"]).default("KZT").optional()
 })
 
 export const hoursSchema = z.object({

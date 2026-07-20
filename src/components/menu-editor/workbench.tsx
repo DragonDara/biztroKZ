@@ -238,7 +238,7 @@ function applyOptimisticItemUpdate(
     status: nextStatus,
     categoryId: nextCategoryId,
     featured: nextFeatured,
-    currency: input.currency ?? existingItem.currency ?? "MXN",
+    currency: input.currency ?? existingItem.currency ?? "KZT",
     variants: nextVariants
   } satisfies MenuItemBroad
 

@@ -39,9 +39,9 @@ export const menuImportItemSchema = z.object({
   price: z.number().min(0).describe("Price of the menu item as a number"),
   category: z.string().optional().describe("Category the item belongs to"),
   currency: z
-    .enum(["MXN", "USD"])
+    .enum(["MXN", "USD", "KZT"])
     .optional()
-    .describe("Currency code, either MXN or USD"),
+    .describe("Currency code, either MXN or USD or KZT"),
   reliabilityScore: z
     .number()
     .min(0)

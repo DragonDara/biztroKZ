@@ -10,6 +10,7 @@ import {
   ScanText
 } from "lucide-react"
 import { motion, useInView } from "motion/react"
+import { useTranslations } from "next-intl"
 
 import TitleSection from "@/components/marketing/title-section"
 import { AnimatedBeam } from "@/components/ui/animated-beam"
@@ -69,6 +70,8 @@ function BrowserChrome({
 /* ------------------------------------------------------------------ */
 
 function ScannerIllustration() {
+  const t = useTranslations("marketing.aiFeatures")
+
   return (
     <BrowserChrome url="biztro.co/import">
       <div className="relative h-full w-full px-8 pt-5">
@@ -162,7 +165,7 @@ function ScannerIllustration() {
           </div>
           <div className="min-w-0 flex-1">
             <p className="text-xs font-semibold text-taupe-100">
-              Extrayendo elementos del menú...{" "}
+              {t("scanning")}{" "}
               <motion.span
                 className="ml-2 text-orange-400"
                 animate={{ opacity: [1, 0.4, 1] }}
@@ -179,6 +182,7 @@ function ScannerIllustration() {
 }
 
 function TranslationIllustration() {
+  const t = useTranslations("marketing.aiFeatures")
   const containerRef = useRef<HTMLDivElement>(null)
   const sourceRef = useRef<HTMLDivElement>(null)
   const centerRef = useRef<HTMLDivElement>(null)
@@ -226,7 +230,7 @@ function TranslationIllustration() {
             <span
               className="absolute top-full mt-1.5 text-[10px] text-taupe-500"
             >
-              Menú
+              {t("menuLabel")}
             </span>
           </div>
         </div>
@@ -245,7 +249,7 @@ function TranslationIllustration() {
             <span
               className="absolute top-full mt-1.5 text-[10px] text-taupe-500"
             >
-              IA
+              {t("aiLabel")}
             </span>
           </div>
         </div>
@@ -429,6 +433,8 @@ function FeatureRow({
 /* ------------------------------------------------------------------ */
 
 export default function AIFeatures() {
+  const t = useTranslations("marketing.aiFeatures")
+
   return (
     <section
       id="ai-features"
@@ -452,9 +458,9 @@ export default function AIFeatures() {
         {/* Section header */}
         <TitleSection
           align="left"
-          eyebrow="Automatización con IA"
-          title="Tu menú, listo en menos tiempo."
-          tagline="Sube una foto o un PDF y deja que la IA convierta tu menú en contenido editable para que puedas enfocarte en atender a tus clientes."
+          eyebrow={t("eyebrow")}
+          title={t("title")}
+          tagline={t("tagline")}
           inverted
         />
 
@@ -462,8 +468,8 @@ export default function AIFeatures() {
         <FeatureRow
           icon={ScanText}
           accent="bg-orange-500/20 text-orange-400"
-          title="Digitaliza tu menú en segundos"
-          description="Sube un PDF o una foto de tu menú impreso y la IA detecta platillos, precios y descripciones para convertirlos en contenido editable."
+          title={t("digitize.title")}
+          description={t("digitize.description")}
           illustration={<ScannerIllustration />}
           delay={0.1}
         />
@@ -472,8 +478,8 @@ export default function AIFeatures() {
         <FeatureRow
           icon={Languages}
           accent="bg-violet-500/20 text-violet-400"
-          title="Traducción para cada cliente"
-          description="Traduce tu menú a varios idiomas para que cada comensal entienda lo que ofreces y se sienta bien atendido."
+          title={t("translate.title")}
+          description={t("translate.description")}
           illustration={<TranslationIllustration />}
           reverse
           delay={0.1}

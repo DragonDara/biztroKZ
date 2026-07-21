@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import type { Menu } from "@/generated/prisma-client/client"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useTranslations } from "next-intl"
 import { useOptimisticAction } from "next-safe-action/hooks"
 import { z } from "zod/v4"
 
@@ -19,10 +20,6 @@ import { Form } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { updateMenuName } from "@/server/actions/menu/mutations"
 
-const nameSchema = z.object({
-  name: z.string().min(1, "El nombre es requerido")
-})
-
 export function MenuRename({
   menu,
   open,
@@ -32,6 +29,17 @@ export function MenuRename({
   open: boolean
   setOpen: (open: boolean) => void
 }) {
+  const t = useTranslations("dashboard.menus")
+  const tCommon = useTranslations("dashboard.common")
+
+  const nameSchema = useMemo(
+    () =>
+      z.object({
+        name: z.string().min(1, t("nameRequired"))
+      }),
+    [t]
+  )
+
   const form = useForm<z.infer<typeof nameSchema>>({
     resolver: zodResolver(nameSchema),
     defaultValues: { name: menu.name ?? "" }
@@ -55,7 +63,7 @@ export function MenuRename({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle>Renombrar menú</DialogTitle>
+          <DialogTitle>{t("renameTitle")}</DialogTitle>
         </DialogHeader>
         <Form {...form}>
           <form className="space-y-4" onSubmit={form.handleSubmit(onSubmit)}>
@@ -64,7 +72,7 @@ export function MenuRename({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel>Nombre</FieldLabel>
+                  <FieldLabel>{tCommon("name")}</FieldLabel>
                   <Input {...field} />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
@@ -73,7 +81,7 @@ export function MenuRename({
               )}
             />
             <Button variant="default" className="w-full" type="submit">
-              Guardar
+              {tCommon("save")}
             </Button>
           </form>
         </Form>

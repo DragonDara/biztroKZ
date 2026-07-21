@@ -132,8 +132,7 @@ const labels: Record<string, UILabels> = {
     search_products: "Rechercher des produits",
     search_description: "Trouvez des correspondances par nom ou description.",
     no_results: "Aucun résultat",
-    no_results_description:
-      "Essayez un autre nom ou un mot de la description.",
+    no_results_description: "Essayez un autre nom ou un mot de la description.",
     from: "À partir de",
     link_copied: "Lien copié",
     link_copy_error: "Impossible de copier le lien"
@@ -196,8 +195,7 @@ const labels: Record<string, UILabels> = {
     search_products: "Buscar produtos",
     search_description: "Encontre correspondências por nome ou descrição.",
     no_results: "Sem resultados",
-    no_results_description:
-      "Tente outro nome ou uma palavra da descrição.",
+    no_results_description: "Tente outro nome ou uma palavra da descrição.",
     from: "A partir de",
     link_copied: "Link copiado",
     link_copy_error: "Não foi possível copiar o link"
@@ -295,6 +293,37 @@ const labels: Record<string, UILabels> = {
     from: "起价",
     link_copied: "链接已复制",
     link_copy_error: "无法复制链接"
+  },
+  ru: {
+    information: "Информация",
+    address: "Адрес",
+    available_services: "Доступные услуги",
+    delivery: "Доставка",
+    free: "Бесплатно",
+    takeout: "С собой",
+    dine_in: "В зале",
+    closed: "Закрыто",
+    no_schedule: "Нет расписания",
+    open_until_singular: "Открыто — до {time}",
+    open_until_plural: "Открыто — до {time}",
+    monday: "Понедельник",
+    tuesday: "Вторник",
+    wednesday: "Среда",
+    thursday: "Четверг",
+    friday: "Пятница",
+    saturday: "Суббота",
+    sunday: "Воскресенье",
+    menu_detail: "Детали меню",
+    description: "Описание",
+    share: "Поделиться",
+    search: "Поиск",
+    search_products: "Поиск блюд",
+    search_description: "Ищите по названию или описанию.",
+    no_results: "Нет результатов",
+    no_results_description: "Попробуйте другое название или слово из описания.",
+    from: "От",
+    link_copied: "Ссылка скопирована",
+    link_copy_error: "Не удалось скопировать ссылку"
   }
 }
 

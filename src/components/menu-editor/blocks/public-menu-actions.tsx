@@ -4,6 +4,7 @@ import * as React from "react"
 import { Menu } from "bloom-menu"
 import Fuse, { type IFuseOptions } from "fuse.js"
 import { Globe, Search } from "lucide-react"
+import { useTranslations } from "next-intl"
 import Image from "next/image"
 
 import {
@@ -87,6 +88,7 @@ export function PublicMenuActions() {
   )
   const deferredQuery = React.useDeferredValue(query.trim())
   const translation = useTranslation()
+  const tMenu = useTranslations("publicMenu")
   const t = translation?.t ?? getUILabels(null)
   const availableLocales = translation?.availableLocales ?? []
 
@@ -171,7 +173,9 @@ export function PublicMenuActions() {
                     <Globe className="text-foreground size-4" />
                   )}
                   <span className="sr-only">
-                    {translation.locale ? "Cambiar idioma" : "Español"}
+                    {translation.locale
+                      ? tMenu("changeLanguage")
+                      : tMenu("originalLanguageSr")}
                   </span>
                 </div>
               </Menu.Trigger>
@@ -183,7 +187,7 @@ export function PublicMenuActions() {
                   )}
                   onSelect={() => handleLanguageSelect(null)}
                 >
-                  Español (original)
+                  {tMenu("originalLanguage")}
                 </Menu.Item>
                 {availableLocales.map(locale => (
                   <Menu.Item

@@ -1,38 +1,40 @@
+"use client"
+
 import type { CSSProperties } from "react"
 import { Rocket, ShoppingBag, Store } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import Features from "@/components/flare-ui/features-horizontal"
 import { HowItWorksQr } from "@/components/marketing/how-it-works-qr"
 import TitleSection from "@/components/marketing/title-section"
 
-const data = [
-  {
-    id: 1,
-    title: "Configura tu negocio",
-    content:
-      "Agrega el nombre de tu negocio, tus horarios y tus redes sociales. Biztro organiza la información por ti.",
-    image: "/configuration.png",
-    icon: <Store className="size-6" />
-  },
-  {
-    id: 2,
-    title: "Agrega tus productos",
-    content:
-      "Añade tus productos con descripción, precio e imagen para dejar tu menú listo en pocos minutos.",
-    image: "/products.png",
-    icon: <ShoppingBag className="size-6" />
-  },
-  {
-    id: 3,
-    title: "Personaliza y publica",
-    content:
-      "Ajusta el diseño en el editor, publica tu menú y compártelo con un enlace o un código QR.",
-    image: "/editor.png",
-    icon: <Rocket className="size-6" />
-  }
-]
-
 export default function Component() {
+  const t = useTranslations("marketing.howItWorks")
+
+  const data = [
+    {
+      id: 1,
+      title: t("steps.setup.title"),
+      content: t("steps.setup.content"),
+      image: "/configuration.png",
+      icon: <Store className="size-6" />
+    },
+    {
+      id: 2,
+      title: t("steps.products.title"),
+      content: t("steps.products.content"),
+      image: "/products.png",
+      icon: <ShoppingBag className="size-6" />
+    },
+    {
+      id: 3,
+      title: t("steps.publish.title"),
+      content: t("steps.publish.content"),
+      image: "/editor.png",
+      icon: <Rocket className="size-6" />
+    }
+  ]
+
   return (
     <section
       id="how-it-works"
@@ -41,8 +43,8 @@ export default function Component() {
       style={{ "--primary": "oklch(64.6% 0.222 41.116)" } as CSSProperties}
     >
       <TitleSection
-        eyebrow="Cómo funciona"
-        title="Publica tu menú en 3 pasos"
+        eyebrow={t("eyebrow")}
+        title={t("title")}
         className="mb-8"
       />
       <Features collapseDelay={6000} data={data} linePosition="bottom" />
@@ -55,28 +57,21 @@ export default function Component() {
             className="font-display mb-4 text-lg font-semibold text-taupe-950
               sm:text-2xl lg:text-3xl dark:text-taupe-50"
           >
-            Comparte tu menú con un código QR y un enlace
+            {t("qr.title")}
           </h3>
           <div
             className="flex flex-col gap-3 text-taupe-700 sm:text-lg
               dark:text-taupe-300"
           >
+            <p>{t("qr.p1")}</p>
             <p>
-              Descarga tu código QR desde el editor en segundos. Después puedes
-              imprimirlo y colocarlo en mesas, mostrador o escaparate.
-            </p>
-            <p>
-              Tus clientes solo tienen que escanearlo con la cámara de su
-              teléfono para abrir tu menú al instante.{" "}
+              {t("qr.p2")}{" "}
               <span className="text-taupe-950 dark:text-taupe-50">
-                También puedes compartir el mismo enlace en redes sociales
+                {t("qr.p2Highlight")}
               </span>{" "}
-              o en tu sitio web.
+              {t("qr.p2Suffix")}
             </p>
-            <p>
-              El menú se adapta a celulares y tablets, se lee con claridad y no
-              requiere instalar ninguna app.
-            </p>
+            <p>{t("qr.p3")}</p>
           </div>
         </div>
         <HowItWorksQr />

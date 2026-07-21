@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader2 } from "lucide-react"
 import { motion } from "motion/react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import { TextMorph } from "torph/react"
 import { z } from "zod/v4"
@@ -17,13 +18,19 @@ import { Form } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { joinWaitlist } from "@/server/actions/organization/mutations"
 
-const emailSchema = z.object({
-  email: z.email({
-    error: "Por favor, ingresa un correo electrónico válido"
-  })
-})
-
 export default function Waitlist() {
+  const t = useTranslations("marketing.waitlist")
+
+  const emailSchema = useMemo(
+    () =>
+      z.object({
+        email: z.email({
+          error: t("emailInvalid")
+        })
+      }),
+    [t]
+  )
+
   const form = useForm<z.infer<typeof emailSchema>>({
     resolver: zodResolver(emailSchema),
     defaultValues: {
@@ -63,8 +70,8 @@ export default function Waitlist() {
                 <Field>
                   <Input
                     type="email"
-                    aria-label="Correo electrónico"
-                    placeholder="tu@correo.com"
+                    aria-label={t("emailAria")}
+                    placeholder={t("emailPlaceholder")}
                     className="h-8 max-w-75 rounded-full border-0 bg-transparent
                       text-white placeholder:text-taupe-400 focus-visible:ring-0
                       focus-visible:ring-offset-0 dark:bg-transparent"
@@ -86,7 +93,7 @@ export default function Waitlist() {
                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />
               )}
               <TextMorph>
-                {status === "executing" ? "Enviando..." : "Solicitar acceso"}
+                {status === "executing" ? t("submitting") : t("submit")}
               </TextMorph>
             </Button>
           </div>
@@ -100,11 +107,10 @@ export default function Waitlist() {
                 dark:border-taupe-700/30 dark:bg-taupe-900/20"
             >
               <AlertTitle className="text-taupe-950 dark:text-taupe-50">
-                Ya estás en la lista
+                {t("successTitle")}
               </AlertTitle>
               <AlertDescription className="text-taupe-700 dark:text-taupe-300">
-                Te avisaremos por correo cuando abramos nuevos accesos a la
-                beta.
+                {t("successDescription")}
               </AlertDescription>
             </Alert>
           </motion.div>

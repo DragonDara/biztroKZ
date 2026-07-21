@@ -1,0 +1,406 @@
+{
+  "common": {
+    "appName": "Biztro",
+    "logoAlt": "Biztro logo",
+    "notFound": "Not found"
+  },
+  "locale": {
+    "label": "Language",
+    "en": "English",
+    "es": "Español",
+    "ru": "Русский"
+  },
+  "metadata": {
+    "defaultDescription": "Create your digital menu in minutes",
+    "homeTitle": "Biztro | Create and publish your digital menu in minutes",
+    "homeDescription": "Create a professional QR menu for your restaurant or café, update it anytime, and share it without PDFs or technical skills.",
+    "homeKeywords": "digital menu, QR menu, restaurant, café, digital menu board, online menu"
+  },
+  "marketing": {
+    "nav": {
+      "howItWorks": "How it works",
+      "benefits": "Benefits",
+      "pricing": "Pricing",
+      "signIn": "Sign in"
+    },
+    "hero": {
+      "announcementNew": "New",
+      "announcementTitle": "AI features for your menu",
+      "title": "Create your digital menu and publish it in minutes",
+      "subtitle": "Design a professional QR menu for your restaurant or café, update it whenever you want, and share it without the hassle.",
+      "waitlistLabel": "Request early access"
+    },
+    "waitlist": {
+      "emailAria": "Email address",
+      "emailPlaceholder": "you@email.com",
+      "emailInvalid": "Please enter a valid email address",
+      "submit": "Request access",
+      "submitting": "Sending...",
+      "successTitle": "You're on the list",
+      "successDescription": "We'll email you when we open new beta access."
+    },
+    "ctaBanner": {
+      "subtitle": "Want to launch your digital menu quickly and easily?",
+      "title": "Request early access to Biztro"
+    },
+    "benefits": {
+      "eyebrow": "Why use Biztro",
+      "title": "More control for your business, better experience for your customers",
+      "soon": "Soon",
+      "items": {
+        "reach": {
+          "title": "Reach more customers",
+          "description": "Share your menu via QR or link so customers can view it anytime."
+        },
+        "update": {
+          "title": "Update your menu easily",
+          "description": "Change prices, products, or availability without reprinting menus or PDFs."
+        },
+        "brand": {
+          "title": "Showcase your business",
+          "description": "Customize your QR code and menu design so they feel part of your brand."
+        },
+        "flexible": {
+          "title": "Flexible menus",
+          "description": "Create menus for seasons, events, or promotions and publish them when you need."
+        },
+        "promote": {
+          "title": "Promote your business",
+          "description": "Soon you'll be able to highlight offers and key products to drive more orders."
+        },
+        "noCommitment": {
+          "title": "No commitments",
+          "description": "Start with a free plan and upgrade only when your business needs more."
+        }
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "contactPrefix": "Still have questions? Email us at",
+      "items": [
+        {
+          "question": "What is a QR menu?",
+          "answer": "It's a digital menu your customers open by scanning a QR code with their phone camera."
+        },
+        {
+          "question": "How do QR menus work for restaurants?",
+          "answer": "You publish your menu once, place the QR code in your business, and customers open it in their browser. If you make changes, the QR stays the same."
+        },
+        {
+          "question": "How do I create a QR code for my restaurant menu?",
+          "answer": "First publish your menu, then download the QR code from Biztro. You can print it and use it on tables, counters, or promotional materials."
+        },
+        {
+          "question": "Can I update the menu without reprinting the QR code?",
+          "answer": "Yes. You can change products, prices, or descriptions anytime and the same QR code will keep working."
+        },
+        {
+          "question": "Do my customers need an app to open the menu?",
+          "answer": "No. They only need to open their phone camera and scan the QR code. The menu opens in the browser, like any web page."
+        }
+      ]
+    },
+    "pricing": {
+      "eyebrow": "Pricing",
+      "title": "Choose the plan that fits your business",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "yearlyDiscount": "(-20%)",
+      "subtitle": "Start free. When you need more products, menus, and support, upgrade to Pro.",
+      "perMonth": "MXN/month",
+      "perYear": "MXN/year",
+      "tiers": {
+        "free": {
+          "name": "Free",
+          "priceMonthly": "$0",
+          "priceYearly": "$0",
+          "description": "Publish your first digital menu at no cost.",
+          "cta": "Request access",
+          "features": [
+            "Up to 10 products",
+            "1 menu per business",
+            "Customize the design",
+            "Download QR code"
+          ]
+        },
+        "pro": {
+          "name": "Pro",
+          "priceMonthly": "$149",
+          "priceYearly": "$1,490",
+          "description": "More capacity and tools for businesses with multiple menus or higher traffic.",
+          "cta": "Request Pro access",
+          "features": [
+            "Unlimited products",
+            "Unlimited menus",
+            "Customize the design",
+            "Custom QR code",
+            "Basic visit analytics (coming soon)",
+            "Promotions and offers (coming soon)",
+            "Email support"
+          ]
+        }
+      }
+    },
+    "howItWorks": {
+      "eyebrow": "How it works",
+      "title": "Publish your menu in 3 steps",
+      "steps": {
+        "setup": {
+          "title": "Set up your business",
+          "content": "Add your business name, hours, and social links. Biztro organizes the information for you."
+        },
+        "products": {
+          "title": "Add your products",
+          "content": "Add products with description, price, and image to get your menu ready in minutes."
+        },
+        "publish": {
+          "title": "Customize and publish",
+          "content": "Adjust the design in the editor, publish your menu, and share it with a link or QR code."
+        }
+      },
+      "qr": {
+        "title": "Share your menu with a QR code and link",
+        "p1": "Download your QR code from the editor in seconds. Then print it and place it on tables, counters, or storefronts.",
+        "p2": "Your customers only need to scan it with their phone camera to open your menu instantly.",
+        "p2Highlight": "You can also share the same link on social media",
+        "p2Suffix": "or on your website.",
+        "p3": "The menu adapts to phones and tablets, reads clearly, and requires no app install."
+      }
+    },
+    "aiFeatures": {
+      "eyebrow": "AI automation",
+      "title": "Your menu, ready in less time.",
+      "tagline": "Upload a photo or PDF and let AI convert your menu into editable content so you can focus on serving customers.",
+      "scanning": "Extracting menu items...",
+      "menuLabel": "Menu",
+      "aiLabel": "AI",
+      "digitize": {
+        "title": "Digitize your menu in seconds",
+        "description": "Upload a PDF or photo of your printed menu and AI detects dishes, prices, and descriptions to turn them into editable content."
+      },
+      "translate": {
+        "title": "Translation for every customer",
+        "description": "Translate your menu into multiple languages so every guest understands what you offer and feels well served."
+      }
+    },
+    "bento": {
+      "title": "Forget outdated PDFs.",
+      "tagline": "Edit prices, photos, and categories from the browser, and your changes publish instantly.",
+      "brand": {
+        "name": "On-brand design",
+        "description": "Start with a template and adjust colors, images, and labels like allergens so your menu looks like your business.",
+        "cta": "See designs",
+        "imageAlt": "Menu view on a phone"
+      },
+      "editor": {
+        "name": "Easy-to-use editor",
+        "description": "Edit sections, products, and prices in a visual editor. No technical experience needed to get your menu ready.",
+        "cta": "See the editor"
+      },
+      "qr": {
+        "name": "QR and shareable link",
+        "description": "Customers can open your menu from their phone by scanning the code or visiting a link—no app required.",
+        "cta": "See example"
+      },
+      "publishButton": "Publish menu"
+    },
+    "editorPreview": {
+      "alt": "Screenshot of the web menu editor"
+    },
+    "footer": {
+      "contact": "Contact",
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "logoAlt": "Logo"
+    }
+  },
+  "auth": {
+    "login": {
+      "metaTitle": "Sign in",
+      "metaDescription": "Sign in to Biztro",
+      "welcome": "Welcome",
+      "subtitle": "Sign in with your Biztro account",
+      "continueWith": "Continue with {provider}",
+      "error": "Something went wrong while signing in. Please try again later."
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "menus": "Menus",
+      "catalog": "Catalog",
+      "products": "Products",
+      "categories": "Categories",
+      "translations": "Translations",
+      "media": "Media",
+      "settings": "Settings",
+      "general": "General",
+      "location": "Location",
+      "members": "Members",
+      "billing": "Billing"
+    },
+    "sidebar": {
+      "upgradeTitle": "Upgrade to Pro",
+      "upgradeDescription": "Unlimited products and menus, extra components, and more.",
+      "upgradeCta": "Upgrade now",
+      "reportIssue": "Report an issue",
+      "createOrganization": "Create organization",
+      "selectBusiness": "Select a business",
+      "organizations": "Organizations",
+      "addOrganization": "Add organization",
+      "planBasic": "Basic",
+      "planPro": "Pro",
+      "switchOrgError": "Could not switch organization"
+    },
+    "profile": {
+      "ariaLabel": "Your profile",
+      "account": "My account",
+      "profile": "Profile",
+      "theme": "Theme",
+      "themeSystem": "System",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "home": "Home",
+      "signOut": "Sign out"
+    },
+    "common": {
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "save": "Save",
+      "name": "Name",
+      "actions": "Actions",
+      "edit": "Edit",
+      "duplicate": "Duplicate",
+      "rename": "Rename",
+      "genericError": "Something went wrong",
+      "retry": "Try again",
+      "backHome": "Back to home",
+      "ready": "Ready",
+      "view": "View"
+    },
+    "menus": {
+      "metaTitle": "Home",
+      "title": "Menus",
+      "description": "All menus.",
+      "info": "View all menus for your organization. The active menu is public for your customers. Only one menu can be active at a time.",
+      "visitOnline": "Visit your online menu",
+      "newMenuDefaultName": "New menu",
+      "create": "Create menu",
+      "statusPublished": "Published",
+      "statusDraft": "Draft",
+      "active": "Active",
+      "moreActions": "More actions",
+      "setActive": "Set as active",
+      "cannotDeleteActive": "You can't delete the active menu. Set another menu as active first.",
+      "duplicateLoading": "Duplicating menu...",
+      "duplicated": "Menu duplicated",
+      "duplicateError": "Could not duplicate menu",
+      "setActiveLoading": "Updating active menu...",
+      "setActiveSuccess": "Active menu updated",
+      "setActiveError": "Could not update active menu",
+      "deleteTitle": "Delete menu",
+      "deleteDescription": "Are you sure you want to delete this menu? This action cannot be undone.",
+      "deleteLoading": "Deleting menu...",
+      "deleted": "Menu deleted",
+      "createError": "Could not create menu",
+      "renameTitle": "Rename menu",
+      "nameRequired": "Name is required",
+      "upgradeTitle": "Grow your business with Pro",
+      "upgradeDescription": "Upgrade to Pro to create more menus and access all premium features."
+    },
+    "onboarding": {
+      "welcome": "Welcome to Biztro",
+      "description": "Here are some links to get started setting up your business.",
+      "progress": "Progress",
+      "business": "Business",
+      "businessDescription": "Add your business info, such as name and logo.",
+      "location": "Location",
+      "locationDescription": "Add your address, hours, and social links.",
+      "products": "Products",
+      "productsDescription": "Create products and categories for your menu."
+    },
+    "upgrade": {
+      "defaultTitle": "Upgrade to Pro",
+      "defaultDescription": "This feature requires Pro.",
+      "cta": "Upgrade to Pro",
+      "stayFree": "Stay on the free plan"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved changes",
+      "defaultMessage": "You have unsaved changes",
+      "goBack": "Go back",
+      "discard": "Discard changes"
+    },
+    "menuSync": {
+      "title": "Update published menus?",
+      "defaultDescription": "Product changes were detected. Do you want to apply them to the published menu?",
+      "remember": "Don't ask again",
+      "notNow": "Not now",
+      "updating": "Updating...",
+      "update": "Update"
+    }
+  },
+  "menuEditor": {
+    "publish": {
+      "preview": "Preview",
+      "saveChanges": "Save changes",
+      "generateQr": "Generate QR code",
+      "qrTitle": "Generate QR code",
+      "qrDescription": "Scanning the code with your phone camera or QR app will open this URL:",
+      "qrDraftWarning": "Don't forget to publish your menu so it's accessible via the QR code.",
+      "publish": "Publish",
+      "publishMenu": "Publish menu",
+      "publishMenuDescription": "Publish your menu to a public URL you can share.",
+      "publishing": "Publishing...",
+      "menuLink": "Menu link",
+      "publishChanges": "Publish changes",
+      "reverting": "Reverting...",
+      "revertChanges": "Revert changes",
+      "switchToDraft": "Switch to draft",
+      "published": "Published",
+      "unpublishedChanges": "You have unpublished changes.",
+      "unpublishedChangesHint": "Publish changes to update your menu.",
+      "help": "Help",
+      "menuUpdated": "Menu updated",
+      "updateError": "An error occurred while updating the menu",
+      "saveError": "An error occurred",
+      "reverted": "Menu reverted to last published version",
+      "revertError": "Could not revert to published menu",
+      "noPublishedToRevert": "There is no published version to revert to",
+      "revertGenericError": "An error occurred while reverting",
+      "qrSettings": "Settings",
+      "color": "Color",
+      "showLogo": "Show logo",
+      "downloadQr": "Download QR image"
+    }
+  },
+  "errors": {
+    "global": {
+      "title": "Something went wrong",
+      "heading": "Internal server error",
+      "description": "An unexpected error occurred. Please try again later.",
+      "backHome": "Back to home"
+    },
+    "notFound": {
+      "title": "Page not found",
+      "description": "We couldn't find the page you're looking for.",
+      "backHome": "Back to home"
+    },
+    "dashboard": {
+      "title": "An error occurred in the dashboard",
+      "description": "Try again or go back home. If the problem persists, contact us.",
+      "retry": "Try again",
+      "backHome": "Back to home"
+    },
+    "menuEditor": {
+      "title": "An error occurred in the editor",
+      "description": "Try again or go back to the dashboard to select another menu.",
+      "retry": "Try again",
+      "backDashboard": "Back to dashboard"
+    }
+  },
+  "publicMenu": {
+    "originalLanguage": "Spanish (original)",
+    "changeLanguage": "Change language",
+    "originalLanguageSr": "Original language"
+  }
+}

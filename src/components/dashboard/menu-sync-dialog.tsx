@@ -1,5 +1,7 @@
 "use client"
 
+import { useTranslations } from "next-intl"
+
 import {
   AlertDialog,
   AlertDialogAction,
@@ -32,15 +34,19 @@ export function MenuSyncDialog({
   onCancel,
   onConfirm,
   isLoading = false,
-  description = "Se detectaron cambios en tus productos. ¿Quieres aplicar los cambios al menú publicado?",
+  description,
   checkboxId = "remember-published-choice"
 }: MenuSyncDialogProps) {
+  const t = useTranslations("dashboard.menuSync")
+
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>¿Actualizar menús publicados?</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
+          <AlertDialogTitle>{t("title")}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {description ?? t("defaultDescription")}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <div className="flex items-center gap-2">
           <Checkbox
@@ -51,15 +57,15 @@ export function MenuSyncDialog({
             }
           />
           <label htmlFor={checkboxId} className="text-muted-foreground text-sm">
-            No volver a preguntar
+            {t("remember")}
           </label>
         </div>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={onCancel} disabled={isLoading}>
-            No ahora
+            {t("notNow")}
           </AlertDialogCancel>
           <AlertDialogAction onClick={onConfirm} disabled={isLoading}>
-            {isLoading ? "Actualizando..." : "Actualizar"}
+            {isLoading ? t("updating") : t("update")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

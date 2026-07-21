@@ -1,10 +1,12 @@
 "use client"
 
 import React from "react"
+import { Link } from "@/i18n/navigation"
 import { motion, useScroll, useTransform } from "motion/react"
+import { useTranslations } from "next-intl"
 import Image from "next/image"
-import Link from "next/link"
 
+import { LocaleSwitcher } from "@/components/locale-switcher"
 import { Button } from "@/components/ui/button"
 
 export default function Navbar({
@@ -14,7 +16,8 @@ export default function Navbar({
   children?: React.ReactNode
   showLinks?: boolean
 }) {
-  // Use Framer Motion's scroll tracking to derive animation values
+  const t = useTranslations("marketing.nav")
+  const tCommon = useTranslations("common")
   const { scrollY } = useScroll()
   const opacity = useTransform(scrollY, [0, 64], [0, 1], { clamp: true })
   const boxShadow = useTransform(
@@ -47,7 +50,7 @@ export default function Navbar({
         >
           <Image
             src="/logo-bistro.svg"
-            alt="Logo de Biztro"
+            alt={tCommon("logoAlt")}
             width={32}
             height={32}
             unoptimized
@@ -67,7 +70,7 @@ export default function Navbar({
               className="text-taupe-700 transition-colors hover:text-taupe-950
                 dark:text-taupe-300 dark:hover:text-taupe-50"
             >
-              Cómo funciona
+              {t("howItWorks")}
             </Link>
             <Link
               href="#benefits"
@@ -75,7 +78,7 @@ export default function Navbar({
               className="text-taupe-700 transition-colors hover:text-taupe-950
                 dark:text-taupe-300 dark:hover:text-taupe-50"
             >
-              Beneficios
+              {t("benefits")}
             </Link>
             <Link
               href="#pricing"
@@ -83,22 +86,25 @@ export default function Navbar({
               className="text-taupe-700 transition-colors hover:text-taupe-950
                 dark:text-taupe-300 dark:hover:text-taupe-50"
             >
-              Precios
+              {t("pricing")}
             </Link>
           </nav>
         )}
         {children}
-        <Link href="/dashboard" prefetch={false}>
-          <Button
-            variant="default"
-            size="xs"
-            className="rounded-full bg-taupe-950 px-4 text-taupe-50 shadow-xs
-              hover:bg-taupe-800 dark:bg-taupe-100 dark:text-taupe-950
-              dark:hover:bg-taupe-200"
-          >
-            Acceder a mi cuenta
-          </Button>
-        </Link>
+        <div className="flex items-center gap-2">
+          <LocaleSwitcher />
+          <Link href="/dashboard" prefetch={false}>
+            <Button
+              variant="default"
+              size="xs"
+              className="rounded-full bg-taupe-950 px-4 text-taupe-50 shadow-xs
+                hover:bg-taupe-800 dark:bg-taupe-100 dark:text-taupe-950
+                dark:hover:bg-taupe-200"
+            >
+              {t("signIn")}
+            </Button>
+          </Link>
+        </div>
       </div>
     </motion.header>
   )

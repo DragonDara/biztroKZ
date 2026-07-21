@@ -5,6 +5,7 @@ import AppSidebar, {
   SkeletonWorkgroup
 } from "@/components/dashboard/app-sidebar"
 import Header from "@/components/dashboard/header"
+import { LocaleSwitcher } from "@/components/locale-switcher"
 import { ThemeSwitcher } from "@/components/theme-switcher/theme-switcher"
 import {
   Sidebar,
@@ -48,6 +49,7 @@ export default async function Layout({
                 className="size-7 text-gray-400 sm:size-5 dark:text-gray-500"
               />
               <ThemeSwitcher />
+              <LocaleSwitcher />
             </div>
           </Header>
           {children}

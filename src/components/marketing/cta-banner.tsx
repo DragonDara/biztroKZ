@@ -1,8 +1,14 @@
+"use client"
+
+import { useTranslations } from "next-intl"
 import Image from "next/image"
 
 import Waitlist from "@/components/marketing/waitlist"
 
 export default function CTABanner() {
+  const t = useTranslations("marketing.ctaBanner")
+  const tCommon = useTranslations("common")
+
   return (
     <div
       id="cta-banner"
@@ -20,17 +26,17 @@ export default function CTABanner() {
           >
             <Image
               src="/logo-bistro.svg"
-              alt="Logo de Biztro"
+              alt={tCommon("logoAlt")}
               width={40}
               height={40}
               unoptimized
             />
           </div>
           <p className="mt-4 mb-1 hidden text-lg text-taupe-300 sm:block">
-            ¿Quieres lanzar tu menú digital de manera rápida y sencilla?
+            {t("subtitle")}
           </p>
           <h3 className="font-display mb-4 text-center text-3xl text-white">
-            Solicita acceso anticipado a Biztro
+            {t("title")}
           </h3>
           <Waitlist />
         </div>

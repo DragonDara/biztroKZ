@@ -2,12 +2,14 @@
 
 import { useRef } from "react"
 import { motion, useInView } from "motion/react"
+import { useTranslations } from "next-intl"
 import Image from "next/image"
 
 import editorDark from "../../../public/editor-dark.png"
 import landingBg from "../../../public/landing-bg-2.png"
 
 export default function EditorPreview() {
+  const t = useTranslations("marketing.editorPreview")
   const fadeInRef = useRef(null)
   const fadeInInView = useInView(fadeInRef, {
     once: true
@@ -62,11 +64,7 @@ export default function EditorPreview() {
             className="relative inline-block overflow-hidden rounded-lg
               shadow-[0_32px_80px_rgba(0,0,0,0.45)]"
           >
-            <Image
-              src={editorDark}
-              className="block w-full"
-              alt="Imagen del editor de menús en web"
-            />
+            <Image src={editorDark} className="block w-full" alt={t("alt")} />
             {/* Overlay ring on top of the image */}
             <div
               className="pointer-events-none absolute inset-0 rounded-lg

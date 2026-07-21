@@ -1,4 +1,5 @@
 import { Suspense } from "react"
+import { localePathSegments, staticParamsPlaceholder } from "@/i18n/routing"
 import lz from "lzutf8"
 import { type Metadata, type ResolvingMetadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
@@ -16,8 +17,8 @@ import {
   getAllActiveOrganizations,
   getOrganizationBySlug
 } from "@/server/actions/organization/queries"
-import PublicMenuTracker from "@/app/[subdomain]/public-menu-tracker"
-import ResolveEditor from "@/app/[subdomain]/resolve-editor"
+import PublicMenuTracker from "@/app/sites/[subdomain]/public-menu-tracker"
+import ResolveEditor from "@/app/sites/[subdomain]/resolve-editor"
 import { normalizePublicMenuItems } from "@/lib/menu-search"
 import { extractMenuDataFromNodes } from "@/lib/sync-status"
 import { SubscriptionStatus } from "@/lib/types/billing"
@@ -26,10 +27,17 @@ import { SUPPORTED_LOCALES } from "@/lib/types/translations"
 // Add generateStaticParams to pre-render specific paths. Used placeholder for empty organizations.
 export async function generateStaticParams() {
   const organizations = await getAllActiveOrganizations()
-  if (organizations.length === 0) {
-    return [{ subdomain: "_placeholder" }]
+  const params = organizations
+    .filter(({ slug }) => !localePathSegments.has(slug))
+    .map(({ slug }) => ({
+      subdomain: slug
+    }))
+
+  if (params.length === 0) {
+    return [{ subdomain: staticParamsPlaceholder }]
   }
-  return organizations.map(({ slug }) => ({ subdomain: slug }))
+
+  return params
 }
 
 async function getCachedOrganizationBySubdomain(subdomain: string) {
@@ -120,6 +128,14 @@ export default async function SitePage(props: {
   "use cache"
 
   const params = await props.params
+
+  if (
+    params.subdomain === staticParamsPlaceholder ||
+    localePathSegments.has(params.subdomain)
+  ) {
+    return notFound()
+  }
+
   cacheTag(`subdomain-${params.subdomain}`)
   cacheLife("days")
   const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)

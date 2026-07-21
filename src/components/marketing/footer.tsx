@@ -1,18 +1,16 @@
+"use client"
+
+import { useTranslations } from "next-intl"
 import Image from "next/image"
 
-type Link = {
-  text: string
-  url: string
-}
+export default function Footer() {
+  const t = useTranslations("marketing.footer")
 
-export const links: Link[] = [
-  { text: "Términos", url: "/terms" },
-  { text: "Privacidad", url: "/privacy" }
-]
+  const links = [
+    { text: t("terms"), url: "/terms" },
+    { text: t("privacy"), url: "/privacy" }
+  ]
 
-// skipcq: JS-0116
-export default async function Footer() {
-  "use cache"
   return (
     <footer
       className="mx-auto max-w-6xl px-4 py-5 sm:px-6 lg:px-8 lg:py-10 lg:pb-10"
@@ -21,7 +19,7 @@ export default async function Footer() {
         <div className="flex items-center gap-x-2">
           <Image
             src="/safari-pinned-tab.svg"
-            alt="Logo"
+            alt={t("logoAlt")}
             width={24}
             height={24}
             unoptimized
@@ -40,7 +38,7 @@ export default async function Footer() {
               hover:underline hover:underline-offset-4 dark:text-taupe-400
               dark:hover:text-taupe-50"
           >
-            <a href="mailto:contacto@biztro.co">Contacto</a>
+            <a href="mailto:contacto@biztro.co">{t("contact")}</a>
           </li>
           {links.map((link, index) => (
             <li

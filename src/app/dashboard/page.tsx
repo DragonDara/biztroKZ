@@ -1,31 +1,26 @@
 import { Suspense } from "react"
-import { ChevronRightIcon, GlobeIcon } from "lucide-react"
 import type { Metadata } from "next"
-import Link from "next/link"
+import { getTranslations } from "next-intl/server"
 import { redirect } from "next/navigation"
 
 import OnboardingStatus from "@/components/dashboard/onboarding-status"
-import PageSubtitle from "@/components/dashboard/page-subtitle"
-import {
-  Item,
-  ItemActions,
-  ItemContent,
-  ItemMedia,
-  ItemTitle
-} from "@/components/ui/item"
 import { Skeleton } from "@/components/ui/skeleton"
 import { getMenus } from "@/server/actions/menu/queries"
 import {
   getCurrentOrganization,
   hasOrganizations
 } from "@/server/actions/user/queries"
+import { DashboardHomeHeader } from "@/app/dashboard/dashboard-home-header"
 import MenuList from "@/app/dashboard/menu-list"
-import { getPublishedMenuUrl } from "@/lib/utils"
 
-export const metadata: Metadata = {
-  title: "Inicio"
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("dashboard.menus")
+  return {
+    title: t("metaTitle")
+  }
 }
 
+// skipcq: JS-0116
 export default async function DashboardPage() {
   const [orgAvailable, currentOrg] = await Promise.all([
     hasOrganizations(),
@@ -76,45 +71,7 @@ export default async function DashboardPage() {
           </Suspense>
         </div>
         <div className="col-span-full">
-          <PageSubtitle>
-            <PageSubtitle.Title>Menús</PageSubtitle.Title>
-            <PageSubtitle.Description>
-              Todos los menús.
-            </PageSubtitle.Description>
-            <PageSubtitle.Info>
-              Aquí puedes ver todos los menús de tu organización. El menú activo
-              es público para tus clientes. Solo puede haber un menú activo a la
-              vez.
-            </PageSubtitle.Info>
-            <PageSubtitle.Actions>
-              {currentOrg?.slug && (
-                <Item
-                  size="sm"
-                  variant="outline"
-                  className="bg-white/70 dark:bg-black/30"
-                  asChild
-                >
-                  <Link
-                    href={getPublishedMenuUrl(currentOrg.slug)}
-                    className="block w-full"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    prefetch={false}
-                  >
-                    <ItemMedia>
-                      <GlobeIcon className="size-4" />
-                    </ItemMedia>
-                    <ItemContent>
-                      <ItemTitle>Visita tu menú en línea</ItemTitle>
-                    </ItemContent>
-                    <ItemActions>
-                      <ChevronRightIcon className="size-4" />
-                    </ItemActions>
-                  </Link>
-                </Item>
-              )}
-            </PageSubtitle.Actions>
-          </PageSubtitle>
+          <DashboardHomeHeader orgSlug={currentOrg?.slug} />
         </div>
         <Suspense fallback={<MenuListSkeleton />}>
           <MenuList promiseMenus={menus} />

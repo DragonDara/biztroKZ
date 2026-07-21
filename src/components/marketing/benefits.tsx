@@ -1,3 +1,5 @@
+"use client"
+
 import type { JSX } from "react"
 import {
   BadgeCheck,
@@ -8,56 +10,36 @@ import {
   RefreshCcw,
   type LucideIcon
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import TitleSection from "@/components/marketing/title-section"
 import { Badge } from "@/components/ui/badge"
 
-const BENEFITS = [
-  {
-    title: "Llega a más clientes",
-    Icon: BadgeCheck,
-    description:
-      "Comparte tu menú por QR o enlace para que tus clientes lo consulten en cualquier momento.",
-    soon: false
-  },
-  {
-    title: "Actualiza tu menú fácilmente",
-    Icon: RefreshCcw,
-    description:
-      "Cambia precios, productos o disponibilidad sin reimprimir cartas ni PDFs.",
-    soon: false
-  },
-  {
-    title: "Destaca tu negocio",
-    Icon: QrCodeIcon,
-    description:
-      "Personaliza tu código QR y el diseño del menú para que se sientan parte de tu marca.",
-    soon: false
-  },
-  {
-    title: "Menú flexible",
-    Icon: Group,
-    description:
-      "Crea menús para temporadas, eventos o promociones y publícalos cuando los necesites.",
-    soon: false
-  },
-  {
-    title: "Promociona tu negocio",
-    Icon: Gem,
-    description:
-      "Pronto podrás destacar ofertas y productos clave para impulsar más pedidos.",
-    soon: true
-  },
-  {
-    title: "Sin compromisos",
-    Icon: Handshake,
-    description:
-      "Empieza con un plan gratuito y cambia solo cuando tu negocio necesite más.",
-    soon: false
-  }
-]
+const BENEFIT_KEYS = [
+  "reach",
+  "update",
+  "brand",
+  "flexible",
+  "promote",
+  "noCommitment"
+] as const
+
+const BENEFIT_ICONS: Record<(typeof BENEFIT_KEYS)[number], LucideIcon> = {
+  reach: BadgeCheck,
+  update: RefreshCcw,
+  brand: QrCodeIcon,
+  flexible: Group,
+  promote: Gem,
+  noCommitment: Handshake
+}
+
+const BENEFIT_SOON: Partial<Record<(typeof BENEFIT_KEYS)[number], boolean>> = {
+  promote: true
+}
 
 export default function Benefits() {
+  const t = useTranslations("marketing.benefits")
+
   return (
     <section id="benefits" className="relative pt-20 pb-28 sm:py-32">
       <div
@@ -75,16 +57,23 @@ export default function Benefits() {
       <div className="relative z-10">
         <TitleSection
           align="left"
-          eyebrow="Por qué usar Biztro"
-          title="Más control para tu negocio, mejor experiencia para tus clientes"
+          eyebrow={t("eyebrow")}
+          title={t("title")}
           className="mx-auto mb-8 px-4 sm:mb-12 sm:px-6 lg:mb-16 lg:px-8"
         />
         <div
           className="mx-auto mt-8 grid max-w-6xl grid-cols-1 gap-8 px-4
             sm:grid-cols-3 sm:gap-12 sm:px-6 lg:gap-16 lg:px-8"
         >
-          {BENEFITS.map((benefit, index) => (
-            <BenefitItem key={index} {...benefit} />
+          {BENEFIT_KEYS.map(key => (
+            <BenefitItem
+              key={key}
+              Icon={BENEFIT_ICONS[key]}
+              title={t(`items.${key}.title`)}
+              description={t(`items.${key}.description`)}
+              soon={BENEFIT_SOON[key] ?? false}
+              soonLabel={t("soon")}
+            />
           ))}
         </div>
       </div>
@@ -96,12 +85,14 @@ const BenefitItem = ({
   Icon,
   title,
   description,
-  soon
+  soon,
+  soonLabel
 }: {
   Icon: LucideIcon
   title: string
   description: string
   soon: boolean
+  soonLabel: string
 }): JSX.Element => {
   return (
     <div className="flex flex-col gap-3">
@@ -120,7 +111,7 @@ const BenefitItem = ({
               text-taupe-600 uppercase dark:border-taupe-700/50
               dark:bg-taupe-800/20 dark:text-taupe-400"
           >
-            Pronto
+            {soonLabel}
           </Badge>
         )}
       </div>

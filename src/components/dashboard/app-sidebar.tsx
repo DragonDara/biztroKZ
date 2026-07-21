@@ -9,6 +9,7 @@ import {
   useTransition
 } from "react"
 import toast from "react-hot-toast"
+import { Link } from "@/i18n/navigation"
 import * as Sentry from "@sentry/nextjs"
 import { type feedbackIntegration } from "@sentry/nextjs"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
@@ -24,8 +25,8 @@ import {
   ShoppingBag,
   type LucideIcon
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
-import Link from "next/link"
 import {
   usePathname,
   useRouter,
@@ -82,31 +83,35 @@ type NavigationItem = {
   items?: NavigationItem[]
 }
 
-const navigation: NavigationItem[] = [
-  { title: "Menús", url: "/dashboard", icon: LayoutTemplate },
-  {
-    title: "Catálogo",
-    url: "/dashboard/menu-items",
-    icon: ShoppingBag,
-    items: [
-      { title: "Productos", url: "/dashboard/menu-items" },
-      { title: "Categorías", url: "/dashboard/menu-items/categories" },
-      { title: "Traducciones", url: "/dashboard/menu-items/translations" }
-    ]
-  },
-  { title: "Medios", url: "/dashboard/media", icon: Images },
-  {
-    title: "Configuración",
-    url: "/dashboard/settings",
-    icon: Settings,
-    items: [
-      { title: "General", url: "/dashboard/settings" },
-      { title: "Sucursal", url: "/dashboard/settings/locations" },
-      { title: "Miembros", url: "/dashboard/settings/members" },
-      { title: "Suscripción", url: "/dashboard/settings/billing" }
-    ]
-  }
-]
+function useNavigationItems(): NavigationItem[] {
+  const t = useTranslations("dashboard.nav")
+
+  return [
+    { title: t("menus"), url: "/dashboard", icon: LayoutTemplate },
+    {
+      title: t("catalog"),
+      url: "/dashboard/menu-items",
+      icon: ShoppingBag,
+      items: [
+        { title: t("products"), url: "/dashboard/menu-items" },
+        { title: t("categories"), url: "/dashboard/menu-items/categories" },
+        { title: t("translations"), url: "/dashboard/menu-items/translations" }
+      ]
+    },
+    { title: t("media"), url: "/dashboard/media", icon: Images },
+    {
+      title: t("settings"),
+      url: "/dashboard/settings",
+      icon: Settings,
+      items: [
+        { title: t("general"), url: "/dashboard/settings" },
+        { title: t("location"), url: "/dashboard/settings/locations" },
+        { title: t("members"), url: "/dashboard/settings/members" },
+        { title: t("billing"), url: "/dashboard/settings/billing" }
+      ]
+    }
+  ]
+}
 
 export default function AppSidebar({
   promiseOrganization
@@ -114,6 +119,8 @@ export default function AppSidebar({
   promiseOrganization: ReturnType<typeof getCurrentOrganization>
 }) {
   const currentOrg = use(promiseOrganization)
+  const navigation = useNavigationItems()
+  const tSidebar = useTranslations("dashboard.sidebar")
   const { isMobile, setOpenMobile } = useSidebar()
 
   const closeMobileSidebar = () => {
@@ -188,12 +195,12 @@ export default function AppSidebar({
                     className="mr-1.5 inline size-4 align-text-top
                       text-amber-600 dark:text-amber-500"
                   />
-                  Actualiza a Pro
+                  {tSidebar("upgradeTitle")}
                 </CardTitle>
                 <CardDescription
                   className="dark:text-foreground/80 text-foreground/60 text-xs"
                 >
-                  Productos y menús ilimitados, componentes adicionales y más.
+                  {tSidebar("upgradeDescription")}
                 </CardDescription>
               </CardHeader>
               <CardFooter className="px-3">
@@ -203,7 +210,7 @@ export default function AppSidebar({
                     prefetch={false}
                     onClick={closeMobileSidebar}
                   >
-                    Actualiza ahora
+                    {tSidebar("upgradeCta")}
                   </Link>
                 </Button>
               </CardFooter>
@@ -271,6 +278,7 @@ function SidebarSubLink({
 }
 
 function SidebarWorkgroup({ onNavigate }: { onNavigate?: () => void }) {
+  const t = useTranslations("dashboard.sidebar")
   const { data: organizations, refetch } = authClient.useListOrganizations()
 
   const { data: currentOrg } = useQuery({
@@ -306,7 +314,7 @@ function SidebarWorkgroup({ onNavigate }: { onNavigate?: () => void }) {
       Sentry.captureException(error, {
         tags: { section: "sidebar-switch-org" }
       })
-      toast.error("No se pudo cambiar de organización")
+      toast.error(t("switchOrgError"))
     },
     onSettled: () => {
       refetch()
@@ -338,7 +346,9 @@ function SidebarWorkgroup({ onNavigate }: { onNavigate?: () => void }) {
               >
                 <Plus className="size-4" />
               </div>
-              <span className="truncate font-semibold">Crear organización</span>
+              <span className="truncate font-semibold">
+                {t("createOrganization")}
+              </span>
             </Link>
           </SidebarMenuButton>
         </SidebarMenu>
@@ -375,12 +385,14 @@ function SidebarWorkgroup({ onNavigate }: { onNavigate?: () => void }) {
                         {currentOrg.name}
                       </span>
                       <span className="truncate text-xs">
-                        {currentOrg.plan === Plan.BASIC ? "Básico" : "Pro"}
+                        {currentOrg.plan === Plan.BASIC
+                          ? t("planBasic")
+                          : t("planPro")}
                       </span>
                     </div>
                   </>
                 ) : (
-                  <span className="truncate">Selecciona un negocio</span>
+                  <span className="truncate">{t("selectBusiness")}</span>
                 )}
                 <ChevronsUpDown className="ml-auto" />
               </SidebarMenuButton>
@@ -393,7 +405,7 @@ function SidebarWorkgroup({ onNavigate }: { onNavigate?: () => void }) {
               sideOffset={4}
             >
               <DropdownMenuLabel className="text-muted-foreground text-xs">
-                Organizaciones
+                {t("organizations")}
               </DropdownMenuLabel>
               {organizations?.map(organization => (
                 <DropdownMenuItem
@@ -427,7 +439,7 @@ function SidebarWorkgroup({ onNavigate }: { onNavigate?: () => void }) {
                     <Plus className="size-4" />
                   </div>
                   <div className="text-muted-foreground font-medium">
-                    Agregar organización
+                    {t("addOrganization")}
                   </div>
                 </Link>
               </DropdownMenuItem>
@@ -453,6 +465,7 @@ export function SkeletonWorkgroup() {
 }
 
 function AttachToFeedbackButton() {
+  const t = useTranslations("dashboard.sidebar")
   // Explicitly set the state type to any (adjust as needed).
   const [feedback, setFeedback] =
     useState<ReturnType<typeof feedbackIntegration>>()
@@ -485,7 +498,7 @@ function AttachToFeedbackButton() {
     <SidebarMenuButton asChild size="sm">
       <a href="#" ref={elRef}>
         <Megaphone />
-        <span>Reportar un problema</span>
+        <span>{t("reportIssue")}</span>
       </a>
     </SidebarMenuButton>
   )

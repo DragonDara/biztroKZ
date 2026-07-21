@@ -1,57 +1,56 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Check } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { TextMorph } from "torph/react"
 
 import TitleSection from "@/components/marketing/title-section"
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { cn } from "@/lib/utils"
 
-const marketingTiers = [
-  {
-    name: "Gratis",
-    id: "tier-free",
-    href: "#cta-banner",
-    priceMonthly: "$0",
-    priceYearly: "$0",
-    description: "Publica tu primer menú digital sin costo.",
-    features: [
-      "Hasta 10 productos",
-      "1 menú por negocio",
-      "Personaliza el diseño",
-      "Descargar código QR"
-    ],
-    featured: false,
-    cta: "Solicitar acceso"
-  },
-  {
-    name: "Pro",
-    id: "tier-pro",
-    href: "#cta-banner",
-    priceMonthly: "$149",
-    priceYearly: "$1,490",
-    description:
-      "Más capacidad y herramientas para negocios con varios menús o más movimiento.",
-    features: [
-      "Productos ilimitados",
-      "Menús ilimitados",
-      "Personaliza el diseño",
-      "Código QR personalizado",
-      "Analítica básica de visitas (próximamente)",
-      "Promociones y ofertas (próximamente)",
-      "Soporte por correo electrónico"
-    ],
-    featured: true,
-    cta: "Solicitar acceso Pro"
-  }
-]
+type PricingTier = {
+  name: string
+  id: string
+  href: string
+  priceMonthly: string
+  priceYearly: string
+  description: string
+  features: string[]
+  featured: boolean
+  cta: string
+}
 
 export default function Pricing() {
+  const t = useTranslations("marketing.pricing")
   const [billingPeriod, setBillingPeriod] = useState<"monthly" | "yearly">(
     "monthly"
   )
   const isYearly = billingPeriod === "yearly"
+
+  const marketingTiers = useMemo((): PricingTier[] => {
+    type TierData = Omit<PricingTier, "id" | "href" | "featured">
+    const tiers = t.raw("tiers" as Parameters<typeof t.raw>[0]) as {
+      free: TierData
+      pro: TierData
+    }
+    const { free, pro } = tiers
+
+    return [
+      {
+        ...free,
+        id: "tier-free",
+        href: "#cta-banner",
+        featured: false
+      },
+      {
+        ...pro,
+        id: "tier-pro",
+        href: "#cta-banner",
+        featured: true
+      }
+    ]
+  }, [t])
 
   return (
     <section
@@ -76,8 +75,8 @@ export default function Pricing() {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-2xl text-center lg:max-w-4xl">
           <TitleSection
-            eyebrow="Precios"
-            title="Elige el plan que mejor se adapta a tu negocio"
+            eyebrow={t("eyebrow")}
+            title={t("title")}
             className="mb-8"
           />
         </div>
@@ -99,19 +98,19 @@ export default function Pricing() {
                 className="rounded-full data-[state=active]:bg-taupe-950
                   data-[state=active]:text-white"
               >
-                Mensual
+                {t("monthly")}
               </TabsTrigger>
               <TabsTrigger
                 value="yearly"
                 className="rounded-full data-[state=active]:bg-taupe-950
                   data-[state=active]:text-white"
               >
-                Anual{" "}
+                {t("yearly")}{" "}
                 <span
                   className="ml-1 text-taupe-600 in-focus:text-white
                     dark:text-taupe-400"
                 >
-                  (−20%)
+                  {t("yearlyDiscount")}
                 </span>
               </TabsTrigger>
             </TabsList>
@@ -121,8 +120,7 @@ export default function Pricing() {
           className="mx-auto mt-6 max-w-2xl text-center text-lg leading-8
             text-pretty text-taupe-700 dark:text-taupe-300"
         >
-          Empieza gratis. Cuando necesites más productos, más menús y soporte,
-          pasa a Pro.
+          {t("subtitle")}
         </p>
         <div
           className="mx-auto mt-16 grid max-w-lg grid-cols-1 items-center
@@ -187,7 +185,9 @@ export default function Pricing() {
                     "text-base"
                   )}
                 >
-                  <TextMorph>{isYearly ? "MXN/año" : "MXN/mes"}</TextMorph>
+                  <TextMorph>
+                    {isYearly ? t("perYear") : t("perMonth")}
+                  </TextMorph>
                 </span>
               </div>
               <div

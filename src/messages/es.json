@@ -1,0 +1,406 @@
+{
+  "common": {
+    "appName": "Biztro",
+    "logoAlt": "Logo de Biztro",
+    "notFound": "No encontrado"
+  },
+  "locale": {
+    "label": "Idioma",
+    "en": "English",
+    "es": "Español",
+    "ru": "Русский"
+  },
+  "metadata": {
+    "defaultDescription": "Crea tu menú digital en minutos",
+    "homeTitle": "Biztro | Crea y publica tu menú digital en minutos",
+    "homeDescription": "Crea un menú QR profesional para tu restaurante o cafetería, actualízalo cuando quieras y compártelo sin depender de PDFs ni conocimientos técnicos.",
+    "homeKeywords": "menú digital, menú QR, restaurante, cafetería, carta digital, menú online"
+  },
+  "marketing": {
+    "nav": {
+      "howItWorks": "Cómo funciona",
+      "benefits": "Beneficios",
+      "pricing": "Precios",
+      "signIn": "Acceder a mi cuenta"
+    },
+    "hero": {
+      "announcementNew": "Nuevo",
+      "announcementTitle": "Funciones IA para tu menú",
+      "title": "Crea tu menú digital y publícalo en minutos",
+      "subtitle": "Diseña un menú QR profesional para tu restaurante o cafetería, actualízalo cuando quieras y compártelo sin complicarte.",
+      "waitlistLabel": "Solicita acceso anticipado"
+    },
+    "waitlist": {
+      "emailAria": "Correo electrónico",
+      "emailPlaceholder": "tu@correo.com",
+      "emailInvalid": "Por favor, ingresa un correo electrónico válido",
+      "submit": "Solicitar acceso",
+      "submitting": "Enviando...",
+      "successTitle": "Ya estás en la lista",
+      "successDescription": "Te avisaremos por correo cuando abramos nuevos accesos a la beta."
+    },
+    "ctaBanner": {
+      "subtitle": "¿Quieres lanzar tu menú digital de manera rápida y sencilla?",
+      "title": "Solicita acceso anticipado a Biztro"
+    },
+    "benefits": {
+      "eyebrow": "Por qué usar Biztro",
+      "title": "Más control para tu negocio, mejor experiencia para tus clientes",
+      "soon": "Pronto",
+      "items": {
+        "reach": {
+          "title": "Llega a más clientes",
+          "description": "Comparte tu menú por QR o enlace para que tus clientes lo consulten en cualquier momento."
+        },
+        "update": {
+          "title": "Actualiza tu menú fácilmente",
+          "description": "Cambia precios, productos o disponibilidad sin reimprimir cartas ni PDFs."
+        },
+        "brand": {
+          "title": "Destaca tu negocio",
+          "description": "Personaliza tu código QR y el diseño del menú para que se sientan parte de tu marca."
+        },
+        "flexible": {
+          "title": "Menú flexible",
+          "description": "Crea menús para temporadas, eventos o promociones y publícalos cuando los necesites."
+        },
+        "promote": {
+          "title": "Promociona tu negocio",
+          "description": "Pronto podrás destacar ofertas y productos clave para impulsar más pedidos."
+        },
+        "noCommitment": {
+          "title": "Sin compromisos",
+          "description": "Empieza con un plan gratuito y cambia solo cuando tu negocio necesite más."
+        }
+      }
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "contactPrefix": "¿Te quedó alguna duda? Escríbenos a",
+      "items": [
+        {
+          "question": "¿Qué es un menú QR?",
+          "answer": "Es un menú digital que tus clientes abren al escanear un código QR con la cámara de su teléfono."
+        },
+        {
+          "question": "¿Cómo funcionan los menús QR para los restaurantes?",
+          "answer": "Publicas tu menú una sola vez, colocas el código QR en tu negocio y tus clientes lo abren en el navegador. Si haces cambios, el QR sigue siendo el mismo."
+        },
+        {
+          "question": "¿Cómo creo un código QR para el menú de mi restaurante?",
+          "answer": "Primero publicas tu menú y después descargas el código QR desde Biztro. Luego puedes imprimirlo y usarlo en mesas, mostrador o material promocional."
+        },
+        {
+          "question": "¿Puedo actualizar el menú sin reimprimir el código QR?",
+          "answer": "Sí. Puedes cambiar productos, precios o descripciones cuando quieras y el mismo código QR seguirá funcionando."
+        },
+        {
+          "question": "¿Mis clientes necesitan una app para abrir el menú?",
+          "answer": "No. Solo necesitan abrir la cámara de su teléfono y escanear el código QR. El menú se abre en el navegador, como cualquier página web."
+        }
+      ]
+    },
+    "pricing": {
+      "eyebrow": "Precios",
+      "title": "Elige el plan que mejor se adapta a tu negocio",
+      "monthly": "Mensual",
+      "yearly": "Anual",
+      "yearlyDiscount": "(−20%)",
+      "subtitle": "Empieza gratis. Cuando necesites más productos, más menús y soporte, pasa a Pro.",
+      "perMonth": "MXN/mes",
+      "perYear": "MXN/año",
+      "tiers": {
+        "free": {
+          "name": "Gratis",
+          "priceMonthly": "$0",
+          "priceYearly": "$0",
+          "description": "Publica tu primer menú digital sin costo.",
+          "cta": "Solicitar acceso",
+          "features": [
+            "Hasta 10 productos",
+            "1 menú por negocio",
+            "Personaliza el diseño",
+            "Descargar código QR"
+          ]
+        },
+        "pro": {
+          "name": "Pro",
+          "priceMonthly": "$149",
+          "priceYearly": "$1,490",
+          "description": "Más capacidad y herramientas para negocios con varios menús o más movimiento.",
+          "cta": "Solicitar acceso Pro",
+          "features": [
+            "Productos ilimitados",
+            "Menús ilimitados",
+            "Personaliza el diseño",
+            "Código QR personalizado",
+            "Analítica básica de visitas (próximamente)",
+            "Promociones y ofertas (próximamente)",
+            "Soporte por correo electrónico"
+          ]
+        }
+      }
+    },
+    "howItWorks": {
+      "eyebrow": "Cómo funciona",
+      "title": "Publica tu menú en 3 pasos",
+      "steps": {
+        "setup": {
+          "title": "Configura tu negocio",
+          "content": "Agrega el nombre de tu negocio, tus horarios y tus redes sociales. Biztro organiza la información por ti."
+        },
+        "products": {
+          "title": "Agrega tus productos",
+          "content": "Añade tus productos con descripción, precio e imagen para dejar tu menú listo en pocos minutos."
+        },
+        "publish": {
+          "title": "Personaliza y publica",
+          "content": "Ajusta el diseño en el editor, publica tu menú y compártelo con un enlace o un código QR."
+        }
+      },
+      "qr": {
+        "title": "Comparte tu menú con un código QR y un enlace",
+        "p1": "Descarga tu código QR desde el editor en segundos. Después puedes imprimirlo y colocarlo en mesas, mostrador o escaparate.",
+        "p2": "Tus clientes solo tienen que escanearlo con la cámara de su teléfono para abrir tu menú al instante.",
+        "p2Highlight": "También puedes compartir el mismo enlace en redes sociales",
+        "p2Suffix": "o en tu sitio web.",
+        "p3": "El menú se adapta a celulares y tablets, se lee con claridad y no requiere instalar ninguna app."
+      }
+    },
+    "aiFeatures": {
+      "eyebrow": "Automatización con IA",
+      "title": "Tu menú, listo en menos tiempo.",
+      "tagline": "Sube una foto o un PDF y deja que la IA convierta tu menú en contenido editable para que puedas enfocarte en atender a tus clientes.",
+      "scanning": "Extrayendo elementos del menú...",
+      "menuLabel": "Menú",
+      "aiLabel": "IA",
+      "digitize": {
+        "title": "Digitaliza tu menú en segundos",
+        "description": "Sube un PDF o una foto de tu menú impreso y la IA detecta platillos, precios y descripciones para convertirlos en contenido editable."
+      },
+      "translate": {
+        "title": "Traducción para cada cliente",
+        "description": "Traduce tu menú a varios idiomas para que cada comensal entienda lo que ofreces y se sienta bien atendido."
+      }
+    },
+    "bento": {
+      "title": "Olvídate de los PDFs desactualizados.",
+      "tagline": "Edita precios, fotos y categorías desde el navegador, y tus cambios se publican al instante.",
+      "brand": {
+        "name": "Diseño alineado a tu marca",
+        "description": "Empieza con una plantilla y ajusta colores, imágenes y etiquetas como alérgenos para que tu menú se vea como tu negocio.",
+        "cta": "Ver diseños",
+        "imageAlt": "Vista del menú en un celular"
+      },
+      "editor": {
+        "name": "Editor fácil de usar",
+        "description": "Edita secciones, productos y precios desde un editor visual. No necesitas experiencia técnica para dejar tu menú listo.",
+        "cta": "Ver el editor"
+      },
+      "qr": {
+        "name": "QR y enlace para compartir",
+        "description": "Tus clientes pueden abrir tu menú desde su teléfono al escanear el código o entrar desde un enlace, sin instalar ninguna app.",
+        "cta": "Ver ejemplo"
+      },
+      "publishButton": "Publicar menú"
+    },
+    "editorPreview": {
+      "alt": "Imagen del editor de menús en web"
+    },
+    "footer": {
+      "contact": "Contacto",
+      "terms": "Términos",
+      "privacy": "Privacidad",
+      "logoAlt": "Logo"
+    }
+  },
+  "auth": {
+    "login": {
+      "metaTitle": "Iniciar sesión",
+      "metaDescription": "Iniciar sesión en Biztro",
+      "welcome": "Bienvenido",
+      "subtitle": "Inicia sesión con tu cuenta de Biztro",
+      "continueWith": "Continuar con {provider}",
+      "error": "Ocurrió un error al iniciar sesión. Por favor, intenta de nuevo más tarde."
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "menus": "Menús",
+      "catalog": "Catálogo",
+      "products": "Productos",
+      "categories": "Categorías",
+      "translations": "Traducciones",
+      "media": "Medios",
+      "settings": "Configuración",
+      "general": "General",
+      "location": "Sucursal",
+      "members": "Miembros",
+      "billing": "Suscripción"
+    },
+    "sidebar": {
+      "upgradeTitle": "Actualiza a Pro",
+      "upgradeDescription": "Productos y menús ilimitados, componentes adicionales y más.",
+      "upgradeCta": "Actualiza ahora",
+      "reportIssue": "Reportar un problema",
+      "createOrganization": "Crear organización",
+      "selectBusiness": "Selecciona un negocio",
+      "organizations": "Organizaciones",
+      "addOrganization": "Agregar organización",
+      "planBasic": "Básico",
+      "planPro": "Pro",
+      "switchOrgError": "No se pudo cambiar de organización"
+    },
+    "profile": {
+      "ariaLabel": "Tu perfil",
+      "account": "Mi cuenta",
+      "profile": "Perfil",
+      "theme": "Tema",
+      "themeSystem": "Sistema",
+      "themeLight": "Claro",
+      "themeDark": "Oscuro",
+      "home": "Inicio",
+      "signOut": "Salir"
+    },
+    "common": {
+      "cancel": "Cancelar",
+      "delete": "Eliminar",
+      "save": "Guardar",
+      "name": "Nombre",
+      "actions": "Acciones",
+      "edit": "Editar",
+      "duplicate": "Duplicar",
+      "rename": "Renombrar",
+      "genericError": "Algo salió mal",
+      "retry": "Reintentar",
+      "backHome": "Volver al inicio",
+      "ready": "Listo",
+      "view": "Ver"
+    },
+    "menus": {
+      "metaTitle": "Inicio",
+      "title": "Menús",
+      "description": "Todos los menús.",
+      "info": "Aquí puedes ver todos los menús de tu organización. El menú activo es público para tus clientes. Solo puede haber un menú activo a la vez.",
+      "visitOnline": "Visita tu menú en línea",
+      "newMenuDefaultName": "Nuevo menú",
+      "create": "Crear menú",
+      "statusPublished": "Publicado",
+      "statusDraft": "Borrador",
+      "active": "Activo",
+      "moreActions": "Más acciones",
+      "setActive": "Marcar como activo",
+      "cannotDeleteActive": "No puedes eliminar el menú activo. Selecciona otro menú activo primero.",
+      "duplicateLoading": "Duplicando Menú...",
+      "duplicated": "Menú duplicado",
+      "duplicateError": "No se pudo duplicar el menú",
+      "setActiveLoading": "Actualizando menú activo...",
+      "setActiveSuccess": "Menú activo actualizado",
+      "setActiveError": "No se pudo actualizar el menú activo",
+      "deleteTitle": "Eliminar Menú",
+      "deleteDescription": "¿Estás seguro de eliminar este menú? Esta acción no se puede deshacer",
+      "deleteLoading": "Eliminando Menú...",
+      "deleted": "Menú eliminado",
+      "createError": "No se pudo crear el menú",
+      "renameTitle": "Renombrar menú",
+      "nameRequired": "El nombre es requerido",
+      "upgradeTitle": "Impulsa tu negocio con el plan Pro",
+      "upgradeDescription": "Actualiza tu plan a Pro para crear más menús y acceder a todas las funciones premium."
+    },
+    "onboarding": {
+      "welcome": "Bienvenido a Biztro",
+      "description": "Aquí tienes algunos enlaces para comenzar a configurar tu negocio.",
+      "progress": "Progreso",
+      "business": "Negocio",
+      "businessDescription": "Captura la información de tu negocio, como nombre, logo, etc.",
+      "location": "Sucursal",
+      "locationDescription": "Registra la dirección, horarios y redes sociales.",
+      "products": "Productos",
+      "productsDescription": "Crea tus productos y categorías para tu menú."
+    },
+    "upgrade": {
+      "defaultTitle": "Actualizar a Pro",
+      "defaultDescription": "Esta función requiere Pro.",
+      "cta": "Actualizar a Pro",
+      "stayFree": "Seguir en el plan gratuito"
+    },
+    "unsavedChanges": {
+      "title": "Cambios sin guardar",
+      "defaultMessage": "Tienes cambios sin guardar",
+      "goBack": "Regresar",
+      "discard": "Descartar cambios"
+    },
+    "menuSync": {
+      "title": "¿Actualizar menús publicados?",
+      "defaultDescription": "Se detectaron cambios en tus productos. ¿Quieres aplicar los cambios al menú publicado?",
+      "remember": "No volver a preguntar",
+      "notNow": "No ahora",
+      "updating": "Actualizando...",
+      "update": "Actualizar"
+    }
+  },
+  "menuEditor": {
+    "publish": {
+      "preview": "Vista previa",
+      "saveChanges": "Guardar cambios",
+      "generateQr": "Generar código QR",
+      "qrTitle": "Generar código QR",
+      "qrDescription": "Al escanear el código con la cámara de tu móvil o aplicación QR te llevará a la siguiente dirección:",
+      "qrDraftWarning": "No olvides publicar tu menú para que sea accesible a través del código QR.",
+      "publish": "Publicar",
+      "publishMenu": "Publicar Menú",
+      "publishMenuDescription": "Publica tu menú a una URL pública que puedes compartir.",
+      "publishing": "Publicando...",
+      "menuLink": "Liga Menú",
+      "publishChanges": "Publicar cambios",
+      "reverting": "Revirtiendo...",
+      "revertChanges": "Revertir cambios",
+      "switchToDraft": "Cambiar a Borrador",
+      "published": "Publicado",
+      "unpublishedChanges": "Existen cambios sin publicar.",
+      "unpublishedChangesHint": "Publica los cambios para actualizar tu menú.",
+      "help": "Ayuda",
+      "menuUpdated": "Menú actualizado",
+      "updateError": "Ocurrió un error al actualizar el menú",
+      "saveError": "Ocurrió un error",
+      "reverted": "Menú revertido al último publicado",
+      "revertError": "No se pudo revertir el menú publicado",
+      "noPublishedToRevert": "No hay una versión publicada para revertir",
+      "revertGenericError": "Ocurrió un error al revertir",
+      "qrSettings": "Ajustes",
+      "color": "Color",
+      "showLogo": "Mostrar Logo",
+      "downloadQr": "Descargar imágen QR"
+    }
+  },
+  "errors": {
+    "global": {
+      "title": "Algo salió mal",
+      "heading": "Error interno del servidor",
+      "description": "Ocurrió un error inesperado. Por favor, intenta nuevamente más tarde.",
+      "backHome": "Volver al inicio"
+    },
+    "notFound": {
+      "title": "Página no encontrada",
+      "description": "No encontramos la página que estás buscando.",
+      "backHome": "Volver al inicio"
+    },
+    "dashboard": {
+      "title": "Ocurrió un error en el dashboard",
+      "description": "Intenta nuevamente o vuelve al inicio. Si el problema persiste, contáctanos.",
+      "retry": "Reintentar",
+      "backHome": "Volver al inicio"
+    },
+    "menuEditor": {
+      "title": "Ocurrió un error en el editor",
+      "description": "Intenta nuevamente o vuelve al dashboard para seleccionar otro menú.",
+      "retry": "Reintentar",
+      "backDashboard": "Volver al dashboard"
+    }
+  },
+  "publicMenu": {
+    "originalLanguage": "Español (original)",
+    "changeLanguage": "Cambiar idioma",
+    "originalLanguageSr": "Idioma original"
+  }
+}

@@ -13,7 +13,6 @@ import {
   type RgbaColor
 } from "@uiw/react-color"
 import { differenceInMinutes, formatDate, formatDistanceToNow } from "date-fns"
-import { es } from "date-fns/locale"
 import { useAtomValue, useSetAtom } from "jotai"
 import {
   Check,
@@ -28,6 +27,7 @@ import {
 } from "lucide-react"
 import lz from "lzutf8"
 import { AnimatePresence, motion } from "motion/react"
+import { useLocale, useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import { TextMorph } from "torph/react"
@@ -79,6 +79,7 @@ import type { getCurrentOrganization } from "@/server/actions/user/queries"
 import useLocalStorage from "@/hooks/use-local-storage"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { colorThemeAtom, fontThemeAtom, tourModeAtom } from "@/lib/atoms"
+import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import exportAsImage from "@/lib/export-as-image"
 import { syncEditorWithMenuState } from "@/lib/sync-status"
 import { MenuStatus } from "@/lib/types/menu"
@@ -105,6 +106,10 @@ export default function MenuPublish({
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
   soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
 }) {
+  const t = useTranslations("menuEditor.publish")
+  const locale = useLocale()
+  const dateFnsLocale = getDateFnsLocale(locale)
+
   const { store, query, actions, nodes } = useEditor((state, query) => ({
     nodes: query.getSerializedNodes()
   }))
@@ -129,7 +134,7 @@ export default function MenuPublish({
           publishedColorTheme: data.success.publishedColorTheme,
           updatedAt: data.success.updatedAt
         })
-        toast.success("Menú actualizado")
+        toast.success(t("menuUpdated"))
         // Reset history to avoid undoing the update
         actions.history.clear()
         setTimelineLength(store.history.timeline.length)
@@ -142,7 +147,7 @@ export default function MenuPublish({
       reset()
     },
     onError: () => {
-      toast.error("Ocurrió un error al actualizar el menú")
+      toast.error(t("updateError"))
       reset()
     }
   })
@@ -178,7 +183,7 @@ export default function MenuPublish({
       resetSerialData()
     },
     onError: () => {
-      toast.error("Ocurrió un error")
+      toast.error(t("saveError"))
       resetSerialData()
     }
   })
@@ -223,23 +228,23 @@ export default function MenuPublish({
           setLastSavedTimelineLength(store.history.timeline.length)
           clearUnsavedChanges()
           onRevertSuccess?.()
-          toast.success("Menú revertido al último publicado")
+          toast.success(t("reverted"))
         } catch (error) {
           console.error(error)
           Sentry.captureException(error, {
             tags: { section: "menu-publish", operation: "revertToPublished" }
           })
-          toast.error("No se pudo revertir el menú publicado")
+          toast.error(t("revertError"))
         }
       } else if (data?.failure?.reason) {
         toast.error(data.failure.reason)
       } else {
-        toast.error("No hay una versión publicada para revertir")
+        toast.error(t("noPublishedToRevert"))
       }
       resetRevert()
     },
     onError: () => {
-      toast.error("Ocurrió un error al revertir")
+      toast.error(t("revertGenericError"))
       resetRevert()
     }
   })
@@ -367,7 +372,7 @@ export default function MenuPublish({
 
   return (
     <div className="editor-published flex h-8 justify-end gap-4 sm:gap-2">
-      <TooltipHelper content="Vista previa">
+      <TooltipHelper content={t("preview")}>
         <div>
           <GuardLink href={`/menu-editor/${menu.id}/preview`}>
             <Button size="xs" variant="ghost">
@@ -376,7 +381,7 @@ export default function MenuPublish({
           </GuardLink>
         </div>
       </TooltipHelper>
-      <TooltipHelper content="Guardar cambios">
+      <TooltipHelper content={t("saveChanges")}>
         <Button
           size="xs"
           variant="ghost"
@@ -391,7 +396,7 @@ export default function MenuPublish({
         </Button>
       </TooltipHelper>
       <Dialog>
-        <TooltipHelper content="Generar código QR">
+        <TooltipHelper content={t("generateQr")}>
           <DialogTrigger asChild>
             <Button size="xs" variant="ghost">
               <QrCodeIcon className="size-4" />
@@ -400,10 +405,9 @@ export default function MenuPublish({
         </TooltipHelper>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Generar código QR</DialogTitle>
+            <DialogTitle>{t("qrTitle")}</DialogTitle>
             <DialogDescription className="flex flex-col gap-2">
-              Al escanear el código con la cámara de tu móvil o aplicación QR te
-              llevará a la siguiente dirección:{" "}
+              {t("qrDescription")}{" "}
             </DialogDescription>
           </DialogHeader>
           <Item size="sm" variant="outline">
@@ -438,8 +442,7 @@ export default function MenuPublish({
           {menu.status === MenuStatus.DRAFT && (
             <Alert variant="warning">
               <AlertDescription className="flex flex-row items-center gap-3">
-                No olvides publicar tu menú para que sea accesible a través del
-                código QR.
+                {t("qrDraftWarning")}
               </AlertDescription>
             </Alert>
           )}
@@ -449,7 +452,7 @@ export default function MenuPublish({
       <Popover>
         <div className="relative">
           <PopoverTrigger asChild>
-            <Button size="xs">Publicar</Button>
+            <Button size="xs">{t("publish")}</Button>
           </PopoverTrigger>
           {menu.publishedAt && showPendingPublishIndicator && (
             <>
@@ -481,9 +484,9 @@ export default function MenuPublish({
                 >
                   <Globe className="size-6" />
                 </span>
-                <span className="text-sm font-medium">Publicar Menú</span>
+                <span className="text-sm font-medium">{t("publishMenu")}</span>
                 <span className="text-xs text-gray-600 dark:text-gray-400">
-                  Publica tu menú a una URL pública que puedes compartir.
+                  {t("publishMenuDescription")}
                 </span>
                 <Button
                   size="xs"
@@ -494,7 +497,7 @@ export default function MenuPublish({
                     <Loader className="size-4 animate-spin" />
                   )}
                   <TextMorph>
-                    {status === "executing" ? "Publicando..." : "Publicar"}
+                    {status === "executing" ? t("publishing") : t("publish")}
                   </TextMorph>
                 </Button>
               </motion.div>
@@ -506,7 +509,7 @@ export default function MenuPublish({
                 exit={{ opacity: 0, y: 10 }}
                 className="flex flex-col gap-2"
               >
-                <span className="text-sm font-medium">Liga Menú</span>
+                <span className="text-sm font-medium">{t("menuLink")}</span>
                 <div className="flex flex-row items-center gap-1">
                   <Link
                     href={publishedMenuUrl}
@@ -551,8 +554,8 @@ export default function MenuPublish({
                         className="my-3 text-xs text-gray-500
                           dark:text-gray-400"
                       >
-                        Existen cambios sin publicar. <br /> Publica los cambios
-                        para actualizar tu menú.
+                        {t("unpublishedChanges")} <br />{" "}
+                        {t("unpublishedChangesHint")}
                       </motion.p>
                     )}
                   </AnimatePresence>
@@ -568,8 +571,8 @@ export default function MenuPublish({
                     )}
                     <TextMorph>
                       {status === "executing"
-                        ? "Publicando..."
-                        : "Publicar cambios"}
+                        ? t("publishing")
+                        : t("publishChanges")}
                     </TextMorph>
                   </Button>
                   {menu.publishedAt && (
@@ -585,8 +588,8 @@ export default function MenuPublish({
                       )}
                       <TextMorph>
                         {statusRevert === "executing"
-                          ? "Revirtiendo..."
-                          : "Revertir cambios"}
+                          ? t("reverting")
+                          : t("revertChanges")}
                       </TextMorph>
                     </Button>
                   )}
@@ -596,14 +599,14 @@ export default function MenuPublish({
                     variant="secondary"
                     onClick={() => handleUpdateStatus(MenuStatus.DRAFT)}
                   >
-                    Cambiar a Borrador
+                    {t("switchToDraft")}
                   </Button>
 
                   <TooltipHelper
                     content={
                       menu.publishedAt
                         ? formatDate(menu.publishedAt, "PPpp", {
-                            locale: es
+                            locale: dateFnsLocale
                           })
                         : ""
                     }
@@ -612,11 +615,11 @@ export default function MenuPublish({
                       className="pt-2 text-center text-xs text-gray-500
                         dark:text-gray-400"
                     >
-                      Publicado{" "}
+                      {t("published")}{" "}
                       {menu.publishedAt
                         ? formatDistanceToNow(menu.publishedAt, {
                             addSuffix: true,
-                            locale: es
+                            locale: dateFnsLocale
                           })
                         : ""}
                     </p>
@@ -627,7 +630,7 @@ export default function MenuPublish({
           </AnimatePresence>
         </PopoverContent>
       </Popover>
-      <TooltipHelper content="Ayuda">
+      <TooltipHelper content={t("help")}>
         <Button
           size="xs"
           variant="ghost"
@@ -650,6 +653,7 @@ function QrCodeEditor({
   logoURL?: string
   fgColor?: RgbaColor
 }) {
+  const t = useTranslations("menuEditor.publish")
   const exportRef = useRef<HTMLDivElement | null>(null)
   const [color, setColor] = useLocalStorage<
     Record<"r" | "g" | "b" | "a", number>
@@ -734,10 +738,10 @@ function QrCodeEditor({
                 dark:border-gray-800"
             >
               <legend className="-ml-1 px-1 text-sm font-medium">
-                Ajustes
+                {t("qrSettings")}
               </legend>
               <div className="grid gap-3">
-                <Label htmlFor="color">Color</Label>
+                <Label htmlFor="color">{t("color")}</Label>
                 <Popover>
                   <PopoverTrigger>
                     <div
@@ -774,7 +778,7 @@ function QrCodeEditor({
                 </Popover>
               </div>
               <div className="grid gap-3">
-                <Label htmlFor="logo">Mostrar Logo</Label>
+                <Label htmlFor="logo">{t("showLogo")}</Label>
                 {isLoading ? (
                   <Loader className="size-4 animate-spin" />
                 ) : (
@@ -799,7 +803,7 @@ function QrCodeEditor({
           }
         >
           <Download className="size-4" />
-          <span>Descargar imágen QR</span>
+          <span>{t("downloadQr")}</span>
         </Button>
       </div>
     </div>

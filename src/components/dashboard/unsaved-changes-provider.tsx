@@ -13,6 +13,7 @@ import {
   type PropsWithChildren,
   type SetStateAction
 } from "react"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 import type { LinkProps as NextLinkProps } from "next/link"
 import NextLink from "next/link"
@@ -51,45 +52,49 @@ export const UnsavedChangesModal: React.FC<UnsavedChangesContext> = ({
   setModalContent,
   showModal,
   setShowModal
-}) => (
-  <AlertDialog
-    open={showModal}
-    onOpenChange={() => {
-      setShowModal(false)
-    }}
-  >
-    <AlertDialogContent>
-      <AlertDialogHeader>
-        <AlertDialogTitle>Cambios sin guardar</AlertDialogTitle>
-        <AlertDialogDescription>
-          {modalContent?.message ?? "Tienes cambios sin guardar"}
-        </AlertDialogDescription>
-      </AlertDialogHeader>
-      <AlertDialogFooter>
-        <AlertDialogCancel
-          onClick={() => {
-            setShowModal(false)
-          }}
-        >
-          {modalContent?.dismissButtonLabel ?? "Regresar"}
-        </AlertDialogCancel>
-        <AlertDialogAction>
-          <Link
-            href={modalContent?.proceedLinkHref ?? "/"}
-            prefetch={false}
+}) => {
+  const t = useTranslations("dashboard.unsavedChanges")
+
+  return (
+    <AlertDialog
+      open={showModal}
+      onOpenChange={() => {
+        setShowModal(false)
+      }}
+    >
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>{t("title")}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {modalContent?.message ?? t("defaultMessage")}
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel
             onClick={() => {
               setShowModal(false)
-              modalContent?.proceedAction?.()
-              setModalContent(undefined)
             }}
           >
-            {modalContent?.proceedLinkLabel ?? "Descartar cambios"}
-          </Link>
-        </AlertDialogAction>
-      </AlertDialogFooter>
-    </AlertDialogContent>
-  </AlertDialog>
-)
+            {modalContent?.dismissButtonLabel ?? t("goBack")}
+          </AlertDialogCancel>
+          <AlertDialogAction>
+            <Link
+              href={modalContent?.proceedLinkHref ?? "/"}
+              prefetch={false}
+              onClick={() => {
+                setShowModal(false)
+                modalContent?.proceedAction?.()
+                setModalContent(undefined)
+              }}
+            >
+              {modalContent?.proceedLinkLabel ?? t("discard")}
+            </Link>
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  )
+}
 
 const UnsavedChangesContext = createContext<UnsavedChangesContext | undefined>(
   undefined
@@ -162,6 +167,7 @@ export function useUnsavedChanges() {
   }
 
   const { modalContent, setModalContent, setShowModal } = context
+  const t = useTranslations("dashboard.unsavedChanges")
 
   const showUnsavedChangesModal = useCallback(
     (proceedLinkHref: string) => {
@@ -178,8 +184,7 @@ export function useUnsavedChanges() {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
       if (modalContent !== undefined) {
         e.preventDefault()
-        return (e.returnValue =
-          modalContent.message ?? "Tienes cambios sin guardar")
+        return (e.returnValue = modalContent.message ?? t("defaultMessage"))
       }
     }
 
@@ -187,7 +192,7 @@ export function useUnsavedChanges() {
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload)
     }
-  }, [modalContent])
+  }, [modalContent, t])
 
   return useMemo(
     () => ({

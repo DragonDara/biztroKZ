@@ -1,6 +1,5 @@
 import { Users } from "lucide-react"
 import type { Metadata } from "next"
-import { headers } from "next/headers"
 import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
@@ -18,25 +17,15 @@ export const metadata: Metadata = {
 }
 
 export default async function MembersPage() {
-  const [canInviteMember, canDeleteMember, isPro, currentOrg] =
-    await Promise.all([
-      safeHasPermission({
-        headers: await headers(),
-        body: { permissions: { invitation: ["create"] } }
-      }),
-      safeHasPermission({
-        headers: await headers(),
-        body: { permissions: { member: ["delete"] } }
-      }),
-      isProMember(),
-      getCurrentOrganization()
-    ])
+  const currentOrg = await getCurrentOrganization()
+  if (!currentOrg) return notFound()
 
-  if (!currentOrg) {
-    return notFound()
-  }
-
-  const data = await getMembers(currentOrg.id)
+  const [canInviteMember, canDeleteMember, isPro, data] = await Promise.all([
+    safeHasPermission({ invitation: ["create"] }),
+    safeHasPermission({ member: ["delete"] }),
+    isProMember(),
+    getMembers(currentOrg.id)
+  ])
 
   const ROLES = ["member", "admin", "owner"] as const
   type Role = (typeof ROLES)[number]

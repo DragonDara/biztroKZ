@@ -242,57 +242,80 @@ export async function isProMember() {
   )
 }
 
-export async function safeHasPermission(
-  opts: Parameters<typeof auth.api.hasPermission>[0]
-) {
+function isTransientPermissionError(err: unknown): boolean {
+  if (!err || typeof err !== "object") return false
+
+  const e = err as {
+    code?: string | number
+    message?: string
+    cause?: { code?: string | number; message?: string }
+    body?: { message?: string }
+  }
+
+  const message = [e.message, e.cause?.message, e.body?.message]
+    .filter(Boolean)
+    .join(" ")
+
+  if (/aborted/i.test(message)) return true
+  if (e.code === 20 || e.cause?.code === 20) return true
+
+  return false
+}
+
+async function getPermissionCached(permissions: Record<string, string[]>) {
   "use cache: private"
   cacheLife({ stale: 30 })
 
-  if (!opts) {
-    console.error("safeHasPermission called without opts")
-    Sentry.captureMessage("safeHasPermission called without opts", {
+  const requestHeaders = await headers()
+
+  const normalized = Object.entries(permissions)
+    .map(([resource, actions]) => {
+      const sorted = [...actions].sort()
+      return `${resource}:${sorted.join("|")}`
+    })
+    .sort()
+    .join(";")
+
+  cacheTag("permissions-all")
+  cacheTag(normalized ? `permissions-${normalized}` : "permissions-default")
+
+  // без try/catch — ошибки уходят во внешнюю обёртку
+  return await auth.api.hasPermission({
+    headers: requestHeaders,
+    body: { permissions }
+  })
+}
+
+export async function safeHasPermission(permissions: Record<string, string[]>) {
+  if (!permissions || Object.keys(permissions).length === 0) {
+    console.error("safeHasPermission called without permissions")
+    Sentry.captureMessage("safeHasPermission called without permissions", {
       level: "error",
       tags: { section: "user-queries" }
     })
     return null
   }
 
-  try {
-    const requestHeaders = opts.headers ?? (await headers())
-    const permissions = opts.body?.permissions ?? {}
-    const normalizedPermissions = Object.entries(permissions)
-      .map(([resource, actions]) => {
-        if (!Array.isArray(actions)) {
-          return `${resource}:${JSON.stringify(actions)}`
-        }
+  const maxAttempts = 2
 
-        const sortedActions = [...actions].sort()
-        return `${resource}:${sortedActions.join("|")}`
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await getPermissionCached(permissions)
+    } catch (err) {
+      const canRetry = attempt < maxAttempts && isTransientPermissionError(err)
+
+      if (canRetry) continue
+
+      console.error("auth.api.hasPermission failed:", err)
+      Sentry.captureException(err, {
+        tags: { section: "user-queries" },
+        extra: { permissions, attempt }
       })
-      .sort()
-      .join(";")
-
-    cacheTag("permissions-all")
-    cacheTag(
-      normalizedPermissions
-        ? `permissions-${normalizedPermissions}`
-        : "permissions-default"
-    )
-
-    const callOpts = {
-      ...opts,
-      headers: requestHeaders
-    } as Parameters<typeof auth.api.hasPermission>[0]
-
-    const result = await auth.api.hasPermission(callOpts)
-    return result
-  } catch (err) {
-    console.error("auth.api.hasPermission failed:", err)
-    Sentry.captureException(err, {
-      tags: { section: "user-queries" }
-    })
-    return null
+      return null
+    }
   }
+
+  return null
 }
 
 export async function isWaitlistEnabled(email?: string | null) {

@@ -1,6 +1,5 @@
 import { Store } from "lucide-react"
 import { type Metadata } from "next"
-import { headers } from "next/headers"
 import { notFound } from "next/navigation"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
@@ -53,10 +52,7 @@ function StatusBadge({ status }: { status: SubscriptionStatus }) {
 export default async function SettingsPage() {
   const [currentOrg, canDeleteOrg] = await Promise.all([
     getCurrentOrganization(),
-    safeHasPermission({
-      headers: await headers(),
-      body: { permissions: { organization: ["delete"] } }
-    })
+    safeHasPermission({ organization: ["delete"] })
   ])
 
   if (!currentOrg) {

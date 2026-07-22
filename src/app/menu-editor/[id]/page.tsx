@@ -22,7 +22,6 @@ import {
   getThemes
 } from "@/server/actions/menu/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
-import { debugLog } from "@/lib/debug-log"
 
 export async function generateMetadata(props: {
   params: Promise<{ id: string }>
@@ -41,14 +40,6 @@ export async function generateMetadata(props: {
 export default async function MenuEditorPage(props: {
   params: Promise<{ id: string }>
 }) {
-  const pageStart = Date.now()
-  debugLog({
-    hypothesisId: "H",
-    location: "menu-editor/page.tsx:start",
-    message: "MenuEditorPage started",
-    data: { elapsedMs: 0 }
-  })
-
   const params = await props.params
   const queryClient = new QueryClient()
 
@@ -71,18 +62,6 @@ export default async function MenuEditorPage(props: {
       getFeaturedItems(),
       getMenuById(params.id)
     ])
-
-  debugLog({
-    hypothesisId: "H",
-    location: "menu-editor/page.tsx:after-data",
-    message: "Menu editor data loaded",
-    data: {
-      menuId: params.id,
-      hasMenu: Boolean(menu),
-      elapsedMs: Date.now() - pageStart
-    },
-    runId: "post-fix"
-  })
 
   if (!menu || !currentOrg) {
     return notFound()

@@ -28,7 +28,7 @@ import { SUPPORTED_LOCALES } from "@/lib/types/translations"
 export async function generateStaticParams() {
   const organizations = await getAllActiveOrganizations()
   const params = organizations
-    .filter(({ slug }) => !localePathSegments.has(slug))
+    .filter(({ slug }) => !localePathSegments.has(slug ?? ""))
     .map(({ slug }) => ({
       subdomain: slug
     }))

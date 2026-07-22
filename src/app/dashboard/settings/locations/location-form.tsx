@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useMemo, type ReactNode } from "react"
+import { useEffect, type ReactNode } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { type Location } from "@/generated/prisma-client/client"
@@ -10,7 +10,7 @@ import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
 import { TextMorph } from "torph/react"
-import { z, type z as zType } from "zod/v4"
+import { type z as zType } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -38,6 +38,7 @@ import {
   updateLocation
 } from "@/server/actions/location/mutations"
 import type { Currency } from "@/lib/currency"
+import { locationSchema } from "@/lib/types/location"
 
 export default function LocationForm({
   data,
@@ -54,7 +55,7 @@ export default function LocationForm({
 }) {
   const t = useTranslations("dashboard.settings.location.form")
 
-  const locationSchema = useMemo(
+  /* const locationSchema = useMemo(
     () =>
       z.object({
         id: z.string().optional(),
@@ -94,7 +95,7 @@ export default function LocationForm({
         currency: z.enum(["MXN", "USD"]).default("MXN").optional()
       }),
     [t]
-  )
+  ) */
 
   const form = useForm<zType.infer<typeof locationSchema>>({
     resolver: zodResolver(locationSchema),

@@ -31,7 +31,7 @@ export function DashboardHomeHeader({ orgSlug }: { orgSlug?: string | null }) {
             asChild
           >
             <Link
-              href={getPublishedMenuUrl(orgSlug)}
+              href={getPublishedMenuUrl(orgSlug ?? "")}
               className="block w-full"
               target="_blank"
               rel="noopener noreferrer"

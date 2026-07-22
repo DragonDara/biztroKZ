@@ -7,6 +7,7 @@ import { useQuery } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
 import { useAtomValue, useSetAtom } from "jotai"
 import { GripVertical, Lock, PlusSquare, type LucideIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
@@ -54,6 +55,7 @@ export default function ToolboxPanel({
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
   isPro: boolean
 }) {
+  const t = useTranslations("menuEditor.toolbox")
   const { connectors, actions, query } = useEditor()
   const fontThemeId = useAtomValue(fontThemeAtom)
   const colorThemeId = useAtomValue(colorThemeAtom)
@@ -93,10 +95,8 @@ export default function ToolboxPanel({
   if (!selectedFontTheme || !selectedColorTheme) {
     return (
       <Alert variant="destructive" className="m-2 w-auto text-sm">
-        <AlertTitle>Error</AlertTitle>
-        <AlertDescription>
-          No se pudo encontrar el tema de fuente o color seleccionado.
-        </AlertDescription>
+        <AlertTitle>{t("themeLoadErrorTitle")}</AlertTitle>
+        <AlertDescription>{t("themeLoadErrorDescription")}</AlertDescription>
       </Alert>
     )
   }
@@ -130,7 +130,7 @@ export default function ToolboxPanel({
 
   const headingBlock = (
     <HeadingElement
-      text="Encabezado"
+      text={t("previewHeading")}
       color={hexToRgba(selectedColorTheme.accentColor)}
       fontFamily={selectedFontTheme.fontDisplay}
     />
@@ -138,7 +138,7 @@ export default function ToolboxPanel({
 
   const textBlock = (
     <TextElement
-      text="Texto"
+      text={t("previewText")}
       color={hexToRgba(selectedColorTheme.textColor)}
       fontFamily={selectedFontTheme.fontText}
     />
@@ -146,7 +146,10 @@ export default function ToolboxPanel({
 
   return (
     <>
-      <SideSection title="Categorías y Productos" className="editor-categories">
+      <SideSection
+        title={t("categoriesAndProducts")}
+        className="editor-categories"
+      >
         {categories.map(category => {
           const categoryBlock = (
             <CategoryBlock
@@ -185,7 +188,7 @@ export default function ToolboxPanel({
                         .parseReactElement(categoryBlock)
                         .toNodeTree()
                       actions.addNodeTree(newNode, ROOT_NODE)
-                      toast.success("Categoría agregada")
+                      toast.success(t("toasts.categoryAdded"))
                     }}
                   />
                 }
@@ -228,7 +231,7 @@ export default function ToolboxPanel({
                         .parseReactElement(itemBlock)
                         .toNodeTree()
                       actions.addNodeTree(newNode, ROOT_NODE)
-                      toast.success("Producto agregado")
+                      toast.success(t("toasts.productAdded"))
                     }}
                   />
                 }
@@ -242,9 +245,9 @@ export default function ToolboxPanel({
             variant="information"
             className="mx-0.5 my-2 w-auto border-dashed text-sm"
           >
-            <AlertTitle>Sin productos.</AlertTitle>
+            <AlertTitle>{t("noProductsTitle")}</AlertTitle>
             <AlertDescription className="text-xs">
-              Agrega productos y categorizalos para incluirlos en tu menú.
+              {t("noProductsDescription")}
             </AlertDescription>
             <Link href="/dashboard/menu-items" prefetch={false}>
               <Button
@@ -255,13 +258,13 @@ export default function ToolboxPanel({
                   hover:text-blue-900 dark:border-blue-400 dark:bg-transparent
                   dark:text-blue-400 dark:hover:bg-blue-900"
               >
-                Ver productos
+                {t("viewProducts")}
               </Button>
             </Link>
           </Alert>
         ) : null}
       </SideSection>
-      <SideSection title="Elementos" className="editor-elements">
+      <SideSection title={t("elements")} className="editor-elements">
         <div
           ref={ref => {
             if (ref) {
@@ -270,7 +273,7 @@ export default function ToolboxPanel({
           }}
         >
           <ToolboxElement
-            title="Cabecera"
+            title={t("blocks.header")}
             Icon={menuBlockIconMeta.header.icon}
             addButton={
               <AddButton
@@ -279,7 +282,7 @@ export default function ToolboxPanel({
                     .parseReactElement(headerBlock)
                     .toNodeTree()
                   actions.addNodeTree(newNode, ROOT_NODE)
-                  toast.success("Cabecera agregada")
+                  toast.success(t("toasts.headerAdded"))
                 }}
               />
             }
@@ -293,14 +296,14 @@ export default function ToolboxPanel({
           }}
         >
           <ToolboxElement
-            title="Navegación"
+            title={t("blocks.navigation")}
             Icon={menuBlockIconMeta.navigator.icon}
             addButton={
               <AddButton
                 onClick={() => {
                   const newNode = query.parseReactElement(navBlock).toNodeTree()
                   actions.addNodeTree(newNode, ROOT_NODE)
-                  toast.success("Navegación agregada")
+                  toast.success(t("toasts.navigationAdded"))
                 }}
               />
             }
@@ -315,7 +318,7 @@ export default function ToolboxPanel({
             }}
           >
             <ToolboxElement
-              title="Recomendados"
+              title={t("blocks.featured")}
               Icon={menuBlockIconMeta.featured.icon}
               addButton={
                 isPro && (
@@ -325,7 +328,7 @@ export default function ToolboxPanel({
                         .parseReactElement(featuredBlock)
                         .toNodeTree()
                       actions.addNodeTree(newNode, ROOT_NODE)
-                      toast.success("Recomendados agregados")
+                      toast.success(t("toasts.featuredAdded"))
                     }}
                   />
                 )
@@ -342,7 +345,7 @@ export default function ToolboxPanel({
             }}
           >
             <ToolboxElement
-              title="Encabezado"
+              title={t("blocks.heading")}
               Icon={menuBlockIconMeta.heading.icon}
               addButton={
                 isPro && (
@@ -352,7 +355,7 @@ export default function ToolboxPanel({
                         .parseReactElement(headingBlock)
                         .toNodeTree()
                       actions.addNodeTree(newNode, ROOT_NODE)
-                      toast.success("Encabezado agregado")
+                      toast.success(t("toasts.headingAdded"))
                     }}
                   />
                 )
@@ -369,7 +372,7 @@ export default function ToolboxPanel({
             }}
           >
             <ToolboxElement
-              title="Texto"
+              title={t("blocks.text")}
               Icon={menuBlockIconMeta.text.icon}
               addButton={
                 isPro && (
@@ -379,7 +382,7 @@ export default function ToolboxPanel({
                         .parseReactElement(textBlock)
                         .toNodeTree()
                       actions.addNodeTree(newNode, ROOT_NODE)
-                      toast.success("Texto agregado")
+                      toast.success(t("toasts.textAdded"))
                     }}
                   />
                 )
@@ -399,10 +402,12 @@ function ProOnlyWrapper({
   children: React.ReactNode
   enabled: boolean
 }) {
+  const t = useTranslations("menuEditor.toolbox")
+
   if (enabled) return <>{children}</>
 
   return (
-    <TooltipHelper content="Disponible en la versión Pro">
+    <TooltipHelper content={t("availableOnPro")}>
       <div className="relative cursor-not-allowed opacity-50">
         {children}
         <Badge

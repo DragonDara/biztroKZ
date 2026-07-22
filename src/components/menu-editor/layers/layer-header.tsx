@@ -1,3 +1,5 @@
+"use client"
+
 import React, { useEffect, useRef, useState } from "react"
 import { ROOT_NODE, useEditor } from "@craftjs/core"
 import { useLayer } from "@craftjs/layers"
@@ -11,6 +13,7 @@ import {
   Link,
   PenSquare
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import {
   getMenuBlockIconColor,
@@ -38,6 +41,8 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { cn } from "@/lib/utils"
 
 export default function LayerHeader() {
+  const t = useTranslations("menuEditor.layers")
+  const tCommon = useTranslations("dashboard.common")
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [tempName, setTempName] = useState("")
 
@@ -70,8 +75,7 @@ export default function LayerHeader() {
       ? state.nodes[id]?.data.custom.displayName
       : state.nodes[id]?.data.displayName
     const iconKey = state.nodes[id]?.data.custom.iconKey as
-      | MenuBlockIconKey
-      | undefined
+      MenuBlockIconKey | undefined
 
     return {
       hidden: state.nodes[id]?.data.hidden,
@@ -194,20 +198,18 @@ export default function LayerHeader() {
         >
           <DrawerContent>
             <DrawerHeader className="text-left">
-              <DrawerTitle>Editar nombre</DrawerTitle>
-              <DrawerDescription>
-                Cambia el nombre de la sección.
-              </DrawerDescription>
+              <DrawerTitle>{t("editNameTitle")}</DrawerTitle>
+              <DrawerDescription>{t("editNameDescription")}</DrawerDescription>
             </DrawerHeader>
             <div className="px-4 pb-4">
               <Input
                 value={tempName}
                 onChange={e => setTempName(e.target.value)}
-                placeholder="Escribe el nombre de la sección"
+                placeholder={t("sectionNamePlaceholder")}
               />
               <div className="mt-6 flex">
                 <Button onClick={handleSaveName} className="w-full">
-                  Guardar
+                  {tCommon("save")}
                 </Button>
               </div>
             </div>
@@ -223,17 +225,17 @@ export default function LayerHeader() {
         >
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Editar nombre</DialogTitle>
+              <DialogTitle>{t("editNameTitle")}</DialogTitle>
             </DialogHeader>
             <div className="py-4">
               <Input
                 value={tempName}
                 onChange={e => setTempName(e.target.value)}
-                placeholder="Escribe el nombre de la sección"
+                placeholder={t("sectionNamePlaceholder")}
               />
             </div>
             <DialogFooter>
-              <Button onClick={handleSaveName}>Guardar</Button>
+              <Button onClick={handleSaveName}>{tCommon("save")}</Button>
             </DialogFooter>
           </DialogContent>
         </Dialog>

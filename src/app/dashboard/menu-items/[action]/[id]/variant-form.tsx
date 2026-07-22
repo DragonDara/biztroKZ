@@ -8,7 +8,8 @@ import {
   type UseFormReturn
 } from "react-hook-form"
 import { Trash } from "lucide-react"
-import { z } from "zod/v4"
+import { useTranslations } from "next-intl"
+import type { z } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import { Field, FieldError, FieldLabel } from "@/components/ui/field"
@@ -22,7 +23,7 @@ import {
   TableRow
 } from "@/components/ui/table"
 import VariantDelete from "@/app/dashboard/menu-items/[action]/[id]/variant-delete"
-import { menuItemFormSchema } from "@/lib/types/menu-item"
+import type { menuItemFormSchema } from "@/lib/types/menu-item"
 
 type VariantFormValues = z.infer<typeof menuItemFormSchema>
 
@@ -51,13 +52,15 @@ function MultiVariantForm({
   fieldArray: FieldArrayWithId<VariantFormValues>[]
   parentForm: UseFormReturn<VariantFormValues>
 }) {
+  const t = useTranslations("dashboard.menuItems.variants")
+
   return (
     <Table>
       <TableHeader>
         <TableRow>
-          <TableHead>Nombre</TableHead>
-          <TableHead>Precio</TableHead>
-          <TableHead>Acciones</TableHead>
+          <TableHead>{t("columnName")}</TableHead>
+          <TableHead>{t("columnPrice")}</TableHead>
+          <TableHead>{t("columnActions")}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -70,12 +73,12 @@ function MultiVariantForm({
                 render={({ field, fieldState }) => (
                   <Field className="space-y-0">
                     <FieldLabel htmlFor={field.name} className="sr-only">
-                      Nombre
+                      {t("nameLabel")}
                     </FieldLabel>
                     <Input
                       {...field}
                       id={field.name}
-                      placeholder="Nombre de la variante"
+                      placeholder={t("namePlaceholder")}
                     />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
@@ -91,7 +94,7 @@ function MultiVariantForm({
                 render={({ field, fieldState }) => (
                   <Field className="space-y-0">
                     <FieldLabel htmlFor={field.name} className="sr-only">
-                      Precio
+                      {t("priceLabel")}
                     </FieldLabel>
                     <Input
                       {...field}
@@ -100,7 +103,7 @@ function MultiVariantForm({
                       inputMode="decimal"
                       step="0.01"
                       min={0}
-                      placeholder="Precio"
+                      placeholder={t("pricePlaceholder")}
                       onChange={e => field.onChange(Number(e.target.value))}
                       onFocus={e => (e.target as HTMLInputElement).select()}
                       value={field.value ?? ""}
@@ -136,19 +139,21 @@ function SingleVariantForm({
 }: {
   control: Control<VariantFormValues>
 }) {
+  const t = useTranslations("dashboard.menuItems.variants")
+
   return (
     <Controller
       name={"variants.0.price"}
       control={control}
       render={({ field, fieldState }) => (
         <Field>
-          <FieldLabel htmlFor={field.name}>Precio</FieldLabel>
+          <FieldLabel htmlFor={field.name}>{t("priceLabel")}</FieldLabel>
           <Input
             {...field}
             id={field.name}
             type="number"
             inputMode="numeric"
-            placeholder="Precio"
+            placeholder={t("pricePlaceholder")}
             className="w-1/3"
             onChange={e => field.onChange(Number(e.target.value))}
             onFocus={e => (e.target as HTMLInputElement).select()}

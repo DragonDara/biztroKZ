@@ -7,10 +7,10 @@ import { Be_Vietnam_Pro, Inter } from "next/font/google"
 import "../../styles/globals.css"
 import "../../styles/gradient-blur.css"
 
+import { IntlProvider } from "@/components/intl-provider"
 import Spinner from "@/components/ui/spinner"
-// import { AxiomWebVitals } from "next-axiom"
 
-import Providers from "@/app/providers"
+// import { AxiomWebVitals } from "next-axiom"
 
 export const metadata: Metadata = {
   metadataBase: new URL(`https://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`),
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     title: "Biztro"
   },
-  description: "Crea tu menú digital en minutos"
+  description: "Create your digital menu in minutes"
 }
 
 export const viewport: Viewport = {
@@ -54,6 +54,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   const shouldInjectToolbar = process.env.NODE_ENV === "development"
+
   return (
     <html
       className={`${beVietnamPro.variable} ${inter.variable} overscroll-none
@@ -73,13 +74,13 @@ export default function RootLayout({
             </div>
           }
         >
-          <Providers>
+          <IntlProvider>
             <div className="flex min-h-dvh flex-col overscroll-auto">
               {children}
               {shouldInjectToolbar && <VercelToolbar />}
               {shouldInjectToolbar && <Agentation />}
             </div>
-          </Providers>
+          </IntlProvider>
         </Suspense>
       </body>
     </html>

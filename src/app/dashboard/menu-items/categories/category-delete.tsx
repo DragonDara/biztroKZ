@@ -2,6 +2,7 @@
 
 import toast from "react-hot-toast"
 import type { Category } from "@/generated/prisma-client/client"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 
 import {
@@ -19,29 +20,29 @@ import { buttonVariants } from "@/components/ui/button"
 import { deleteCategory } from "@/server/actions/item/mutations"
 import { cn } from "@/lib/utils"
 
-export default function ItemDelete({
+export default function CategoryDelete({
   category,
   children
 }: {
   category: Category
   children: React.ReactNode
 }) {
+  const t = useTranslations("dashboard.menuItems.categories")
+  const tCommon = useTranslations("dashboard.common")
+
   const { execute, reset } = useAction(deleteCategory, {
     onExecute: () => {
-      toast("Eliminando categoría...", { icon: "🗑️" })
+      toast(t("deleting"), { icon: "🗑️" })
     },
     onSuccess: async ({ data }) => {
-      // see https://github.com/TheEdoRan/next-safe-action/issues/376
-      if (data?.success) {
-        // toast.success("Categoría eliminada")
-      } else if (data?.failure?.reason) {
-        toast.error(data?.failure?.reason)
+      if (data?.failure?.reason) {
+        toast.error(data.failure.reason)
       }
       reset()
     },
     onError: () => {
       toast.dismiss()
-      toast.error("Algo salió mal")
+      toast.error(tCommon("genericError"))
       reset()
     }
   })
@@ -55,19 +56,18 @@ export default function ItemDelete({
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Eliminar Categoría</AlertDialogTitle>
+          <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
           <AlertDialogDescription>
-            ¿Estás seguro de eliminar esta categoría? Esta acción no se puede
-            deshacer
+            {t("deleteDescription")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
           <AlertDialogAction
             className={cn(buttonVariants({ variant: "destructive" }))}
             onClick={() => onDeleteCategory()}
           >
-            Eliminar
+            {tCommon("delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

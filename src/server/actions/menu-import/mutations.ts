@@ -2,6 +2,7 @@
 
 import { Prisma } from "@/generated/prisma-client/client"
 import * as Sentry from "@sentry/nextjs"
+import { getTranslations } from "next-intl/server"
 import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
@@ -289,12 +290,13 @@ function buildThemeJSON({
 export const createMenuFromImport = authMemberActionClient
   .inputSchema(createImportedMenuSchema)
   .action(async ({ parsedInput, ctx: { member } }) => {
+    const t = await getTranslations("dashboard.menuItems.import.errors")
     const organizationId = member.organizationId
 
     if (!organizationId) {
       return {
         failure: {
-          reason: "No se pudo obtener la organización actual"
+          reason: t("noOrg")
         }
       }
     }
@@ -302,7 +304,7 @@ export const createMenuFromImport = authMemberActionClient
     if (!(await isProMember())) {
       return {
         failure: {
-          reason: "La creación de menús completos desde archivo requiere Pro"
+          reason: t("proRequiredFullMenu")
         }
       }
     }
@@ -310,8 +312,7 @@ export const createMenuFromImport = authMemberActionClient
     if (!parsedInput.simulateResponse && !env.AI_GATEWAY_API_KEY) {
       return {
         failure: {
-          reason:
-            "El diseño visual requiere configurar una clave de API del AI Gateway"
+          reason: t("visualDesignApiKey")
         }
       }
     }
@@ -320,7 +321,7 @@ export const createMenuFromImport = authMemberActionClient
     if (!currentOrg || currentOrg.id !== organizationId) {
       return {
         failure: {
-          reason: "No se pudo obtener la organización actual"
+          reason: t("noOrg")
         }
       }
     }
@@ -329,7 +330,7 @@ export const createMenuFromImport = authMemberActionClient
     if (groupedItems.length === 0) {
       return {
         failure: {
-          reason: "Agrega al menos un producto con nombre"
+          reason: t("addAtLeastOneProduct")
         }
       }
     }
@@ -419,8 +420,7 @@ export const createMenuFromImport = authMemberActionClient
         if (error.code === "P2002" || error.code === "SQLITE_CONSTRAINT") {
           return {
             failure: {
-              reason:
-                "No se pudo crear el menú porque hay productos o temas duplicados"
+              reason: t("duplicateMenuResources")
             }
           }
         }
@@ -428,8 +428,7 @@ export const createMenuFromImport = authMemberActionClient
 
       return {
         failure: {
-          reason:
-            "No se pudo diseñar el menú completo. Intenta nuevamente con un archivo más claro."
+          reason: t("visualDesignRetry")
         }
       }
     }

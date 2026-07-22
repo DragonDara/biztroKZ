@@ -1,0 +1,1307 @@
+{
+  "common": {
+    "appName": "Biztro",
+    "logoAlt": "Biztro logo",
+    "notFound": "Not found"
+  },
+  "locale": {
+    "label": "Language",
+    "en": "English",
+    "es": "Español",
+    "ru": "Русский"
+  },
+  "metadata": {
+    "defaultDescription": "Create your digital menu in minutes",
+    "homeTitle": "Biztro | Create and publish your digital menu in minutes",
+    "homeDescription": "Create a professional QR menu for your restaurant or café, update it anytime, and share it without PDFs or technical skills.",
+    "homeKeywords": "digital menu, QR menu, restaurant, café, digital menu board, online menu"
+  },
+  "marketing": {
+    "nav": {
+      "howItWorks": "How it works",
+      "benefits": "Benefits",
+      "pricing": "Pricing",
+      "signIn": "Sign in"
+    },
+    "hero": {
+      "announcementNew": "New",
+      "announcementTitle": "AI features for your menu",
+      "title": "Create your digital menu and publish it in minutes",
+      "subtitle": "Design a professional QR menu for your restaurant or café, update it whenever you want, and share it without the hassle.",
+      "waitlistLabel": "Request early access"
+    },
+    "waitlist": {
+      "emailAria": "Email address",
+      "emailPlaceholder": "you@email.com",
+      "emailInvalid": "Please enter a valid email address",
+      "submit": "Request access",
+      "submitting": "Sending...",
+      "successTitle": "You're on the list",
+      "successDescription": "We'll email you when we open new beta access."
+    },
+    "ctaBanner": {
+      "subtitle": "Want to launch your digital menu quickly and easily?",
+      "title": "Request early access to Biztro"
+    },
+    "benefits": {
+      "eyebrow": "Why use Biztro",
+      "title": "More control for your business, better experience for your customers",
+      "soon": "Soon",
+      "items": {
+        "reach": {
+          "title": "Reach more customers",
+          "description": "Share your menu via QR or link so customers can view it anytime."
+        },
+        "update": {
+          "title": "Update your menu easily",
+          "description": "Change prices, products, or availability without reprinting menus or PDFs."
+        },
+        "brand": {
+          "title": "Showcase your business",
+          "description": "Customize your QR code and menu design so they feel part of your brand."
+        },
+        "flexible": {
+          "title": "Flexible menus",
+          "description": "Create menus for seasons, events, or promotions and publish them when you need."
+        },
+        "promote": {
+          "title": "Promote your business",
+          "description": "Soon you'll be able to highlight offers and key products to drive more orders."
+        },
+        "noCommitment": {
+          "title": "No commitments",
+          "description": "Start with a free plan and upgrade only when your business needs more."
+        }
+      }
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "contactPrefix": "Still have questions? Email us at",
+      "items": [
+        {
+          "question": "What is a QR menu?",
+          "answer": "It's a digital menu your customers open by scanning a QR code with their phone camera."
+        },
+        {
+          "question": "How do QR menus work for restaurants?",
+          "answer": "You publish your menu once, place the QR code in your business, and customers open it in their browser. If you make changes, the QR stays the same."
+        },
+        {
+          "question": "How do I create a QR code for my restaurant menu?",
+          "answer": "First publish your menu, then download the QR code from Biztro. You can print it and use it on tables, counters, or promotional materials."
+        },
+        {
+          "question": "Can I update the menu without reprinting the QR code?",
+          "answer": "Yes. You can change products, prices, or descriptions anytime and the same QR code will keep working."
+        },
+        {
+          "question": "Do my customers need an app to open the menu?",
+          "answer": "No. They only need to open their phone camera and scan the QR code. The menu opens in the browser, like any web page."
+        }
+      ]
+    },
+    "pricing": {
+      "eyebrow": "Pricing",
+      "title": "Choose the plan that fits your business",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "yearlyDiscount": "(-20%)",
+      "subtitle": "Start free. When you need more products, menus, and support, upgrade to Pro.",
+      "perMonth": "MXN/month",
+      "perYear": "MXN/year",
+      "tiers": {
+        "free": {
+          "name": "Free",
+          "priceMonthly": "$0",
+          "priceYearly": "$0",
+          "description": "Publish your first digital menu at no cost.",
+          "cta": "Request access",
+          "features": [
+            "Up to 10 products",
+            "1 menu per business",
+            "Customize the design",
+            "Download QR code"
+          ]
+        },
+        "pro": {
+          "name": "Pro",
+          "priceMonthly": "$149",
+          "priceYearly": "$1,490",
+          "description": "More capacity and tools for businesses with multiple menus or higher traffic.",
+          "cta": "Request Pro access",
+          "features": [
+            "Unlimited products",
+            "Unlimited menus",
+            "Customize the design",
+            "Custom QR code",
+            "Basic visit analytics (coming soon)",
+            "Promotions and offers (coming soon)",
+            "Email support"
+          ]
+        }
+      }
+    },
+    "howItWorks": {
+      "eyebrow": "How it works",
+      "title": "Publish your menu in 3 steps",
+      "steps": {
+        "setup": {
+          "title": "Set up your business",
+          "content": "Add your business name, hours, and social links. Biztro organizes the information for you."
+        },
+        "products": {
+          "title": "Add your products",
+          "content": "Add products with description, price, and image to get your menu ready in minutes."
+        },
+        "publish": {
+          "title": "Customize and publish",
+          "content": "Adjust the design in the editor, publish your menu, and share it with a link or QR code."
+        }
+      },
+      "qr": {
+        "title": "Share your menu with a QR code and link",
+        "p1": "Download your QR code from the editor in seconds. Then print it and place it on tables, counters, or storefronts.",
+        "p2": "Your customers only need to scan it with their phone camera to open your menu instantly.",
+        "p2Highlight": "You can also share the same link on social media",
+        "p2Suffix": "or on your website.",
+        "p3": "The menu adapts to phones and tablets, reads clearly, and requires no app install."
+      }
+    },
+    "aiFeatures": {
+      "eyebrow": "AI automation",
+      "title": "Your menu, ready in less time.",
+      "tagline": "Upload a photo or PDF and let AI convert your menu into editable content so you can focus on serving customers.",
+      "scanning": "Extracting menu items...",
+      "menuLabel": "Menu",
+      "aiLabel": "AI",
+      "digitize": {
+        "title": "Digitize your menu in seconds",
+        "description": "Upload a PDF or photo of your printed menu and AI detects dishes, prices, and descriptions to turn them into editable content."
+      },
+      "translate": {
+        "title": "Translation for every customer",
+        "description": "Translate your menu into multiple languages so every guest understands what you offer and feels well served."
+      }
+    },
+    "bento": {
+      "title": "Forget outdated PDFs.",
+      "tagline": "Edit prices, photos, and categories from the browser, and your changes publish instantly.",
+      "brand": {
+        "name": "On-brand design",
+        "description": "Start with a template and adjust colors, images, and labels like allergens so your menu looks like your business.",
+        "cta": "See designs",
+        "imageAlt": "Menu view on a phone"
+      },
+      "editor": {
+        "name": "Easy-to-use editor",
+        "description": "Edit sections, products, and prices in a visual editor. No technical experience needed to get your menu ready.",
+        "cta": "See the editor"
+      },
+      "qr": {
+        "name": "QR and shareable link",
+        "description": "Customers can open your menu from their phone by scanning the code or visiting a link—no app required.",
+        "cta": "See example"
+      },
+      "publishButton": "Publish menu"
+    },
+    "editorPreview": {
+      "alt": "Screenshot of the web menu editor"
+    },
+    "footer": {
+      "contact": "Contact",
+      "terms": "Terms",
+      "privacy": "Privacy",
+      "logoAlt": "Logo"
+    }
+  },
+  "auth": {
+    "login": {
+      "metaTitle": "Sign in",
+      "metaDescription": "Sign in to Biztro",
+      "welcome": "Welcome",
+      "subtitle": "Sign in with your Biztro account",
+      "continueWith": "Continue with {provider}",
+      "error": "Something went wrong while signing in. Please try again later."
+    }
+  },
+  "dashboard": {
+    "nav": {
+      "menus": "Menus",
+      "catalog": "Catalog",
+      "products": "Products",
+      "categories": "Categories",
+      "translations": "Translations",
+      "media": "Media",
+      "settings": "Settings",
+      "general": "General",
+      "location": "Location",
+      "members": "Members",
+      "billing": "Billing"
+    },
+    "sidebar": {
+      "upgradeTitle": "Upgrade to Pro",
+      "upgradeDescription": "Unlimited products and menus, extra components, and more.",
+      "upgradeCta": "Upgrade now",
+      "reportIssue": "Report an issue",
+      "createOrganization": "Create organization",
+      "selectBusiness": "Select a business",
+      "organizations": "Organizations",
+      "addOrganization": "Add organization",
+      "planBasic": "Basic",
+      "planPro": "Pro",
+      "switchOrgError": "Could not switch organization"
+    },
+    "profile": {
+      "ariaLabel": "Your profile",
+      "account": "My account",
+      "profile": "Profile",
+      "theme": "Theme",
+      "themeSystem": "System",
+      "themeLight": "Light",
+      "themeDark": "Dark",
+      "home": "Home",
+      "signOut": "Sign out"
+    },
+    "common": {
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "save": "Save",
+      "name": "Name",
+      "actions": "Actions",
+      "edit": "Edit",
+      "duplicate": "Duplicate",
+      "rename": "Rename",
+      "genericError": "Something went wrong",
+      "retry": "Try again",
+      "backHome": "Back to home",
+      "ready": "Ready",
+      "view": "View"
+    },
+    "menus": {
+      "metaTitle": "Home",
+      "title": "Menus",
+      "description": "All menus.",
+      "info": "View all menus for your organization. The active menu is public for your customers. Only one menu can be active at a time.",
+      "visitOnline": "Visit your online menu",
+      "newMenuDefaultName": "New menu",
+      "create": "Create menu",
+      "statusPublished": "Published",
+      "statusDraft": "Draft",
+      "active": "Active",
+      "moreActions": "More actions",
+      "setActive": "Set as active",
+      "cannotDeleteActive": "You can't delete the active menu. Set another menu as active first.",
+      "duplicateLoading": "Duplicating menu...",
+      "duplicated": "Menu duplicated",
+      "duplicateError": "Could not duplicate menu",
+      "setActiveLoading": "Updating active menu...",
+      "setActiveSuccess": "Active menu updated",
+      "setActiveError": "Could not update active menu",
+      "deleteTitle": "Delete menu",
+      "deleteDescription": "Are you sure you want to delete this menu? This action cannot be undone.",
+      "deleteLoading": "Deleting menu...",
+      "deleted": "Menu deleted",
+      "createError": "Could not create menu",
+      "renameTitle": "Rename menu",
+      "nameRequired": "Name is required",
+      "upgradeTitle": "Grow your business with Pro",
+      "upgradeDescription": "Upgrade to Pro to create more menus and access all premium features."
+    },
+    "onboarding": {
+      "welcome": "Welcome to Biztro",
+      "description": "Here are some links to get started setting up your business.",
+      "progress": "Progress",
+      "business": "Business",
+      "businessDescription": "Add your business info, such as name and logo.",
+      "location": "Location",
+      "locationDescription": "Add your address, hours, and social links.",
+      "products": "Products",
+      "productsDescription": "Create products and categories for your menu."
+    },
+    "upgrade": {
+      "defaultTitle": "Upgrade to Pro",
+      "defaultDescription": "This feature requires Pro.",
+      "cta": "Upgrade to Pro",
+      "stayFree": "Stay on the free plan"
+    },
+    "unsavedChanges": {
+      "title": "Unsaved changes",
+      "defaultMessage": "You have unsaved changes",
+      "goBack": "Go back",
+      "discard": "Discard changes"
+    },
+    "menuSync": {
+      "title": "Update published menus?",
+      "defaultDescription": "Product changes were detected. Do you want to apply them to the published menu?",
+      "remember": "Don't ask again",
+      "notNow": "Not now",
+      "updating": "Updating...",
+      "update": "Update"
+    },
+    "settings": {
+      "subscriptionStatus": {
+        "active": "Active",
+        "trialing": "Trial",
+        "canceled": "Canceled",
+        "incomplete": "Incomplete",
+        "incompleteExpired": "Expired",
+        "pastDue": "Past due",
+        "unpaid": "Unpaid",
+        "paused": "Paused",
+        "sponsored": "Sponsored",
+        "unknown": "Unknown"
+      },
+      "organization": {
+        "metaTitle": "My Organization",
+        "metaDescription": "General business information",
+        "title": "My Organization",
+        "description": "General business information",
+        "changeImage": "Change image",
+        "uploadImage": "Upload image",
+        "logoHint": "Recommended size 500×500 in JPG or PNG format.",
+        "businessName": "Business name",
+        "businessNamePlaceholder": "Business name",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Description",
+        "descriptionHint": "Write a short description of your business",
+        "website": "Website",
+        "websitePlaceholder": "your-site",
+        "websiteHint": "This is your website name. Changing it may affect your SEO",
+        "coverImage": "Cover image",
+        "coverImageHint": "The cover image is shown prominently on your website. Recommended size 1200×800 in JPG format.",
+        "saving": "Saving...",
+        "updated": "Information updated",
+        "updateError": "Could not update business information"
+      },
+      "deleteOrganization": {
+        "title": "Delete organization",
+        "description": "Delete the organization, catalogs, and menus associated with it.",
+        "irreversible": "This operation is irreversible.",
+        "confirmTitle": "Delete organization",
+        "confirmDescription": "Are you sure you want to delete this organization? This action is irreversible. All data associated with the organization will be deleted and cannot be recovered. Make sure you have downloaded any data you want to keep before continuing.",
+        "cancelSubscription": "Cancel your subscription before deleting the organization.",
+        "confirmHint": "For security, type {word} and press delete.",
+        "confirmAria": "Confirm by typing ELIMINAR",
+        "confirmWord": "ELIMINAR",
+        "deleting": "Deleting organization...",
+        "deleteError": "Could not delete organization"
+      },
+      "members": {
+        "metaTitle": "Members",
+        "title": "Members",
+        "description": "Manage your team members",
+        "invite": "Invite member",
+        "inviteTitle": "Invite member",
+        "inviteDescription": "Enter the email address of the member you want to invite.",
+        "email": "Email",
+        "emailPlaceholder": "email@example.com",
+        "emailInvalid": "Please enter a valid email address",
+        "sending": "Sending...",
+        "sendInvite": "Send invitation",
+        "inviteSent": "Invitation sent",
+        "inviteError": "Failed to send invitation",
+        "upgradeTitle": "Get more with Pro",
+        "upgradeDescription": "Upgrade to Pro to collaborate with your team and invite members without limits.",
+        "user": "User",
+        "userFallback": "User",
+        "role": "Role",
+        "roleOwner": "Owner",
+        "roleAdmin": "Admin",
+        "roleMember": "Member",
+        "remove": "Remove",
+        "deleteTitle": "Remove member",
+        "deleteDescription": "Are you sure you want to remove this member? This action cannot be undone.",
+        "deleting": "Removing member...",
+        "deleted": "Member removed successfully"
+      },
+      "billing": {
+        "metaTitle": "Subscription",
+        "title": "Subscription plans",
+        "description": "Manage your subscription plan and payment history",
+        "ownerOnlyTitle": "Notice",
+        "ownerOnlyDescription": "Only organization owners can access this page",
+        "plan": "Plan",
+        "basic": "Basic",
+        "free": "Free",
+        "monthly": "Monthly",
+        "yearly": "Yearly",
+        "yearlyDiscount": "-20%",
+        "usage": "You have used {count} of {limit} products available on your plan",
+        "usageHint": "Upgrade your plan to add more products to your menu and unlock more benefits.",
+        "checkoutError": "Could not start checkout. Please try again.",
+        "upgradeMonthly": "Get Pro Monthly",
+        "upgradeYearly": "Get Pro Yearly",
+        "perMonth": "MXN/month",
+        "perYear": "MXN/year",
+        "sponsoredTitle": "Sponsored organization",
+        "sponsoredDescription": "Your organization is on a sponsored Pro plan. Enjoy all Biztro Pro features at no cost.",
+        "price": "Price",
+        "activePeriod": "Active period",
+        "cancelsOn": "Cancels on",
+        "nextRenewal": "Next renewal",
+        "trialEnds": "Ends on {date}",
+        "cancelScheduledTitle": "Subscription scheduled to end",
+        "cancelScheduledDescription": "Your subscription is set to end on {date}. You will have access until then. To reactivate, go to the billing portal.",
+        "manageInStripe": "Manage your subscription in Stripe",
+        "supportPrefix": "Having issues with your subscription? Email",
+        "portal": "Go to customer portal",
+        "portalError": "Could not redirect to the customer portal"
+      },
+      "location": {
+        "metaTitle": "Location",
+        "title": "Location",
+        "contactDescription": "Contact information",
+        "hoursTitle": "Opening hours",
+        "hoursDescription": "Public opening hours",
+        "form": {
+          "branchName": "Branch name",
+          "branchNamePlaceholder": "Name",
+          "branchNameHint": "Internal reference name for this branch; not visible to customers",
+          "description": "Description",
+          "descriptionPlaceholder": "Description (optional)",
+          "address": "Address",
+          "addressPlaceholder": "Address",
+          "phone": "Phone",
+          "phonePlaceholder": "Phone (optional)",
+          "phoneHint": "Branch phone number without spaces or dashes",
+          "socialLegend": "Social media and contact",
+          "socialDescription": "Add social media and contact methods for this branch",
+          "usernamePlaceholder": "username",
+          "whatsappPlaceholder": "Phone number",
+          "servicesLegend": "Services",
+          "servicesDescription": "Configure the services this branch offers",
+          "dineIn": "Dine in",
+          "dineInHint": "Enable on-premise dining",
+          "takeout": "Takeout",
+          "takeoutHint": "Enable takeout",
+          "delivery": "Delivery",
+          "deliveryHint": "Enable delivery",
+          "deliveryFee": "Delivery fee",
+          "deliveryFree": "0 = Free",
+          "currency": "Default currency",
+          "currencyPlaceholder": "Select currency",
+          "created": "Branch created",
+          "updated": "Branch updated",
+          "updateError": "Could not update branch",
+          "createBranch": "Create branch",
+          "updateBranch": "Update branch",
+          "saving": "Saving...",
+          "validation": {
+            "nameRequired": "Name is required",
+            "nameTooShort": "Name is too short",
+            "addressRequired": "Address is required",
+            "addressInvalid": "Address is not valid",
+            "phoneInvalid": "Invalid phone number"
+          }
+        },
+        "hours": {
+          "updated": "Hours updated",
+          "updateError": "Could not update hours",
+          "updateSchedule": "Update hours",
+          "saving": "Saving...",
+          "basicTab": "Basic",
+          "advancedTab": "Advanced",
+          "mixedWarningTitle": "Mixed schedule detected",
+          "mixedWarningDescription": "Saving in basic mode will apply the same hours to all selected days.",
+          "openDays": "Open days",
+          "openDaysHint": "Select the days your business is open.",
+          "from": "From",
+          "to": "To",
+          "dayColumn": "Day",
+          "timeRequired": "Enter opening and closing times",
+          "validationTime": "Enter a time",
+          "days": {
+            "MONDAY": { "short": "Mon", "full": "Monday" },
+            "TUESDAY": { "short": "Tue", "full": "Tuesday" },
+            "WEDNESDAY": { "short": "Wed", "full": "Wednesday" },
+            "THURSDAY": { "short": "Thu", "full": "Thursday" },
+            "FRIDAY": { "short": "Fri", "full": "Friday" },
+            "SATURDAY": { "short": "Sat", "full": "Saturday" },
+            "SUNDAY": { "short": "Sun", "full": "Sunday" }
+          }
+        }
+      },
+      "media": {
+        "title": "Media library",
+        "imageCount": "{count, plural, one {# image} other {# images}}",
+        "imageCountLimit": "{count} of {limit} images",
+        "emptyTitle": "No images",
+        "emptyDescription": "Upload images from products or your organization settings",
+        "detailsTitle": "Image details",
+        "previewAlt": "Preview",
+        "type": "Type",
+        "dimensions": "Dimensions",
+        "pixels": "{width} × {height} pixels",
+        "size": "Size",
+        "uploaded": "Uploaded",
+        "usedIn": "Used in {count, plural, one {# place} other {# places}}",
+        "notUsed": "This image is not in use",
+        "replace": "Replace",
+        "entityMenuItem": "Product",
+        "entityOrganization": "Organization",
+        "entityPromo": "Promotion",
+        "scopeOther": "Other",
+        "scopeMenuItemImage": "Product image",
+        "scopeOrgLogo": "Organization logo",
+        "scopeOrgBanner": "Organization banner",
+        "scopePromo": "Promotion",
+        "replaceTitle": "Replace image",
+        "replaceDescription": "This replaces the image while keeping its current usages.",
+        "replaceSuccess": "Image replaced",
+        "replaceError": "Could not replace the image",
+        "replaceUnavailableTitle": "Cannot replace",
+        "replaceUnavailableDescription": "This image has no valid target (logo/banner/product) or its usages are outdated."
+      }
+    },
+    "menuItems": {
+      "products": {
+        "metaTitle": "Products",
+        "title": "Products",
+        "description": "Manage your menu products",
+        "newProduct": "New product",
+        "defaultName": "New product",
+        "defaultVariant": "Regular",
+        "createError": "Could not create product",
+        "upgradeTitle": "Get more with Pro",
+        "upgradeDescription": "You've reached the limit of {limit} products on your free plan. Upgrade to Pro to keep creating without limits.",
+        "selectAllRows": "Select all rows",
+        "selectRow": "Select row",
+        "columnProduct": "Product",
+        "columnDescription": "Description",
+        "columnCategory": "Category",
+        "columnStatus": "Status",
+        "columnPrice": "Price",
+        "statusActive": "Active",
+        "statusDraft": "Draft",
+        "statusArchived": "Archived",
+        "filterStatus": "Status",
+        "filterCategory": "Category",
+        "deleteTitle": "Delete product",
+        "deleteDescription": "Are you sure you want to delete this product? This action cannot be undone.",
+        "deleting": "Deleting product...",
+        "import": "Import products",
+        "export": "Export products",
+        "moreActions": "More actions",
+        "importTitle": "Import products",
+        "importDescription": "Choose how you want to import your products.",
+        "exportEmpty": "No products to export",
+        "exportSuccess": "CSV generated successfully (1 row per product variant)",
+        "exportError": "Could not export products",
+        "selectedCount": "{count} selected",
+        "deselectAll": "Deselect all",
+        "updateCategory": "Update category",
+        "recommended": "Featured",
+        "bulkDeleteTitle": "Confirm deletion?",
+        "bulkDeleteDescription": "This action cannot be undone. {count} selected products will be deleted.",
+        "categoriesUpdated": "Categories updated",
+        "productsDeleted": "Products deleted",
+        "productsUpdated": "Products updated",
+        "menuUpdated": "Menu updated",
+        "publishedMenuUpdated": "Published menu updated",
+        "menuUpdateError": "Could not update menus"
+      },
+      "import": {
+        "metaTitle": "Import products from file",
+        "pageTitle": "Import from PDF or image",
+        "pageDescription": "Upload a menu file and let AI extract products, or import a CSV with your catalog.",
+        "options": {
+          "aiTitle": "Import with AI",
+          "aiDescription": "Upload a PDF or image of your menu. AI extracts products and prices automatically.",
+          "aiButton": "Import from file",
+          "csvTitle": "Import from CSV",
+          "csvDescription": "Upload a spreadsheet with your products. Download the template to see the required format.",
+          "downloadTemplate": "Download template",
+          "uploadCsv": "Upload CSV",
+          "importing": "Importing...",
+          "importSuccess": "{count, plural, one {# product imported successfully} other {# products imported successfully}}",
+          "importError": "Could not import products",
+          "fileErrorsTitle": "Fix the following errors in your file:",
+          "rowError": "Row {row}: {errors}",
+          "validation": {
+            "nameRequired": "Product name is required",
+            "priceRequired": "Price is required",
+            "priceInvalid": "Price must be a positive number",
+            "currencyInvalid": "Invalid currency. Use MXN or USD.",
+            "emptyFile": "The file is empty",
+            "maxRows": "You cannot import more than 200 products at once",
+            "csvParseError": "Could not process the CSV file: {message}"
+          },
+          "template": {
+            "productName": "Margherita Pizza",
+            "description": "Tomato, mozzarella, basil",
+            "category": "Pizzas",
+            "variantRegular": "Regular",
+            "variantLarge": "Large"
+          }
+        },
+        "ai": {
+          "steps": {
+            "upload": "Upload your file",
+            "extractProducts": "AI extracts products",
+            "reviewSave": "Review and save",
+            "extractDesign": "AI extracts and designs",
+            "generateEditor": "Generate and open editor"
+          },
+          "modeImportTitle": "Import mode",
+          "modeItems": "Products only",
+          "modeItemsDescription": "Extract products to review and save to your catalog.",
+          "modeFullMenuPro": "Full menu Pro",
+          "modeFullMenuProDescription": "Generate a complete digital menu with design and open the editor.",
+          "modeDetailItems": "Products are added to your catalog so you can edit them and use them in any menu.",
+          "modeDetailFullMenu": "We generate a styled digital menu from your file and open the editor so you can publish it.",
+          "clickToSelect": "Click to select a file",
+          "uploadTip": "Works best with clear, well-lit menu text.",
+          "maxFileSize": "Maximum size {max} MB",
+          "basicPlanLimit": "The basic plan includes up to {limit} products.",
+          "upgradeLink": "Upgrade to Pro",
+          "importUnlimited": "to import without limit.",
+          "simulateScenario": "Simulation scenario",
+          "simulateSimple": "Simple menu",
+          "simulateVariants": "Multiple variants per product",
+          "simulateExtract": "Simulate extraction",
+          "extractFromFile": "Extract products from file",
+          "extracting": "Extracting products...",
+          "parseErrorTitle": "Error processing file",
+          "parseErrorPdf": "Error processing PDF file",
+          "readFileError": "Could not read file",
+          "readFileGenericError": "Error reading file",
+          "unsupportedFormat": "Unsupported format. Use PDF, PNG, JPG/JPEG, or WEBP.",
+          "fileTooLarge": "File is too large. Maximum allowed size is {max} MB.",
+          "saveProducts": "{count, plural, one {Save # product} other {Save # products}}",
+          "saving": "Saving...",
+          "savedSuccess": "{count, plural, one {# product imported successfully} other {# products imported successfully}}",
+          "saveError": "Error saving products",
+          "bulkSaveFailed": "Could not save imported products",
+          "menuCreated": "Full menu generated successfully",
+          "couldNotOpenMenu": "Could not open generated menu",
+          "menuCreateError": "Error generating full menu",
+          "reprocessFile": "Re-process the file before generating the menu",
+          "generatingFullMenu": "Generating full menu...",
+          "createFullMenu": "Create full menu",
+          "fullMenuEditorHint": "After generating, we open the menu editor so you can adjust the design and publish it.",
+          "itemsExtractedReview": "{count, plural, one {# product extracted. Review and edit before saving.} other {# products extracted. Review and edit before saving.}}",
+          "groupPreview": "{rows, plural, one {# row} other {# rows}} → {products, plural, one {# product} other {# products}} with {variants, plural, one {# variant} other {# variants}}",
+          "groupPreviewMultiVariant": "({count} with multiple variants)",
+          "limitExceededTitle": "Basic plan limit exceeded",
+          "limitExceededDescription": "You have {count} products to import, but the basic plan allows up to {limit}. Upgrade to Pro to save them all.",
+          "upgradeToPro": "Upgrade to Pro",
+          "recommendedReviewTitle": "Review recommended",
+          "recommendedReviewDescription": "{needsReview, plural, one {# row suggested for review.} other {# rows suggested for review.}} {corrected, plural, one {# row includes AI-suggested corrections.} other {# rows include AI-suggested corrections.}}",
+          "aiReviewColumn": "AI review",
+          "reliabilityReview": "Review",
+          "mediumConfidenceFallback": "Medium confidence extraction",
+          "estimatedReliability": "Estimated reliability: {score}%",
+          "noAmbiguity": "AI did not detect clear ambiguity signals.",
+          "ocrCorrections": "OCR corrections",
+          "correctedBadge": "Corrected",
+          "deleteProduct": "Delete product",
+          "columnProductRequired": "Product *",
+          "columnPriceRequired": "Price *",
+          "columnVariant": "Variant",
+          "upgradeTitle": "Upgrade to Pro",
+          "upgradeDescription": "Upgrade to Pro to import products without limit or create a full menu with AI ✨"
+        },
+        "errors": {
+          "noOrg": "Could not get current organization",
+          "aiGatewayRequired": "File import requires configuring an AI Gateway API key",
+          "simulateFailed": "Could not simulate file extraction. Try again.",
+          "parseFailed": "Could not process the file. Make sure it is a valid menu PDF or image.",
+          "proRequiredFullMenu": "Creating full menus from a file requires Pro",
+          "visualDesignApiKey": "Visual design requires configuring an AI Gateway API key",
+          "addAtLeastOneProduct": "Add at least one product with a name",
+          "duplicateEntry": "Duplicate entry",
+          "invalidReference": "Invalid reference",
+          "visualDesignFailed": "Could not generate menu design. Try again or import products only.",
+          "limitExceeded": "You would exceed the product limit on the basic plan",
+          "bulkSaveFailed": "Could not save imported products",
+          "bulkSaveRetry": "Could not save imported products. Try again.",
+          "duplicateCheck": "Error: Check that products are not duplicated. {code}",
+          "duplicateMenuResources": "Could not create the menu because of duplicate products or themes",
+          "visualDesignRetry": "Could not design the full menu. Try again with a clearer file."
+        }
+      },
+      "categories": {
+        "metaTitle": "Categories",
+        "title": "Categories",
+        "description": "Manage your menu categories",
+        "addCategory": "Add category",
+        "columnCategory": "Category",
+        "dialogTitle": "Category",
+        "dialogCreate": "Add category",
+        "dialogEdit": "Edit category",
+        "nameLabel": "Category",
+        "namePlaceholder": "Name",
+        "created": "Category added",
+        "createError": "Could not add category",
+        "updated": "Category updated",
+        "updateError": "Could not update category",
+        "deleteTitle": "Delete category",
+        "deleteDescription": "Are you sure you want to delete this category? This action cannot be undone.",
+        "deleting": "Deleting category...",
+        "syncDescription": "Category changes were detected. Apply them to the published menu?",
+        "saving": "Saving..."
+      },
+      "form": {
+        "metaCreateTitle": "Create product",
+        "metaEditTitle": "Edit product",
+        "createTitle": "Create product",
+        "editTitle": "Edit product",
+        "notFoundTitle": "Product not found",
+        "notFoundDescription": "The product you are looking for does not exist or was deleted.",
+        "statusActiveDescription": "Visible for display on active menus.",
+        "statusArchivedDescription": "Out of circulation but kept for reference.",
+        "statusDraftDescription": "Not shown to customers until published.",
+        "noCategory": "No category",
+        "proGuardTitle": "Upgrade to Pro",
+        "proGuardDescription": "Automatic per-product translation is available only on the Pro plan. Upgrade to complete missing translations for this product.",
+        "tabs": {
+          "details": "Details",
+          "translations": "Translations"
+        },
+        "unsavedChanges": "Unsaved changes",
+        "pendingCount": "{count, plural, one {# pending} other {# pending}}",
+        "close": "Close",
+        "saving": "Saving",
+        "save": "Save",
+        "saveFailedTitle": "Could not save product",
+        "saveFailedDescription": "Fix the highlighted fields before saving again.",
+        "productDetailsLegend": "Product details",
+        "productDetailsDescription": "Base name and description.",
+        "nameLabel": "Name",
+        "namePlaceholder": "Product name",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Add a description. Include details such as ingredients, flavor, etc.",
+        "imageLegend": "Product image",
+        "imageDescription": "Image used in the catalog and menu.",
+        "availabilityLegend": "Availability and visibility",
+        "availabilityDescription": "Product status, currency, and visibility.",
+        "statusLegend": "Product status",
+        "selectStatus": "Select status",
+        "currencyLegend": "Currency",
+        "selectCurrency": "Select currency",
+        "featuredLegend": "Featured",
+        "featuredDescription": "Show in featured items.",
+        "variantsLegend": "Variants",
+        "variantsDescription": "Options such as size or presentation.",
+        "createVariant": "Create variant",
+        "categoryLegend": "Category",
+        "categoryDescription": "Group this product within the menu.",
+        "categoryType": "Category",
+        "searchCategory": "Search category...",
+        "clearCategory": "Clear category",
+        "allergensLegend": "Allergens and indicators",
+        "allergensDescription": "Mark allergies or special attributes.",
+        "searchAllergens": "Search allergens or indicators",
+        "translationsTitle": "Available translations",
+        "translationsDescription": "Edit languages that have already been created.",
+        "missingTranslationsTitle": "Missing translations in {locale}",
+        "missingProductAndVariants": "Product text and {count, plural, one {# variant} other {# variants}} in {locale} do not exist yet.",
+        "missingProductOnly": "Product text in {locale} does not exist yet.",
+        "missingVariantsOnly": "{count, plural, one {# variant} other {# variants}} still need translation in {locale}.",
+        "translating": "Translating",
+        "translateWithAi": "Translate with AI",
+        "availableOnPro": "Available on Pro",
+        "activeLocaleTitle": "Active language",
+        "activeLocaleDescription": "Select the language you want to review.",
+        "languageLabel": "Language",
+        "selectLanguage": "Select a language",
+        "newLocalesHint": "New languages are added from menu translations.",
+        "localeProduct": "Product",
+        "localeNoProduct": "No product",
+        "localeVariantsCount": "{count} variants",
+        "editableVariantsBadge": "{count} editable variants",
+        "missingHereBadge": "{count} missing here",
+        "productTextTitle": "Product text",
+        "productTextDescription": "Text visible in {locale}.",
+        "thisLocale": "this language",
+        "translatedTitleLabel": "Translated title",
+        "translatedDescriptionLabel": "Translated description",
+        "nameInLocale": "Name in {locale}",
+        "descriptionInLocale": "Description in {locale}",
+        "noProductTranslationTitle": "No product translation",
+        "noProductTranslationDescription": "This language does not have text for this product yet.",
+        "variantTranslationsTitle": "Variant translations",
+        "variantTranslationsDescription": "Variants editable in this language.",
+        "editableBadge": "{count} editable",
+        "pendingOtherLocaleBadge": "{count} pending in another language",
+        "variantNameLabel": "Variant name",
+        "noVariantTranslationsTitle": "No variant translations",
+        "noVariantTranslationsDescription": "There are no editable variants in {locale}.",
+        "emptyTranslationsTitle": "No translations to edit",
+        "emptyTranslationsDescription": "Add a language in menu translations to edit it here.",
+        "manageTranslations": "Manage translations",
+        "summaryLegend": "Operational summary",
+        "summaryStatus": "Status",
+        "summaryCategory": "Category",
+        "summaryVariants": "Variants",
+        "summaryCoverage": "Coverage",
+        "variantsConfigured": "{count, plural, one {# configured} other {# configured}}",
+        "noVariants": "No variants",
+        "coverageSummary": "{localeCount, plural, one {# language} other {# languages}}, {variantCount, plural, one {# editable variant} other {# editable variants}}",
+        "noTranslationsLoaded": "No translations loaded",
+        "variantFallbackName": "Variant {index}",
+        "issueProductName": "Product name",
+        "issueProductDescription": "Product description",
+        "issueTranslatedTitle": "Translated title",
+        "issueTranslatedTitleWithLocale": "Translated title ({locale})",
+        "issueTranslatedDescription": "Translated description",
+        "issueTranslatedDescriptionWithLocale": "Translated description ({locale})",
+        "issueVariantWithLocale": "Variant {name} ({locale})",
+        "issueVariant": "Variant {name}",
+        "issueVariantDescriptionWithLocale": "Description of {name} ({locale})",
+        "issueVariantDescription": "Description of {name}",
+        "issueVariants": "Variants",
+        "issueForm": "Form",
+        "toasts": {
+          "categoryAddError": "Could not add category",
+          "translatePartProduct": "the product",
+          "translatePartVariants": "{count, plural, one {# variant} other {# variants}}",
+          "and": "and",
+          "translateSuccess": "Translated {parts} to {locale}",
+          "translateError": "Could not translate missing product content",
+          "saveBeforeVariant": "Save changes before adding a variant",
+          "saveBeforeTranslate": "Save changes before generating translations",
+          "productNotFoundForTranslate": "Could not find product to translate",
+          "productUpdated": "Product updated",
+          "updateError": "Could not update product",
+          "reviewActiveTranslation": "Review the active translation before saving",
+          "reviewVariantTranslations": "Review variant translations before saving",
+          "reviewMarkedFields": "Review highlighted fields before saving",
+          "reviewFormErrors": "Review form errors before saving"
+        }
+      },
+      "variants": {
+        "title": "Variants",
+        "description": "Add a variant to show different options for the same product.",
+        "nameLabel": "Name",
+        "namePlaceholder": "Variant name",
+        "priceLabel": "Price",
+        "pricePlaceholder": "Price",
+        "creating": "Creating...",
+        "create": "Create variant",
+        "columnName": "Name",
+        "columnPrice": "Price",
+        "columnActions": "Actions",
+        "deleteTitle": "Delete variant",
+        "deleteDescription": "Are you sure you want to delete this variant? This action cannot be undone.",
+        "deleting": "Deleting variant..."
+      }
+    }
+  },
+  "menuEditor": {
+    "publish": {
+      "preview": "Preview",
+      "saveChanges": "Save changes",
+      "generateQr": "Generate QR code",
+      "qrTitle": "Generate QR code",
+      "qrDescription": "Scanning the code with your phone camera or QR app will open this URL:",
+      "qrDraftWarning": "Don't forget to publish your menu so it's accessible via the QR code.",
+      "publish": "Publish",
+      "publishMenu": "Publish menu",
+      "publishMenuDescription": "Publish your menu to a public URL you can share.",
+      "publishing": "Publishing...",
+      "menuLink": "Menu link",
+      "publishChanges": "Publish changes",
+      "reverting": "Reverting...",
+      "revertChanges": "Revert changes",
+      "switchToDraft": "Switch to draft",
+      "published": "Published",
+      "unpublishedChanges": "You have unpublished changes.",
+      "unpublishedChangesHint": "Publish changes to update your menu.",
+      "help": "Help",
+      "menuUpdated": "Menu updated",
+      "updateError": "An error occurred while updating the menu",
+      "saveError": "An error occurred",
+      "reverted": "Menu reverted to last published version",
+      "revertError": "Could not revert to published menu",
+      "noPublishedToRevert": "There is no published version to revert to",
+      "revertGenericError": "An error occurred while reverting",
+      "qrSettings": "Settings",
+      "color": "Color",
+      "showLogo": "Show logo",
+      "downloadQr": "Download QR image"
+    },
+    "unsavedChanges": {
+      "editorLeave": "You have unsaved changes. Are you sure you want to leave the editor?",
+      "dataGridSave": "You have unsaved changes in the product editor. Do you want to save them?",
+      "dataGridWarning": "You have unsaved changes in the product editor",
+      "discardChanges": "Discard changes"
+    },
+    "mobileNav": {
+      "elements": "Elements",
+      "themes": "Themes",
+      "sections": "Sections",
+      "settings": "Settings"
+    },
+    "workbench": {
+      "back": "Back",
+      "desktop": "Desktop",
+      "mobile": "Mobile",
+      "showDataGrid": "Show product editor",
+      "hideDataGrid": "Hide product editor",
+      "toggleDataGrid": "Toggle data grid view",
+      "productsSaved": "{count, plural, one {# product saved} other {# products saved}}",
+      "partialSaveError": "Saved {successCount}, could not save {failCount}",
+      "saveFailed": "Error: could not save {count, plural, one {# product} other {# products}}"
+    },
+    "toolbar": {
+      "undo": "Undo",
+      "redo": "Redo",
+      "switchToDesktop": "Switch to desktop view",
+      "switchToMobile": "Switch to mobile view",
+      "copyStyle": "Copy style",
+      "pasteStyle": "Paste style",
+      "lockEditing": "Lock editing",
+      "unlockEditing": "Unlock editing"
+    },
+    "sync": {
+      "message": "Business or product information has changed. Sync to apply the changes.",
+      "sync": "Sync",
+      "updated": "Information updated"
+    },
+    "settings": {
+      "selectComponent": "Select a component to edit"
+    },
+    "toolbox": {
+      "categoriesAndProducts": "Categories and products",
+      "elements": "Elements",
+      "noProductsTitle": "No products.",
+      "noProductsDescription": "Add products and categorize them to include them in your menu.",
+      "viewProducts": "View products",
+      "themeLoadErrorTitle": "Error",
+      "themeLoadErrorDescription": "Could not find the selected font or color theme.",
+      "availableOnPro": "Available on Pro",
+      "previewHeading": "Heading",
+      "previewText": "Text",
+      "blocks": {
+        "header": "Header",
+        "navigation": "Navigation",
+        "featured": "Featured",
+        "heading": "Heading",
+        "text": "Text"
+      },
+      "toasts": {
+        "categoryAdded": "Category added",
+        "productAdded": "Product added",
+        "headerAdded": "Header added",
+        "navigationAdded": "Navigation added",
+        "featuredAdded": "Featured section added",
+        "headingAdded": "Heading added",
+        "textAdded": "Text added"
+      }
+    },
+    "canvas": {
+      "confirmTitle": "Confirm",
+      "confirmRemove": "Are you sure you want to remove this element?",
+      "remove": "Remove"
+    },
+    "blocks": {
+      "displayNames": {
+        "site": "Site",
+        "header": "Header",
+        "category": "Category",
+        "product": "Product",
+        "navigation": "Navigation",
+        "featured": "Featured",
+        "heading": "Heading",
+        "text": "Text"
+      },
+      "common": {
+        "select": "Select",
+        "general": "General",
+        "text": "Text",
+        "product": "Product",
+        "price": "Price",
+        "category": "Category",
+        "site": "Site",
+        "images": "Images",
+        "business": "Business",
+        "size": "Size",
+        "style": "Style",
+        "alignment": "Alignment",
+        "capitalize": "Capitalize",
+        "capitalizeNormalAria": "Normal capitalization",
+        "capitalizeUpperAria": "Uppercase capitalization",
+        "background": "Background",
+        "show": "Show",
+        "productImage": "Product image",
+        "applyToAll": "Apply to all",
+        "fontWeightLight": "Light",
+        "fontWeightRegular": "Regular",
+        "fontWeightMedium": "Medium",
+        "fontWeightBold": "Bold",
+        "backgroundNone": "None",
+        "backgroundCustom": "Custom",
+        "headingBackground": "Title background",
+        "headingShape": "Title shape",
+        "noColor": "No color",
+        "backgroundColor": "Background color",
+        "selectBackgroundColor": "Select background color"
+      },
+      "shapes": {
+        "none": "None",
+        "rectangle": "Rectangle",
+        "rounded": "Rounded",
+        "pill": "Pill",
+        "slanted": "Slanted cut",
+        "parallelogram": "Slanted band",
+        "chevron": "Chevron",
+        "tab": "Tab",
+        "scooped": "Frame",
+        "ribbon": "Ribbon"
+      },
+      "propagate": {
+        "texts": "Apply these properties to all text elements",
+        "headings": "Apply these properties to all headings",
+        "products": "Apply these properties to all products",
+        "categories": "Apply these properties to all categories"
+      },
+      "header": {
+        "logo": "Logo",
+        "cover": "Cover image",
+        "businessInfo": "Business details",
+        "socialMedia": "Social media"
+      },
+      "featured": {
+        "autoPlay": "Auto play",
+        "autoPlayHelp": "Enable auto play so featured items rotate automatically until the user interacts with them.",
+        "empty": "No featured items"
+      },
+      "container": {
+        "selectBackground": "Select background",
+        "solid": "Solid",
+        "pattern": "Pattern",
+        "image": "Image",
+        "custom": "Custom",
+        "patterns": "Patterns",
+        "images": "Images",
+        "myImages": "My images",
+        "uploaded": "Uploaded",
+        "uploadBackground": "Upload background image",
+        "uploadTitle": "Upload background image",
+        "uploadDescription": "Upload a custom image to use as your menu background. Max size: 1920px, 3MB.",
+        "uploadSuccess": "Image uploaded successfully",
+        "proTitle": "Pro feature",
+        "proDescription": "Uploading a background image is available on the Pro plan. Upgrade to unlock this feature."
+      },
+      "patterns": {
+        "solid": "Solid",
+        "texture": "Texture",
+        "terrain": "Terrain",
+        "snacks": "Snacks",
+        "clouds": "Clouds",
+        "leaves": "Leaves"
+      },
+      "navigator": {
+        "openMenuAria": "Open navigation menu"
+      }
+    },
+    "menuMeta": {
+      "nameRequired": "Name is required",
+      "noName": "Untitled",
+      "nameLabel": "Name",
+      "notFound": "Menu not found"
+    },
+    "preview": {
+      "desktopView": "Desktop view",
+      "mobileView": "Mobile view",
+      "desktop": "Desktop",
+      "mobile": "Mobile",
+      "title": "Preview",
+      "description": "Preview your menu before publishing"
+    },
+    "layers": {
+      "editNameTitle": "Edit name",
+      "editNameDescription": "Change the section name.",
+      "sectionNamePlaceholder": "Enter section name"
+    },
+    "theme": {
+      "presetTheme": "Preset theme",
+      "typography": "Typography",
+      "typographySelector": "Fonts",
+      "colors": "Colors",
+      "customizeColors": "Customize colors",
+      "customizeColorsDescription": "Customize your menu colors",
+      "presetThemesTitle": "Preset themes",
+      "chooseTheme": "Choose theme",
+      "active": "Active",
+      "themeSaved": "Theme saved",
+      "themeSaveError": "Something went wrong while saving the theme",
+      "themeDeleted": "Theme deleted",
+      "themeDeleteError": "Something went wrong while deleting the theme",
+      "noLogoToExtract": "No logo available to extract colors",
+      "extractColorsError": "Could not extract colors",
+      "extractColors": "Extract colors",
+      "invertColors": "Invert colors",
+      "create": "Create",
+      "save": "Save",
+      "delete": "Delete",
+      "done": "Done",
+      "selectColor": "Select a color.",
+      "colorSurface": "Background",
+      "colorBrand": "Brand",
+      "colorAccent": "Accent",
+      "colorText": "Text",
+      "colorMuted": "Muted",
+      "selectSurfaceColor": "Select background color",
+      "selectBrandColor": "Select brand color",
+      "selectAccentColor": "Select accent color",
+      "selectTextColor": "Select text color",
+      "selectMutedColor": "Select muted color",
+      "surfaceColorTitle": "Background color",
+      "brandColorTitle": "Brand color",
+      "accentColorTitle": "Accent color",
+      "textColorTitle": "Text color",
+      "mutedColorTitle": "Muted color",
+      "businessFallback": "Business",
+      "previewCategory": "Category",
+      "previewProduct": "Product",
+      "previewDescription": "Product description...",
+      "themeNameTitle": "Theme name",
+      "themeNameLabel": "Theme name",
+      "themeNamePlaceholder": "Theme name",
+      "nameRequired": "Name is required",
+      "nameInvalidChars": "Name can only contain letters, numbers, and spaces",
+      "themeNameDescription": "Please enter a name for the theme.",
+      "solidTab": "Solid",
+      "imageTab": "With image"
+    },
+    "dataGrid": {
+      "title": "Edit menu products",
+      "saving": "Saving...",
+      "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}",
+      "emptyTitle": "No products yet",
+      "emptyDescription": "Create your first product to start editing the menu.",
+      "createProduct": "Create product",
+      "columnAllergens": "Allergens",
+      "columnCurrency": "Currency",
+      "keyboardEditPrefix": "Press",
+      "keyboardEditMiddle": "to start editing a cell,",
+      "keyboardEditCancel": "to cancel editing.",
+      "keyboardCommandsPrefix": "Press",
+      "keyboardCommandsSuffix": "to show the full command list.",
+      "variantsEdit": {
+        "title": "Edit variants: {name}",
+        "description": "Edit this product's variants. It must have at least one variant.",
+        "addVariant": "Add variant",
+        "saveChanges": "Save changes",
+        "saving": "Saving",
+        "nameRequired": "Name is required",
+        "nameTooLong": "Name is too long",
+        "priceNegative": "Price cannot be negative",
+        "minOneVariant": "Must have at least one variant"
+      }
+    },
+    "tour": {
+      "back": "Back",
+      "close": "Close",
+      "last": "Last",
+      "next": "Next",
+      "skip": "Skip",
+      "finish": "Finish",
+      "openHelp": "Open the help dialog",
+      "progress": "{current} of {total}",
+      "steps": {
+        "categories": {
+          "title": "Categories and products",
+          "content": "Here you can see your menu categories and products. Drag and drop elements to reorganize them."
+        },
+        "elements": {
+          "title": "Elements",
+          "content": "Add elements to your menu such as headers and free text."
+        },
+        "layers": {
+          "title": "Layers",
+          "content": "Layers let you organize menu elements. Change layer order by dragging up or down. Double-click a name to rename a layer."
+        },
+        "preview": {
+          "title": "Preview",
+          "content": "See how your menu will look on mobile or desktop. Click elements to edit them."
+        },
+        "toolbar": {
+          "title": "Tools",
+          "content": "Find tools to edit your menu, such as undo/redo, copy/paste styles, and more."
+        },
+        "theme": {
+          "title": "Theme",
+          "content": "Choose a color and font theme for your menu. You can choose <strong>Customize colors</strong> to pick your own palette."
+        },
+        "settings": {
+          "title": "Settings",
+          "content": "Change menu settings such as text size and element alignment."
+        },
+        "publish": {
+          "title": "Publish and generate your QR code",
+          "content": "When you're done designing your menu, publish it and generate a QR code so customers can access it."
+        }
+      }
+    },
+    "tourMobile": {
+      "back": "Back",
+      "close": "Close",
+      "last": "Last",
+      "next": "Next",
+      "skip": "Skip",
+      "finish": "Finish",
+      "openHelp": "Open the help dialog",
+      "progress": "{current} of {total}",
+      "steps": {
+        "topbar": {
+          "title": "Top bar",
+          "intro": "Access save, preview, and export options for your menu.",
+          "previewItem": "Preview your menu",
+          "saveItem": "Save changes",
+          "qrItem": "Generate your QR code",
+          "publishLabel": "Publish",
+          "publishItem": "Publish your menu on the web"
+        },
+        "toolbar": {
+          "title": "Toolbar",
+          "content": "Quickly access features like undo/redo."
+        },
+        "bottombar": {
+          "title": "Bottom bar",
+          "intro": "Access elements and themes to customize your menu.",
+          "elementsLabel": "Elements",
+          "elementsContent": "Add elements such as headers and free text.",
+          "themesLabel": "Themes",
+          "themesContent": "Choose a color and font theme for your menu.",
+          "sectionsLabel": "Sections",
+          "sectionsContent": "List menu elements and change their order.",
+          "settingsLabel": "Settings",
+          "settingsContent": "Select a menu element, then change its settings."
+        }
+      }
+    }
+  },
+  "errors": {
+    "global": {
+      "title": "Something went wrong",
+      "heading": "Internal server error",
+      "description": "An unexpected error occurred. Please try again later.",
+      "backHome": "Back to home"
+    },
+    "notFound": {
+      "title": "Page not found",
+      "description": "We couldn't find the page you're looking for.",
+      "backHome": "Back to home"
+    },
+    "dashboard": {
+      "title": "An error occurred in the dashboard",
+      "description": "Try again or go back home. If the problem persists, contact us.",
+      "retry": "Try again",
+      "backHome": "Back to home"
+    },
+    "menuEditor": {
+      "title": "An error occurred in the editor",
+      "description": "Try again or go back to the dashboard to select another menu.",
+      "retry": "Try again",
+      "backDashboard": "Back to dashboard"
+    }
+  },
+  "publicMenu": {
+    "originalLanguage": "Spanish (original)",
+    "changeLanguage": "Change language",
+    "originalLanguageSr": "Original language"
+  }
+}

@@ -1,23 +1,31 @@
 import { XIcon } from "lucide-react"
 import lz from "lzutf8"
+import { getTranslations } from "next-intl/server"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import type { Metadata } from "next/types"
 
+import { PreviewToggle } from "@/components/menu-editor/preview-toggle"
 import { Button } from "@/components/ui/button"
 import { getMenuById } from "@/server/actions/menu/queries"
-import { PreviewToggle } from "@/app/menu-editor/[id]/preview/preview-toggle"
 
-export const metadata: Metadata = {
-  title: "Vista previa",
-  description: "Vista previa de un menú"
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("menuEditor.preview")
+
+  return {
+    title: t("title"),
+    description: t("description")
+  }
 }
 
-export default async function PreviewPage(props: {
+export default async function MenuPreviewPage(props: {
   params: Promise<{ id: string }>
 }) {
   const params = await props.params
-  const siteMenu = await getMenuById(params.id)
+  const [siteMenu, t] = await Promise.all([
+    getMenuById(params.id),
+    getTranslations("menuEditor.preview")
+  ])
 
   if (!params.id || !siteMenu) {
     return notFound()
@@ -39,7 +47,7 @@ export default async function PreviewPage(props: {
             bg-amber-400/80 py-1 pr-1 pl-3 text-sm text-amber-950 shadow-md
             inset-ring inset-ring-amber-300/50 backdrop-blur-lg"
         >
-          Vista previa
+          {t("title")}
           <Link href={`/menu-editor/${params.id}`} prefetch={false}>
             <Button variant="ghost" size="icon-sm" className="rounded-full">
               <XIcon />

@@ -4,6 +4,7 @@ import { useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
 import { ChevronDown, Download, Loader, Upload } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import Papa from "papaparse"
 
@@ -45,6 +46,7 @@ function downloadCsvFile(
 }
 
 export default function ItemImport() {
+  const t = useTranslations("dashboard.menuItems.products")
   const [open, setOpen] = useState(false)
   const isMobile = useIsMobile()
 
@@ -56,7 +58,7 @@ export default function ItemImport() {
     onSuccess: response => {
       const items = response.data?.success ?? []
       if (items.length === 0) {
-        toast.error("No hay productos para exportar")
+        toast.error(t("exportEmpty"))
         resetExport()
         return
       }
@@ -84,9 +86,7 @@ export default function ItemImport() {
       })
 
       downloadCsvFile(csvRows, "productos-exportados-con-variantes.csv")
-      toast.success(
-        "CSV generado correctamente (1 fila por variante de producto)"
-      )
+      toast.success(t("exportSuccess"))
       resetExport()
     },
     onError: error => {
@@ -94,7 +94,7 @@ export default function ItemImport() {
       Sentry.captureException(error, {
         tags: { section: "item-export" }
       })
-      toast.error("No se pudo exportar los productos")
+      toast.error(t("exportError"))
       resetExport()
     }
   })
@@ -119,14 +119,14 @@ export default function ItemImport() {
           disabled={isExporting}
         >
           <Upload className="size-4" />
-          Importar Productos
+          {t("import")}
         </Button>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <Button
               variant="outline"
               size="icon"
-              aria-label="Más acciones"
+              aria-label={t("moreActions")}
               disabled={isExporting}
             >
               {isExporting ? (
@@ -142,7 +142,7 @@ export default function ItemImport() {
               disabled={isExporting}
             >
               <Download className="size-4" />
-              Exportar Productos
+              {t("export")}
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -152,10 +152,10 @@ export default function ItemImport() {
         <DialogContent>
           <DialogHeader>
             <DialogTitle className="text-balance">
-              Importar productos
+              {t("importTitle")}
             </DialogTitle>
             <DialogDescription className="text-pretty">
-              Elige cómo quieres importar tus productos.
+              {t("importDescription")}
             </DialogDescription>
           </DialogHeader>
           <MenuImportOptions

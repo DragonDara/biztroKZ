@@ -16,11 +16,11 @@ import Navbar from "@/components/marketing/nav-bar"
 import Pricing from "@/components/marketing/pricing"
 
 export const metadata: Metadata = {
-  title: "Biztro | Crea y publica tu menú digital en minutos",
+  title: "Biztro | Create and publish your digital menu in minutes",
   description:
-    "Crea un menú QR profesional para tu restaurante o cafetería, actualízalo cuando quieras y compártelo sin depender de PDFs ni conocimientos técnicos.",
+    "Create a professional QR menu for your restaurant or café, update it anytime, and share it without PDFs or technical skills.",
   keywords:
-    "menú digital, menú QR, restaurante, cafetería, carta digital, menú online"
+    "digital menu, QR menu, restaurant, café, digital menu board, online menu"
 }
 
 // skipcq: JS-0116

@@ -1,10 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
 import { BorderBeam } from "border-beam"
 import { AlertCircle, FileSpreadsheet, FileText, Loader } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import Papa from "papaparse"
@@ -28,6 +29,9 @@ type ImportError = {
   errors: string[]
 }
 
+type ImportValidationKey =
+  "nameRequired" | "priceRequired" | "priceInvalid" | "currencyInvalid"
+
 function downloadCsvFile(rows: CSVRow[], fileName: string) {
   const csv = Papa.unparse(rows)
   const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
@@ -43,47 +47,29 @@ function downloadCsvFile(rows: CSVRow[], fileName: string) {
   URL.revokeObjectURL(url)
 }
 
-function getTemplateRows(): CSVRow[] {
-  return [
-    {
-      nombre: "Producto ejemplo",
-      variante: "Regular",
-      descripcion: "Descripcion del producto",
-      precio: "100.00",
-      categoria: "Categoria (opcional)",
-      moneda: "KZT"
-    },
-    {
-      nombre: "Producto ejemplo",
-      variante: "Grande",
-      descripcion: "Descripcion del producto",
-      precio: "120.00",
-      categoria: "Categoria (opcional)",
-      moneda: "KZT"
-    }
-  ]
-}
-
-function validateRow(row: CSVRow): string[] {
+function validateRow(
+  row: CSVRow,
+  t: (key: ImportValidationKey) => string
+): string[] {
   const errors: string[] = []
 
   if (!row.nombre?.trim()) {
-    errors.push("El nombre es requerido")
+    errors.push(t("nameRequired"))
   }
 
   if (!row.precio) {
-    errors.push("El precio es requerido")
+    errors.push(t("priceRequired"))
   } else {
     const price = parseFloat(row.precio)
     if (isNaN(price) || price < 0) {
-      errors.push("El precio debe ser un número positivo")
+      errors.push(t("priceInvalid"))
     }
   }
 
   if (row.moneda) {
     const currency = row.moneda.trim().toUpperCase()
     if (!["MXN", "USD", "KZT"].includes(currency)) {
-      errors.push("Moneda no válida. Usa MXN, USD o KZT.")
+      errors.push(t("currencyInvalid"))
     }
   }
 
@@ -97,7 +83,33 @@ export default function MenuImportOptions({
   aiImportHref: string
   onCsvSuccess?: (createdCount: number) => void
 }) {
+  const t = useTranslations("dashboard.menuItems.import.options")
+  const tValidation = useTranslations(
+    "dashboard.menuItems.import.options.validation"
+  )
   const [errors, setErrors] = useState<ImportError[]>([])
+
+  const templateRows = useMemo<CSVRow[]>(
+    () => [
+      {
+        nombre: t("template.productName"),
+        variante: t("template.variantRegular"),
+        descripcion: t("template.description"),
+        precio: "100.00",
+        categoria: t("template.category"),
+        moneda: "KZT"
+      },
+      {
+        nombre: t("template.productName"),
+        variante: t("template.variantLarge"),
+        descripcion: t("template.description"),
+        precio: "120.00",
+        categoria: t("template.category"),
+        moneda: "KZT"
+      }
+    ],
+    [t]
+  )
 
   const { execute, isPending, reset } = useAction(bulkCreateItems, {
     onSuccess: response => {
@@ -108,7 +120,7 @@ export default function MenuImportOptions({
       }
 
       const createdCount = response.data?.success?.length ?? 0
-      toast.success(`${createdCount} productos importados correctamente`)
+      toast.success(t("importSuccess", { count: createdCount }))
       setErrors([])
       onCsvSuccess?.(createdCount)
       reset()
@@ -118,7 +130,7 @@ export default function MenuImportOptions({
       Sentry.captureException(error, {
         tags: { section: "item-import" }
       })
-      toast.error("Error al importar los productos")
+      toast.error(t("importError"))
       reset()
     }
   })
@@ -138,17 +150,12 @@ export default function MenuImportOptions({
       encoding: "utf-8",
       complete: results => {
         if (results.data.length === 0) {
-          setErrors([{ row: 0, errors: ["El archivo está vacío"] }])
+          setErrors([{ row: 0, errors: [tValidation("emptyFile")] }])
           return
         }
 
         if (results.data.length > 200) {
-          setErrors([
-            {
-              row: 0,
-              errors: ["No puedes importar más de 200 productos a la vez"]
-            }
-          ])
+          setErrors([{ row: 0, errors: [tValidation("maxRows")] }])
           return
         }
 
@@ -156,7 +163,7 @@ export default function MenuImportOptions({
         const validItems: BulkMenuItem[] = []
 
         results.data.forEach((row, index) => {
-          const rowErrors = validateRow(row)
+          const rowErrors = validateRow(row, key => tValidation(key))
 
           if (rowErrors.length > 0) {
             foundErrors.push({
@@ -191,7 +198,7 @@ export default function MenuImportOptions({
         setErrors([
           {
             row: 0,
-            errors: [`No pudimos procesar el archivo CSV: ${error.message}`]
+            errors: [tValidation("csvParseError", { message: error.message })]
           }
         ])
       }
@@ -207,7 +214,7 @@ export default function MenuImportOptions({
             backdrop-blur dark:bg-gray-950/80 dark:text-gray-100"
         >
           <Loader className="size-6 animate-spin" />
-          <p className="text-sm font-medium">Importando productos...</p>
+          <p className="text-sm font-medium">{t("importing")}</p>
         </div>
       )}
       <BorderBeam size="pulse-outside" colorVariant="colorful" strength={0.5}>
@@ -218,18 +225,15 @@ export default function MenuImportOptions({
           <div className="mb-3 flex items-start gap-3">
             <FileText className="text-muted-foreground size-5" />
             <div>
-              <p className="font-medium">
-                Importar menú desde PDF o imagen con IA
-              </p>
+              <p className="font-medium">{t("aiTitle")}</p>
               <p className="text-muted-foreground text-sm text-pretty">
-                Usa la importación con IA para extraer productos desde una
-                carta, PDF o imagen de menú.
+                {t("aiDescription")}
               </p>
             </div>
           </div>
           <Button asChild variant="outline" disabled={isPending}>
             <Link href={aiImportHref} prefetch={false}>
-              Importar menú con IA
+              {t("aiButton")}
             </Link>
           </Button>
         </div>
@@ -242,10 +246,9 @@ export default function MenuImportOptions({
         <div className="mb-3 flex items-start gap-3">
           <FileSpreadsheet className="text-muted-foreground size-5" />
           <div>
-            <p className="font-medium">Importar desde CSV</p>
+            <p className="font-medium">{t("csvTitle")}</p>
             <p className="text-muted-foreground text-sm text-pretty">
-              Sube un CSV con estas columnas: nombre y precio obligatorios;
-              descripción, variante, categoría y moneda son opcionales.
+              {t("csvDescription")}
             </p>
           </div>
         </div>
@@ -255,16 +258,16 @@ export default function MenuImportOptions({
             variant="outline"
             className="w-full justify-start sm:w-fit"
             onClick={() =>
-              downloadCsvFile(getTemplateRows(), "plantilla-productos.csv")
+              downloadCsvFile(templateRows, "plantilla-productos.csv")
             }
             disabled={isPending}
           >
             <FileSpreadsheet className="mr-1" />
-            Descargar plantilla CSV
+            {t("downloadTemplate")}
           </Button>
 
           <div className="space-y-2">
-            <p className="text-sm font-medium">Subir archivo CSV</p>
+            <p className="text-sm font-medium">{t("uploadCsv")}</p>
             <input
               type="file"
               accept=".csv"
@@ -287,12 +290,15 @@ export default function MenuImportOptions({
         {errors.length > 0 && (
           <Alert variant="destructive" className="mb-4">
             <AlertCircle className="size-4" />
-            <AlertTitle>Errores en el archivo</AlertTitle>
+            <AlertTitle>{t("fileErrorsTitle")}</AlertTitle>
             <AlertDescription>
               <ul className="list-inside list-disc">
                 {errors.map((error, index) => (
                   <li key={`${error.row}-${index}`}>
-                    Fila {error.row}: {error.errors.join(", ")}
+                    {t("rowError", {
+                      row: error.row,
+                      errors: error.errors.join(", ")
+                    })}
                   </li>
                 ))}
               </ul>

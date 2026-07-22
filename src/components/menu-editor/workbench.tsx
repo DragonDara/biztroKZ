@@ -18,6 +18,7 @@ import * as Sentry from "@sentry/nextjs"
 import { useAtom, useSetAtom } from "jotai"
 import { ChevronLeft, DatabaseIcon } from "lucide-react"
 import lz from "lzutf8"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 
@@ -52,6 +53,7 @@ import SettingsPanel from "@/components/menu-editor/settings-panel"
 import SyncStatusBanner from "@/components/menu-editor/sync-status-banner"
 import ThemeSelector from "@/components/menu-editor/theme-selector"
 import ToolboxPanel from "@/components/menu-editor/toolbox-panel"
+import { useMenuEditorUnsavedCopy } from "@/components/menu-editor/use-menu-editor-unsaved"
 import { Button } from "@/components/ui/button"
 import { DrawerHeader, DrawerTitle } from "@/components/ui/drawer"
 import {
@@ -296,6 +298,9 @@ export default function Workbench({
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
   defaultLayout?: Layout
 }) {
+  const t = useTranslations("menuEditor.workbench")
+  const tMobile = useTranslations("menuEditor.mobileNav")
+  const unsavedCopy = useMenuEditorUnsavedCopy()
   const isMobile = useIsMobile()
   const router = useRouter()
   const [isOpen, setIsOpen] = useState(false)
@@ -509,9 +514,7 @@ export default function Workbench({
         setGridDirtyItems([])
         setIsGridDirty(false)
         clearUnsavedChanges()
-        toast.success(
-          `${successCount} producto${successCount > 1 ? "s" : ""} guardado${successCount > 1 ? "s" : ""}`
-        )
+        toast.success(t("productsSaved", { count: successCount }))
 
         // Sync the canvas immediately using optimistic data, then reconcile from the server.
         setSyncEditorTrigger(prev => prev + 1)
@@ -534,17 +537,18 @@ export default function Workbench({
 
       if (failCount > 0 && successCount > 0) {
         toast.error(
-          `Se guardaron ${successCount} y ${failCount} no se pudo${failCount > 1 ? "ieron" : ""} guardar`
+          t("partialSaveError", {
+            successCount,
+            failCount
+          })
         )
       } else if (failCount > 0) {
-        toast.error(
-          `Error: ${failCount} producto${failCount > 1 ? "s" : ""} no se pudo${failCount > 1 ? "ieron" : ""} guardar`
-        )
+        toast.error(t("saveFailed", { count: failCount }))
       }
 
       return false
     },
-    [clearUnsavedChanges, executeBulkUpdateItems, router, serverItemsState]
+    [clearUnsavedChanges, executeBulkUpdateItems, router, serverItemsState, t]
   )
 
   // Handle grid dirty state changes
@@ -555,27 +559,22 @@ export default function Workbench({
         setGridDirtyItems(dirtyItems)
       }
       if (isDirty) {
-        setUnsavedChanges({
-          message:
-            "Tienes cambios sin guardar en el editor de productos. ¿Deseas guardarlos?",
-          dismissButtonLabel: "Cancelar",
-          proceedLinkLabel: "Descartar cambios"
-        })
+        setUnsavedChanges(unsavedCopy.dataGridSave)
       } else {
         clearUnsavedChanges()
       }
     },
-    [setUnsavedChanges, clearUnsavedChanges]
+    [setUnsavedChanges, clearUnsavedChanges, unsavedCopy.dataGridSave]
   )
 
   const handleDataGridToggle = useCallback(
     (next: boolean) => {
       if (isDataGridView && !next && isGridDirty) {
-        toast("Tienes cambios sin guardar en el editor de productos")
+        toast(unsavedCopy.dataGridWarning)
       }
       setIsDataGridView(next)
     },
-    [isDataGridView, isGridDirty]
+    [isDataGridView, isGridDirty, unsavedCopy.dataGridWarning]
   )
 
   // Initialize themes only on first load
@@ -701,7 +700,7 @@ export default function Workbench({
         return (
           <>
             <DrawerHeader>
-              <DrawerTitle>Temas</DrawerTitle>
+              <DrawerTitle>{tMobile("themes")}</DrawerTitle>
             </DrawerHeader>
             <ThemeSelector menu={menu} />
           </>
@@ -710,7 +709,7 @@ export default function Workbench({
         return (
           <>
             <DrawerHeader>
-              <DrawerTitle>Ajustes</DrawerTitle>
+              <DrawerTitle>{tMobile("settings")}</DrawerTitle>
             </DrawerHeader>
             <SettingsPanel />
           </>
@@ -719,7 +718,7 @@ export default function Workbench({
         return (
           <>
             <DrawerHeader>
-              <DrawerTitle>Elementos</DrawerTitle>
+              <DrawerTitle>{tMobile("elements")}</DrawerTitle>
             </DrawerHeader>
             <ToolboxPanel
               organization={organization}
@@ -735,7 +734,7 @@ export default function Workbench({
         return (
           <>
             <DrawerHeader>
-              <DrawerTitle>Secciones</DrawerTitle>
+              <DrawerTitle>{tMobile("sections")}</DrawerTitle>
             </DrawerHeader>
             <Layers renderLayer={DefaultLayer} />
           </>
@@ -837,14 +836,12 @@ export default function Workbench({
                 <GuardLink href={"/dashboard"}>
                   <Button variant="ghost" size="sm">
                     <ChevronLeft className="size-5" />
-                    Regresar
+                    {t("back")}
                   </Button>
                 </GuardLink>
                 <TooltipHelper
                   content={
-                    isDataGridView
-                      ? "Ocultar editor de productos"
-                      : "Mostrar editor de productos"
+                    isDataGridView ? t("hideDataGrid") : t("showDataGrid")
                   }
                 >
                   <div>
@@ -853,7 +850,7 @@ export default function Workbench({
                       variant="default"
                       pressed={isDataGridView}
                       onPressedChange={handleDataGridToggle}
-                      aria-label="Toggle data grid view"
+                      aria-label={t("toggleDataGrid")}
                     >
                       <DatabaseIcon className="size-4" />
                     </Toggle>
@@ -962,7 +959,9 @@ export default function Workbench({
                     className="editor-size block p-2 text-center text-sm
                       text-gray-400"
                   >
-                    {frameSize === FrameSize.DESKTOP ? "Escritorio" : "Móvil"}
+                    {frameSize === FrameSize.DESKTOP
+                      ? t("desktop")
+                      : t("mobile")}
                   </span>
                   <div
                     className={cn(

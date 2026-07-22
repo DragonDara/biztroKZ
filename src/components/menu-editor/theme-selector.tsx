@@ -8,12 +8,14 @@ import { hexToRgba } from "@uiw/react-color"
 import { useAtom } from "jotai"
 import { ChevronsUpDown } from "lucide-react"
 import lz from "lzutf8"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 
 import { useSetUnsavedChanges } from "@/components/dashboard/unsaved-changes-provider"
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import PresetSelector from "@/components/menu-editor/preset-selector"
 import SideSection from "@/components/menu-editor/side-section"
+import { useMenuEditorUnsavedCopy } from "@/components/menu-editor/use-menu-editor-unsaved"
 import { Button } from "@/components/ui/button"
 import {
   DrawerContent,
@@ -123,6 +125,10 @@ export default function ThemeSelector({
 }: {
   menu: Awaited<ReturnType<typeof getMenuById>>
 }) {
+  const tPublish = useTranslations("menuEditor.publish")
+  const tCommon = useTranslations("dashboard.common")
+  const tTheme = useTranslations("menuEditor.theme")
+  const unsavedCopy = useMenuEditorUnsavedCopy()
   const { nodes, actions, query } = useEditor(state => ({
     nodes: state.nodes
   }))
@@ -313,7 +319,7 @@ export default function ThemeSelector({
   } = useAction(updateMenuSerialData, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        toast.success("Menú actualizado")
+        toast.success(tPublish("menuUpdated"))
         queryClient.invalidateQueries({
           queryKey: ["menu", menu?.id]
         })
@@ -325,7 +331,7 @@ export default function ThemeSelector({
       resetSerialData()
     },
     onError: () => {
-      toast.error("Ocurrió un error")
+      toast.error(tCommon("genericError"))
       resetSerialData()
     }
   })
@@ -340,10 +346,7 @@ export default function ThemeSelector({
         menu?.colorTheme !== colorThemeId
       ) {
         setUnsavedChanges({
-          message:
-            "Tienes cambios sin guardar ¿Estás seguro de salir del Editor?",
-          dismissButtonLabel: "Cancelar",
-          proceedLinkLabel: "Descartar cambios",
+          ...unsavedCopy.editorLeave,
           proceedAction: () => {
             setFontThemeId(menu.fontTheme)
             setColorThemeId(menu.colorTheme)
@@ -360,7 +363,8 @@ export default function ThemeSelector({
     setUnsavedChanges,
     setFontThemeId,
     setColorThemeId,
-    clearUnsavedChanges
+    clearUnsavedChanges,
+    unsavedCopy.editorLeave
   ])
 
   if (!menu) return null
@@ -379,7 +383,7 @@ export default function ThemeSelector({
 
   return (
     <div className="editor-theme flex flex-col">
-      <SideSection title="Tema predefinido">
+      <SideSection title={tTheme("presetTheme")}>
         <PresetSelector
           colorThemes={colorThemes}
           currentFontTheme={fontThemeId}
@@ -406,10 +410,10 @@ export default function ThemeSelector({
           }}
         />
       </SideSection>
-      <SideSection title="Tipografía">
+      <SideSection title={tTheme("typography")}>
         <ThemedSelector
           isMobile={isMobile}
-          title="Tipografías"
+          title={tTheme("typographySelector")}
           items={fontThemes}
           currentValue={fontThemeId}
           onValueChange={setFontThemeId}
@@ -461,10 +465,10 @@ export default function ThemeSelector({
           )}
         />
       </SideSection>
-      <SideSection title="Colores">
+      <SideSection title={tTheme("colors")}>
         <ThemedSelector
           isMobile={isMobile}
-          title="Colores"
+          title={tTheme("colors")}
           items={colorThemes}
           currentValue={colorThemeId}
           onValueChange={setColorThemeId}
@@ -524,7 +528,7 @@ export default function ThemeSelector({
             >
               <SheetTrigger asChild>
                 <Button variant="secondary" size="xs" className="w-full">
-                  Personalizar colores
+                  {tTheme("customizeColors")}
                 </Button>
               </SheetTrigger>
               <SheetContent
@@ -532,9 +536,9 @@ export default function ThemeSelector({
                 side={isMobile ? "bottom" : "right"}
               >
                 <SheetHeader>
-                  <SheetTitle>Personalizar colores</SheetTitle>
+                  <SheetTitle>{tTheme("customizeColors")}</SheetTitle>
                   <SheetDescription>
-                    Personaliza los colores de tu menú
+                    {tTheme("customizeColorsDescription")}
                   </SheetDescription>
                 </SheetHeader>
                 <ColorThemeEditor

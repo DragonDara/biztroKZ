@@ -1,25 +1,4 @@
-import { Languages, ShoppingBag, Tags } from "lucide-react"
-
-import { DashboardSecondaryNav } from "@/components/dashboard/dashboard-secondary-nav"
-import type { SecondaryNavItem } from "@/components/dashboard/secondary-nav"
-
-const SecondaryNavItems = [
-  {
-    title: "Productos",
-    href: "dashboard/menu-items",
-    icon: <ShoppingBag className="size-4 shrink-0" />
-  },
-  {
-    title: "Categorías",
-    href: "dashboard/menu-items/categories",
-    icon: <Tags className="size-4 shrink-0" />
-  },
-  {
-    title: "Traducciones",
-    href: "dashboard/menu-items/translations",
-    icon: <Languages className="size-4 shrink-0" />
-  }
-] satisfies SecondaryNavItem[]
+import { CatalogSecondaryNav } from "@/app/dashboard/menu-items/catalog-secondary-nav"
 
 export default function Layout({
   children,
@@ -30,7 +9,7 @@ export default function Layout({
 }) {
   return (
     <>
-      <DashboardSecondaryNav items={SecondaryNavItems} />
+      <CatalogSecondaryNav />
       <div className="relative w-full">{modal}</div>
       <div className="flex grow pb-4">{children}</div>
     </>

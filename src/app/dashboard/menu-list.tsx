@@ -1,10 +1,11 @@
 "use client"
 
-import { use, useState } from "react"
+import { use, useMemo, useState } from "react"
 import toast from "react-hot-toast"
 import { type Menu } from "@/generated/prisma-client/client"
 import { CircleCheck, MoreHorizontal } from "lucide-react"
 import { AnimatePresence, motion } from "motion/react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
 import Link from "next/link"
@@ -57,6 +58,8 @@ export default function MenuList({
 }
 
 function MenuCard({ menu, isActive }: { menu: Menu; isActive: boolean }) {
+  const t = useTranslations("dashboard.menus")
+  const tCommon = useTranslations("dashboard.common")
   const [openDelete, setOpenDelete] = useState<boolean>(false)
   const [openRename, setOpenRename] = useState<boolean>(false)
   const [showUpgrade, setShowUpgrade] = useState(false)
@@ -64,7 +67,7 @@ function MenuCard({ menu, isActive }: { menu: Menu; isActive: boolean }) {
 
   const { execute: executeDuplicate, reset } = useAction(duplicateMenu, {
     onExecute: () => {
-      toast.loading("Duplicando Menú...")
+      toast.loading(t("duplicateLoading"))
     },
     onSuccess: ({ data }) => {
       toast.dismiss()
@@ -72,15 +75,15 @@ function MenuCard({ menu, isActive }: { menu: Menu; isActive: boolean }) {
         if (data.failure.code === BasicPlanLimits.MENU_LIMIT_REACHED) {
           setShowUpgrade(true)
         } else {
-          toast.error(data.failure.reason ?? "Ocurrió un error")
+          toast.error(data.failure.reason ?? tCommon("genericError"))
         }
         return
       }
-      toast.success("Menú duplicado")
+      toast.success(t("duplicated"))
       reset()
     },
     onError: () => {
-      toast.error("No se pudo duplicar el menú")
+      toast.error(t("duplicateError"))
       reset()
     }
   })
@@ -89,25 +92,44 @@ function MenuCard({ menu, isActive }: { menu: Menu; isActive: boolean }) {
     setActiveMenu,
     {
       onExecute: () => {
-        toast.loading("Actualizando menú activo...")
+        toast.loading(t("setActiveLoading"))
       },
       onSuccess: ({ data }) => {
         toast.dismiss()
         if (data?.failure) {
-          toast.error(data.failure.reason ?? "Ocurrió un error")
+          toast.error(data.failure.reason ?? tCommon("genericError"))
           return
         }
-        toast.success("Menú activo actualizado")
+        toast.success(t("setActiveSuccess"))
         resetActive()
       },
       onError: () => {
-        toast.error("No se pudo actualizar el menú activo")
+        toast.error(t("setActiveError"))
         resetActive()
       }
     }
   )
 
   const canSetActive = menu.status === MenuStatus.PUBLISHED && !isActive
+
+  const statusBadge = useMemo(() => {
+    switch (menu.status) {
+      case MenuStatus.PUBLISHED:
+        return (
+          <Badge variant="blue" className="rounded-full">
+            {t("statusPublished")}
+          </Badge>
+        )
+      case MenuStatus.DRAFT:
+        return (
+          <Badge variant="secondary" className="rounded-full">
+            {t("statusDraft")}
+          </Badge>
+        )
+      default:
+        return null
+    }
+  }, [menu.status, t])
 
   return (
     <motion.div
@@ -146,24 +168,7 @@ function MenuCard({ menu, isActive }: { menu: Menu; isActive: boolean }) {
           </Link>
           <div className="flex flex-row items-center justify-between gap-1">
             <div className="flex flex-row gap-1">
-              {(() => {
-                switch (menu.status) {
-                  case MenuStatus.PUBLISHED:
-                    return (
-                      <Badge variant="blue" className="rounded-full">
-                        Publicado
-                      </Badge>
-                    )
-                  case MenuStatus.DRAFT:
-                    return (
-                      <Badge variant="secondary" className="rounded-full">
-                        Borrador
-                      </Badge>
-                    )
-                  default:
-                    return null
-                }
-              })()}
+              {statusBadge}
 
               {isActive && menu.status === MenuStatus.PUBLISHED && (
                 <Badge
@@ -172,7 +177,7 @@ function MenuCard({ menu, isActive }: { menu: Menu; isActive: boolean }) {
                     rounded-full px-1.5"
                 >
                   <CircleCheck className="size-3" />
-                  Activo
+                  {t("active")}
                 </Badge>
               )}
             </div>
@@ -184,46 +189,44 @@ function MenuCard({ menu, isActive }: { menu: Menu; isActive: boolean }) {
                     variant="ghost"
                     size="icon"
                     className="size-8 text-gray-700"
-                    aria-label="Más acciones"
+                    aria-label={t("moreActions")}
                   >
                     <MoreHorizontal className="size-3.5" />
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-32">
-                  <DropdownMenuLabel>Acciones</DropdownMenuLabel>
+                  <DropdownMenuLabel>{tCommon("actions")}</DropdownMenuLabel>
                   <DropdownMenuItem asChild>
                     <Link href={`/menu-editor/${menu.id}`} prefetch={false}>
-                      <span>Editar</span>
+                      <span>{tCommon("edit")}</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => executeDuplicate({ id: menu.id })}
                   >
-                    <span>Duplicar</span>
+                    <span>{tCommon("duplicate")}</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => setOpenRename(true)}>
-                    <span>Renombrar</span>
+                    <span>{tCommon("rename")}</span>
                   </DropdownMenuItem>
                   {canSetActive && (
                     <DropdownMenuItem
                       onClick={() => executeSetActive({ id: menu.id })}
                     >
-                      <span>Marcar como activo</span>
+                      <span>{t("setActive")}</span>
                     </DropdownMenuItem>
                   )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem
                     onClick={() => {
                       if (isActive) {
-                        toast.error(
-                          "No puedes eliminar el menú activo. Selecciona otro menú activo primero."
-                        )
+                        toast.error(t("cannotDeleteActive"))
                         return
                       }
                       setOpenDelete(true)
                     }}
                   >
-                    <span className="text-red-500">Eliminar</span>
+                    <span className="text-red-500">{tCommon("delete")}</span>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -236,8 +239,8 @@ function MenuCard({ menu, isActive }: { menu: Menu; isActive: boolean }) {
       <UpgradeDialog
         open={showUpgrade}
         onClose={() => setShowUpgrade(false)}
-        title="Impulsa tu negocio con el plan Pro"
-        description="Actualiza tu plan a Pro para crear más menús y acceder a todas las funciones premium."
+        title={t("upgradeTitle")}
+        description={t("upgradeDescription")}
       />
     </motion.div>
   )

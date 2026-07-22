@@ -6,10 +6,11 @@ import toast from "react-hot-toast"
 import { type Location } from "@/generated/prisma-client/client"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import Image from "next/image"
 import { TextMorph } from "torph/react"
-import { type z } from "zod/v4"
+import { type z as zType } from "zod/v4"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -52,7 +53,51 @@ export default function LocationForm({
   submitLabel?: string
   secondaryAction?: ReactNode
 }) {
-  const form = useForm<z.infer<typeof locationSchema>>({
+  const t = useTranslations("dashboard.settings.location.form")
+
+  /* const locationSchema = useMemo(
+    () =>
+      z.object({
+        id: z.string().optional(),
+        name: z
+          .string({
+            error: issue =>
+              issue.input === undefined
+                ? t("validation.nameRequired")
+                : undefined
+          })
+          .min(3, { error: t("validation.nameTooShort") })
+          .max(100),
+        description: z.string().optional(),
+        address: z
+          .string({
+            error: issue =>
+              issue.input === undefined
+                ? t("validation.addressRequired")
+                : undefined
+          })
+          .min(3, { error: t("validation.addressInvalid") }),
+        phone: z
+          .string()
+          .regex(/^\d{10}$/, { error: t("validation.phoneInvalid") })
+          .optional(),
+        facebook: z.string().optional(),
+        instagram: z.string().optional(),
+        twitter: z.string().optional(),
+        tiktok: z.string().optional(),
+        whatsapp: z.string().optional(),
+        website: z.url().optional(),
+        organizationId: z.string().optional(),
+        serviceDelivery: z.boolean().default(false).optional(),
+        serviceTakeout: z.boolean().default(false).optional(),
+        serviceDineIn: z.boolean().default(false).optional(),
+        deliveryFee: z.number().min(0).default(0).optional(),
+        currency: z.enum(["MXN", "USD"]).default("MXN").optional()
+      }),
+    [t]
+  ) */
+
+  const form = useForm<zType.infer<typeof locationSchema>>({
     resolver: zodResolver(locationSchema),
     defaultValues: {
       id: data?.id,
@@ -82,7 +127,7 @@ export default function LocationForm({
   } = useAction(createLocation, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        toast.success("Sucursal creada")
+        toast.success(t("created"))
         // Reload the form with the latest data
         const result = data?.success
         form.reset({
@@ -112,7 +157,7 @@ export default function LocationForm({
       resetCreate()
     },
     onError: () => {
-      toast.error("No se pudo actualizar la sucursal")
+      toast.error(t("updateError"))
       resetCreate()
     }
   })
@@ -124,7 +169,7 @@ export default function LocationForm({
   } = useAction(updateLocation, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        toast.success("Sucursal actualizada")
+        toast.success(t("updated"))
         onSuccess?.(data.success)
       } else if (data?.failure.reason) {
         toast.error(data.failure.reason)
@@ -132,12 +177,12 @@ export default function LocationForm({
       resetUpdate()
     },
     onError: () => {
-      toast.error("No se pudo actualizar la sucursal")
+      toast.error(t("updateError"))
       resetUpdate()
     }
   })
 
-  const onSubmit = (values: z.infer<typeof locationSchema>) => {
+  const onSubmit = (values: zType.infer<typeof locationSchema>) => {
     if (data) {
       executeUpdate(values)
     } else {
@@ -177,14 +222,13 @@ export default function LocationForm({
             control={form.control}
             render={({ field, fieldState }) => (
               <Field>
-                <FieldLabel htmlFor={field.name}>
-                  Nombre de la sucursal
-                </FieldLabel>
-                <Input {...field} id={field.name} placeholder="Nombre" />
-                <FieldDescription>
-                  Nombre de referencia para la sucursal, no será visible para
-                  los clientes
-                </FieldDescription>
+                <FieldLabel htmlFor={field.name}>{t("branchName")}</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder={t("branchNamePlaceholder")}
+                />
+                <FieldDescription>{t("branchNameHint")}</FieldDescription>
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -196,11 +240,11 @@ export default function LocationForm({
             control={form.control}
             render={({ field, fieldState }) => (
               <Field>
-                <FieldLabel htmlFor={field.name}>Descripción</FieldLabel>
+                <FieldLabel htmlFor={field.name}>{t("description")}</FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
-                  placeholder="Descripción (opcional)"
+                  placeholder={t("descriptionPlaceholder")}
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
@@ -213,8 +257,12 @@ export default function LocationForm({
             control={form.control}
             render={({ field, fieldState }) => (
               <Field>
-                <FieldLabel htmlFor={field.name}>Dirección</FieldLabel>
-                <Input {...field} id={field.name} placeholder="Dirección" />
+                <FieldLabel htmlFor={field.name}>{t("address")}</FieldLabel>
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder={t("addressPlaceholder")}
+                />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -226,17 +274,15 @@ export default function LocationForm({
             control={form.control}
             render={({ field, fieldState }) => (
               <Field>
-                <FieldLabel htmlFor={field.name}>Teléfono</FieldLabel>
+                <FieldLabel htmlFor={field.name}>{t("phone")}</FieldLabel>
                 <Input
                   type="tel"
                   {...field}
                   id={field.name}
                   className="sm:w-1/2"
-                  placeholder="Teléfono (opcional)"
+                  placeholder={t("phonePlaceholder")}
                 />
-                <FieldDescription>
-                  Número de teléfono de la sucursal sin espacios ni guiones
-                </FieldDescription>
+                <FieldDescription>{t("phoneHint")}</FieldDescription>
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -246,10 +292,8 @@ export default function LocationForm({
         </FieldGroup>
       </FieldSet>
       <FieldSet disabled={!enabled} className="mt-10">
-        <FieldLegend>Redes sociales y contacto</FieldLegend>
-        <FieldDescription>
-          Agrega las redes sociales y métodos de contacto de esta sucursal
-        </FieldDescription>
+        <FieldLegend>{t("socialLegend")}</FieldLegend>
+        <FieldDescription>{t("socialDescription")}</FieldDescription>
         <FieldGroup>
           <Controller
             name="facebook"
@@ -269,7 +313,11 @@ export default function LocationForm({
                   />
                   Facebook
                 </FieldLabel>
-                <Input {...field} id={field.name} placeholder="usuario" />
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder={t("usernamePlaceholder")}
+                />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -294,7 +342,11 @@ export default function LocationForm({
                   />
                   Instagram
                 </FieldLabel>
-                <Input {...field} id={field.name} placeholder="usuario" />
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder={t("usernamePlaceholder")}
+                />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -319,7 +371,11 @@ export default function LocationForm({
                   />
                   Twitter
                 </FieldLabel>
-                <Input {...field} id={field.name} placeholder="usuario" />
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder={t("usernamePlaceholder")}
+                />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -344,7 +400,11 @@ export default function LocationForm({
                   />
                   TikTok
                 </FieldLabel>
-                <Input {...field} id={field.name} placeholder="usuario" />
+                <Input
+                  {...field}
+                  id={field.name}
+                  placeholder={t("usernamePlaceholder")}
+                />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -372,7 +432,7 @@ export default function LocationForm({
                 <Input
                   {...field}
                   id={field.name}
-                  placeholder="Número de teléfono"
+                  placeholder={t("whatsappPlaceholder")}
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
@@ -383,10 +443,8 @@ export default function LocationForm({
         </FieldGroup>
       </FieldSet>
       <FieldSet disabled={!enabled} className="mt-10">
-        <FieldLegend>Servicios</FieldLegend>
-        <FieldDescription>
-          Configura los servicios que ofrece esta sucursal
-        </FieldDescription>
+        <FieldLegend>{t("servicesLegend")}</FieldLegend>
+        <FieldDescription>{t("servicesDescription")}</FieldDescription>
         <FieldGroup>
           <Controller
             name="serviceDineIn"
@@ -395,10 +453,8 @@ export default function LocationForm({
               <FieldLabel htmlFor={field.name}>
                 <Field orientation="horizontal">
                   <FieldContent>
-                    <FieldTitle>Comer aquí</FieldTitle>
-                    <FieldDescription>
-                      Habilitar consumo en local
-                    </FieldDescription>
+                    <FieldTitle>{t("dineIn")}</FieldTitle>
+                    <FieldDescription>{t("dineInHint")}</FieldDescription>
                   </FieldContent>
                   <Switch
                     id={field.name}
@@ -416,8 +472,8 @@ export default function LocationForm({
               <FieldLabel htmlFor={field.name}>
                 <Field orientation="horizontal">
                   <FieldContent>
-                    <FieldTitle>Para llevar</FieldTitle>
-                    <FieldDescription>Habilitar para llevar</FieldDescription>
+                    <FieldTitle>{t("takeout")}</FieldTitle>
+                    <FieldDescription>{t("takeoutHint")}</FieldDescription>
                   </FieldContent>
                   <Switch
                     id={field.name}
@@ -435,10 +491,8 @@ export default function LocationForm({
               <FieldLabel htmlFor={field.name}>
                 <Field orientation="horizontal">
                   <FieldContent>
-                    <FieldTitle>A domicilio</FieldTitle>
-                    <FieldDescription>
-                      Habilitar entrega a domicilio
-                    </FieldDescription>
+                    <FieldTitle>{t("delivery")}</FieldTitle>
+                    <FieldDescription>{t("deliveryHint")}</FieldDescription>
                   </FieldContent>
                   <Switch
                     id={field.name}
@@ -456,7 +510,7 @@ export default function LocationForm({
               render={({ field, fieldState }) => (
                 <Field>
                   <FieldLabel htmlFor={field.name}>
-                    Costo de envío a domicilio
+                    {t("deliveryFee")}
                   </FieldLabel>
                   <Input
                     {...field}
@@ -467,7 +521,7 @@ export default function LocationForm({
                     onFocus={e => (e.target as HTMLInputElement).select()}
                     inputMode="decimal"
                   />
-                  <FieldDescription>0 = Gratis</FieldDescription>
+                  <FieldDescription>{t("deliveryFree")}</FieldDescription>
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
@@ -479,12 +533,10 @@ export default function LocationForm({
               control={form.control}
               render={({ field }) => (
                 <Field>
-                  <FieldLabel htmlFor={field.name}>
-                    Moneda por defecto
-                  </FieldLabel>
+                  <FieldLabel htmlFor={field.name}>{t("currency")}</FieldLabel>
                   <Select onValueChange={field.onChange} value={field.value}>
                     <SelectTrigger>
-                      <SelectValue placeholder="Seleccionar moneda" />
+                      <SelectValue placeholder={t("currencyPlaceholder")} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value={"KZT"}>KZT</SelectItem>
@@ -514,9 +566,9 @@ export default function LocationForm({
                 )}
                 <TextMorph>
                   {statusUpdate === "executing" || statusCreate === "executing"
-                    ? "Guardando..."
+                    ? t("saving")
                     : (submitLabel ??
-                      (data ? "Actualizar sucursal" : "Crear sucursal"))}
+                      (data ? t("updateBranch") : t("createBranch")))}
                 </TextMorph>
               </Button>
             </div>

@@ -4,6 +4,7 @@ import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
@@ -40,6 +41,7 @@ export function VariantCreate({
   setOpen: (open: boolean) => void
   menuItemId: string
 }) {
+  const t = useTranslations("dashboard.menuItems.variants")
   const isMobile = useIsMobile()
 
   if (isMobile) {
@@ -47,11 +49,8 @@ export function VariantCreate({
       <Drawer open={open} onOpenChange={setOpen}>
         <DrawerContent>
           <DrawerHeader className="text-left">
-            <DrawerTitle>Variantes</DrawerTitle>
-            <DrawerDescription>
-              Agrega una variante para mostrar diferentes opciones de un mismo
-              producto
-            </DrawerDescription>
+            <DrawerTitle>{t("title")}</DrawerTitle>
+            <DrawerDescription>{t("description")}</DrawerDescription>
           </DrawerHeader>
           <div className="px-4 pb-4">
             <VariantCreateForm menuItemId={menuItemId} onClose={setOpen} />
@@ -65,11 +64,8 @@ export function VariantCreate({
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Variantes</DialogTitle>
-          <DialogDescription>
-            Agrega una variante para mostrar diferentes opciones de un mismo
-            producto
-          </DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
         <VariantCreateForm menuItemId={menuItemId} onClose={setOpen} />
       </DialogContent>
@@ -84,6 +80,8 @@ export function VariantCreateForm({
   menuItemId: string
   onClose: (open: boolean) => void
 }) {
+  const t = useTranslations("dashboard.menuItems.variants")
+  const tCommon = useTranslations("dashboard.common")
   const form = useForm<z.infer<typeof variantSchema>>({
     resolver: zodResolver(variantSchema),
     defaultValues: {
@@ -106,7 +104,7 @@ export function VariantCreateForm({
       reset()
     },
     onError: () => {
-      toast.error("Ocurrió un error")
+      toast.error(tCommon("genericError"))
       reset()
     }
   })
@@ -126,11 +124,11 @@ export function VariantCreateForm({
         control={form.control}
         render={({ field, fieldState }) => (
           <Field>
-            <FieldLabel htmlFor={field.name}>Nombre</FieldLabel>
+            <FieldLabel htmlFor={field.name}>{t("nameLabel")}</FieldLabel>
             <Input
               {...field}
               id={field.name}
-              placeholder="Nombre de la variante"
+              placeholder={t("namePlaceholder")}
             />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
@@ -141,13 +139,13 @@ export function VariantCreateForm({
         control={form.control}
         render={({ field, fieldState }) => (
           <Field>
-            <FieldLabel htmlFor={field.name}>Precio</FieldLabel>
+            <FieldLabel htmlFor={field.name}>{t("priceLabel")}</FieldLabel>
             <Input
               {...field}
               id={field.name}
               type="number"
               inputMode="decimal"
-              placeholder="Precio"
+              placeholder={t("pricePlaceholder")}
               onChange={e => field.onChange(Number(e.target.value))}
               onFocus={e => (e.target as HTMLInputElement).select()}
               value={field.value ?? ""}
@@ -161,7 +159,7 @@ export function VariantCreateForm({
           <Loader className="mr-2 size-4 animate-spin" />
         )}
         <TextMorph>
-          {status === "executing" ? "Creando..." : "Crear variante"}
+          {status === "executing" ? t("creating") : t("create")}
         </TextMorph>
       </Button>
     </form>

@@ -1,4 +1,7 @@
+"use client"
+
 import { useNode } from "@craftjs/core"
+import { useTranslations } from "next-intl"
 
 import type { HeaderBlockProps } from "@/components/menu-editor/blocks/header-block"
 import SideSection from "@/components/menu-editor/side-section"
@@ -6,6 +9,7 @@ import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 
 export default function HeaderSettings() {
+  const t = useTranslations("menuEditor.blocks")
   const {
     actions: { setProp },
     showBanner,
@@ -21,10 +25,10 @@ export default function HeaderSettings() {
   }))
   return (
     <>
-      <SideSection title="Imágenes">
+      <SideSection title={t("common.images")}>
         <div className="grid grid-cols-2 items-center gap-y-2">
           <dt>
-            <Label size="xs">Logo</Label>
+            <Label size="xs">{t("header.logo")}</Label>
           </dt>
           <dd className="flex items-center">
             <Switch
@@ -39,7 +43,7 @@ export default function HeaderSettings() {
             />
           </dd>
           <dt>
-            <Label size="xs">Portada</Label>
+            <Label size="xs">{t("header.cover")}</Label>
           </dt>
           <dd className="flex items-center">
             <Switch
@@ -55,10 +59,10 @@ export default function HeaderSettings() {
           </dd>
         </div>
       </SideSection>
-      <SideSection title="Negocio">
+      <SideSection title={t("common.business")}>
         <div className="grid grid-cols-2 items-center gap-y-2">
           <dt>
-            <Label size="xs">Datos del negocio</Label>
+            <Label size="xs">{t("header.businessInfo")}</Label>
           </dt>
           <dd className="flex items-center">
             <Switch
@@ -73,7 +77,7 @@ export default function HeaderSettings() {
             />
           </dd>
           <dt>
-            <Label size="xs">Redes sociales</Label>
+            <Label size="xs">{t("header.socialMedia")}</Label>
           </dt>
           <dd className="flex items-center">
             <Switch

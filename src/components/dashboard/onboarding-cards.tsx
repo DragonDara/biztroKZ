@@ -9,6 +9,7 @@ import {
   ShoppingBag,
   Store
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 
 import OnboardingProgress from "@/components/dashboard/onboarding-progress"
@@ -42,6 +43,8 @@ export function OnboardingCards({
   menuItemsReady,
   progress
 }: OnboardingCardsProps) {
+  const t = useTranslations("dashboard.onboarding")
+  const tCommon = useTranslations("dashboard.common")
   const [isCollapsed, setIsCollapsed] = useAtom(onboardingCardsCollapsedAtom)
 
   return (
@@ -52,9 +55,9 @@ export function OnboardingCards({
       <div className="mb-4 flex items-end sm:mb-2 sm:items-center">
         <div className="grow">
           <PageSubtitle>
-            <PageSubtitle.Title>Bienvenido a Biztro</PageSubtitle.Title>
+            <PageSubtitle.Title>{t("welcome")}</PageSubtitle.Title>
             <PageSubtitle.Description>
-              Aquí tienes algunos enlaces para comenzar a configurar tu negocio.
+              {t("description")}
             </PageSubtitle.Description>
             <PageSubtitle.Actions>
               <OnboardingProgress progres={progress} />
@@ -84,7 +87,9 @@ export function OnboardingCards({
                 <Badge className="p-2" variant="violet">
                   <Store className="size-4" />
                 </Badge>
-                <CardTitle className="text-lg font-medium">Negocio</CardTitle>
+                <CardTitle className="text-lg font-medium">
+                  {t("business")}
+                </CardTitle>
               </div>
               <Link href="/dashboard/settings" prefetch={false}>
                 <Button
@@ -95,11 +100,15 @@ export function OnboardingCards({
                   {orgReady ? (
                     <>
                       <CheckCircle className="size-4" />
-                      <span className="hidden xl:inline">Listo</span>
+                      <span className="hidden xl:inline">
+                        {tCommon("ready")}
+                      </span>
                     </>
                   ) : (
                     <>
-                      <span className="hidden xl:inline">Ver</span>
+                      <span className="hidden xl:inline">
+                        {tCommon("view")}
+                      </span>
                       <ArrowRight className="size-4" />
                     </>
                   )}
@@ -108,7 +117,7 @@ export function OnboardingCards({
             </CardHeader>
             <CardContent className="space-y-2 p-3">
               <CardDescription className="text-xs">
-                Captura la información de tu negocio, como nombre, logo, etc.
+                {t("businessDescription")}
               </CardDescription>
             </CardContent>
           </Card>
@@ -125,7 +134,9 @@ export function OnboardingCards({
                 <Badge className="p-2" variant="destructive">
                   <MapPin className="size-4" />
                 </Badge>
-                <CardTitle className="text-lg font-medium">Sucursal</CardTitle>
+                <CardTitle className="text-lg font-medium">
+                  {t("location")}
+                </CardTitle>
               </div>
               <Link href="/dashboard/settings/locations" prefetch={false}>
                 <Button
@@ -136,11 +147,15 @@ export function OnboardingCards({
                   {locationReady ? (
                     <>
                       <CheckCircle className="size-4" />
-                      <span className="hidden xl:inline">Listo</span>
+                      <span className="hidden xl:inline">
+                        {tCommon("ready")}
+                      </span>
                     </>
                   ) : (
                     <>
-                      <span className="hidden xl:inline">Ver</span>
+                      <span className="hidden xl:inline">
+                        {tCommon("view")}
+                      </span>
                       <ArrowRight className="size-4" />
                     </>
                   )}
@@ -149,7 +164,7 @@ export function OnboardingCards({
             </CardHeader>
             <CardContent className="space-y-2 p-3">
               <CardDescription className="text-xs">
-                Registra la dirección, horarios y redes sociales.
+                {t("locationDescription")}
               </CardDescription>
             </CardContent>
           </Card>
@@ -166,7 +181,9 @@ export function OnboardingCards({
                 <Badge className="p-2" variant="green">
                   <ShoppingBag className="size-4" />
                 </Badge>
-                <CardTitle className="text-lg font-medium">Productos</CardTitle>
+                <CardTitle className="text-lg font-medium">
+                  {t("products")}
+                </CardTitle>
               </div>
               <Link href="/dashboard/menu-items" prefetch={false}>
                 <Button
@@ -177,11 +194,15 @@ export function OnboardingCards({
                   {menuItemsReady ? (
                     <>
                       <CheckCircle className="size-4" />
-                      <span className="hidden xl:inline">Listo</span>
+                      <span className="hidden xl:inline">
+                        {tCommon("ready")}
+                      </span>
                     </>
                   ) : (
                     <>
-                      <span className="hidden xl:inline">Ver</span>
+                      <span className="hidden xl:inline">
+                        {tCommon("view")}
+                      </span>
                       <ArrowRight className="size-4" />
                     </>
                   )}
@@ -190,7 +211,7 @@ export function OnboardingCards({
             </CardHeader>
             <CardContent className="space-y-2 p-3">
               <CardDescription className="text-xs">
-                Crea tus productos y categorías para tu menú.
+                {t("productsDescription")}
               </CardDescription>
             </CardContent>
           </Card>

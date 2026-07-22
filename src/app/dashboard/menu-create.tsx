@@ -5,6 +5,7 @@ import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
 import { CirclePlus, Loader } from "lucide-react"
 import { motion } from "motion/react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { usePostHog } from "posthog-js/react"
@@ -14,6 +15,7 @@ import { createMenu } from "@/server/actions/menu/mutations"
 import { BasicPlanLimits } from "@/lib/types/billing"
 
 export default function MenuCreate() {
+  const t = useTranslations("dashboard.menus")
   const router = useRouter()
   const posthog = usePostHog()
   const [showUpgrade, setShowUpgrade] = useState(false)
@@ -32,7 +34,6 @@ export default function MenuCreate() {
         }
       }
 
-      // Track menu creation
       if (data?.success) {
         posthog.capture("menu_created", {
           menu_id: data.success.id,
@@ -49,7 +50,7 @@ export default function MenuCreate() {
       Sentry.captureException(error, {
         tags: { section: "menu-create" }
       })
-      toast.error("No se pudo crear el menú")
+      toast.error(t("createError"))
       reset()
     }
   })
@@ -65,7 +66,7 @@ export default function MenuCreate() {
         disabled={status === "executing"}
         onClick={() =>
           execute({
-            name: "Nuevo menú",
+            name: t("newMenuDefaultName"),
             description: "",
             status: "DRAFT"
           })
@@ -76,14 +77,14 @@ export default function MenuCreate() {
         ) : (
           <CirclePlus className="size-10" />
         )}
-        Crear menú
+        {t("create")}
       </motion.button>
 
       <UpgradeDialog
         open={showUpgrade}
         onClose={() => setShowUpgrade(false)}
-        title="Impulsa tu negocio con el plan Pro"
-        description="Actualiza tu plan a Pro para crear más menús y acceder a todas las funciones premium."
+        title={t("upgradeTitle")}
+        description={t("upgradeDescription")}
       />
     </>
   )

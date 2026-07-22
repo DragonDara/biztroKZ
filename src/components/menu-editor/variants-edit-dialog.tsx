@@ -4,6 +4,7 @@ import * as React from "react"
 import { Controller, useFieldArray, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader, PlusCircle, Trash } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { TextMorph } from "torph/react"
 import { z } from "zod/v4"
 
@@ -28,20 +29,15 @@ import {
 } from "@/components/ui/table"
 import type { MenuItemRow } from "./types"
 
-// Schema for variant editing
-const variantSchema = z.object({
-  id: z.string(),
-  name: z.string().min(1, "Nombre requerido").max(100, "Nombre muy largo"),
-  price: z.number().min(0, "Precio no puede ser negativo"),
-  description: z.string().optional().nullable(),
-  menuItemId: z.string()
-})
-
-const variantsFormSchema = z.object({
-  variants: z.array(variantSchema).min(1, "Debe tener al menos una variante")
-})
-
-type VariantsFormValues = z.infer<typeof variantsFormSchema>
+type VariantsFormValues = {
+  variants: Array<{
+    id: string
+    name: string
+    price: number
+    description?: string | null
+    menuItemId: string
+  }>
+}
 
 interface VariantsEditDialogProps {
   open: boolean
@@ -56,6 +52,31 @@ export function VariantsEditDialog({
   item,
   onSave
 }: VariantsEditDialogProps) {
+  const t = useTranslations("menuEditor.dataGrid.variantsEdit")
+  const tVariants = useTranslations("dashboard.menuItems.variants")
+  const tCommon = useTranslations("dashboard.common")
+
+  const variantsFormSchema = React.useMemo(
+    () =>
+      z.object({
+        variants: z
+          .array(
+            z.object({
+              id: z.string(),
+              name: z
+                .string()
+                .min(1, t("nameRequired"))
+                .max(100, t("nameTooLong")),
+              price: z.number().min(0, t("priceNegative")),
+              description: z.string().optional().nullable(),
+              menuItemId: z.string()
+            })
+          )
+          .min(1, t("minOneVariant"))
+      }),
+    [t]
+  )
+
   const form = useForm<VariantsFormValues>({
     resolver: zodResolver(variantsFormSchema),
     defaultValues: {
@@ -68,7 +89,6 @@ export function VariantsEditDialog({
     name: "variants"
   })
 
-  // Reset form when item changes
   React.useEffect(() => {
     if (item) {
       form.reset({
@@ -100,7 +120,6 @@ export function VariantsEditDialog({
   }
 
   const handleRemoveVariant = (index: number) => {
-    // Prevent removing the last variant
     if (fields.length <= 1) return
     remove(index)
   }
@@ -111,11 +130,8 @@ export function VariantsEditDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Editar variantes: {item.name}</DialogTitle>
-          <DialogDescription>
-            Edita las variantes de este producto. Debe tener al menos una
-            variante.
-          </DialogDescription>
+          <DialogTitle>{t("title", { name: item.name })}</DialogTitle>
+          <DialogDescription>{t("description")}</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={form.handleSubmit(handleSubmit)}>
@@ -123,9 +139,15 @@ export function VariantsEditDialog({
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead className="w-50">Nombre</TableHead>
-                  <TableHead className="w-37.5">Precio</TableHead>
-                  <TableHead className="w-20">Acciones</TableHead>
+                  <TableHead className="w-50">
+                    {tVariants("columnName")}
+                  </TableHead>
+                  <TableHead className="w-37.5">
+                    {tVariants("columnPrice")}
+                  </TableHead>
+                  <TableHead className="w-20">
+                    {tVariants("columnActions")}
+                  </TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -141,12 +163,12 @@ export function VariantsEditDialog({
                               htmlFor={inputField.name}
                               className="sr-only"
                             >
-                              Nombre
+                              {tVariants("nameLabel")}
                             </FieldLabel>
                             <Input
                               {...inputField}
                               id={inputField.name}
-                              placeholder="Nombre de la variante"
+                              placeholder={tVariants("namePlaceholder")}
                             />
                             {fieldState.invalid && (
                               <FieldError errors={[fieldState.error]} />
@@ -165,7 +187,7 @@ export function VariantsEditDialog({
                               htmlFor={inputField.name}
                               className="sr-only"
                             >
-                              Precio
+                              {tVariants("priceLabel")}
                             </FieldLabel>
                             <Input
                               {...inputField}
@@ -174,7 +196,7 @@ export function VariantsEditDialog({
                               inputMode="decimal"
                               step="0.01"
                               min={0}
-                              placeholder="Precio"
+                              placeholder={tVariants("pricePlaceholder")}
                               onChange={e =>
                                 inputField.onChange(Number(e.target.value))
                               }
@@ -213,7 +235,7 @@ export function VariantsEditDialog({
               className="mt-4 w-full gap-1"
             >
               <PlusCircle className="size-3.5" />
-              Agregar variante
+              {t("addVariant")}
             </Button>
           </div>
 
@@ -223,14 +245,14 @@ export function VariantsEditDialog({
               variant="secondary"
               onClick={() => onOpenChange(false)}
             >
-              Cancelar
+              {tCommon("cancel")}
             </Button>
             <Button type="submit" disabled={form.formState.isSubmitting}>
               {form.formState.isSubmitting && (
                 <Loader className="mr-2 size-4 animate-spin" />
               )}
               <TextMorph>
-                {form.formState.isSubmitting ? "Guardando" : "Guardar cambios"}
+                {form.formState.isSubmitting ? t("saving") : t("saveChanges")}
               </TextMorph>
             </Button>
           </DialogFooter>

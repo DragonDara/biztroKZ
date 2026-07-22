@@ -102,6 +102,7 @@ import {
 } from "@/server/actions/item/queries"
 import { translateMenuItemForLocale } from "@/server/actions/item/translations"
 import { syncMenusAfterCatalogChange } from "@/server/actions/menu/sync"
+import { useItemFormLabels } from "@/app/dashboard/menu-items/[action]/[id]/use-item-form-labels"
 import { VariantCreate } from "@/app/dashboard/menu-items/[action]/[id]/variant-create"
 import VariantForm from "@/app/dashboard/menu-items/[action]/[id]/variant-form"
 import type { Currency } from "@/lib/currency"
@@ -115,18 +116,6 @@ import {
 } from "@/lib/types/menu-item"
 import { type SupportedLocaleCode } from "@/lib/types/translations"
 import { cn } from "@/lib/utils"
-
-const spanishLanguageNames = new Intl.DisplayNames(["es"], {
-  type: "language"
-})
-
-function getLocaleLabel(locale?: string | null) {
-  if (!locale) {
-    return ""
-  }
-
-  return spanishLanguageNames.of(locale) ?? locale
-}
 
 function sortTranslationsByLocale<T extends { locale: string }>(
   translations: T[]
@@ -257,30 +246,6 @@ function getTabForIssuePath(path: string): FormTab {
     : "details"
 }
 
-function getMenuItemStatusMeta(status: MenuItemStatus) {
-  switch (status) {
-    case MenuItemStatus.ACTIVE:
-      return {
-        label: "Activo",
-        variant: "green",
-        description: "Visible para mostrarse en los menús activos."
-      } as const
-    case MenuItemStatus.ARCHIVED:
-      return {
-        label: "Archivado",
-        variant: "secondary",
-        description: "Fuera de circulación, pero conservado para referencia."
-      } as const
-    case MenuItemStatus.DRAFT:
-    default:
-      return {
-        label: "Borrador",
-        variant: "violet",
-        description: "Todavía no se muestra a clientes hasta publicarlo."
-      } as const
-  }
-}
-
 export default function ItemForm({
   item,
   // categories,
@@ -292,8 +257,11 @@ export default function ItemForm({
   // categories: Prisma.PromiseReturnType<typeof getCategories>
   action: string
   isPro: boolean
-  availableTranslationLocales: SupportedLocaleCode[]
+  availableTranslationLocales?: SupportedLocaleCode[]
 }) {
+  const { t, tProducts, getLocaleLabel, getMenuItemStatusMeta, title } =
+    useItemFormLabels(action)
+
   const form = useForm<z.output<typeof menuItemFormSchema>>({
     resolver: zodResolver(menuItemFormSchema),
     defaultValues: {
@@ -403,7 +371,8 @@ export default function ItemForm({
         {
           variantIndex: index,
           translationIndex,
-          variantName: variant.name || `Variante ${index + 1}`
+          variantName:
+            variant.name || t("variantFallbackName", { index: index + 1 })
         }
       ]
     }
@@ -491,11 +460,11 @@ export default function ItemForm({
 
   const getIssueLabel = (path: string) => {
     if (path === "name") {
-      return "Nombre del producto"
+      return t("issueProductName")
     }
 
     if (path === "description") {
-      return "Descripción del producto"
+      return t("issueProductDescription")
     }
 
     if (path.startsWith("translations.")) {
@@ -505,14 +474,14 @@ export default function ItemForm({
 
       if (fieldName === "name") {
         return localeLabel
-          ? `Título traducido (${localeLabel})`
-          : "Título traducido"
+          ? t("issueTranslatedTitleWithLocale", { locale: localeLabel })
+          : t("issueTranslatedTitle")
       }
 
       if (fieldName === "description") {
         return localeLabel
-          ? `Descripción traducida (${localeLabel})`
-          : "Descripción traducida"
+          ? t("issueTranslatedDescriptionWithLocale", { locale: localeLabel })
+          : t("issueTranslatedDescription")
       }
     }
 
@@ -531,31 +500,38 @@ export default function ItemForm({
           variant?.translations?.[Number(translationIndexText)]
         const localeLabel = getLocaleLabel(translation?.locale)
         const variantLabel =
-          variant?.name || `Variante ${Number(variantIndexText) + 1}`
+          variant?.name ||
+          t("variantFallbackName", { index: Number(variantIndexText) + 1 })
 
         if (fieldName === "name") {
           return localeLabel
-            ? `Variante ${variantLabel} (${localeLabel})`
-            : `Variante ${variantLabel}`
+            ? t("issueVariantWithLocale", {
+                name: variantLabel,
+                locale: localeLabel
+              })
+            : t("issueVariant", { name: variantLabel })
         }
 
         if (fieldName === "description") {
           return localeLabel
-            ? `Descripción de ${variantLabel} (${localeLabel})`
-            : `Descripción de ${variantLabel}`
+            ? t("issueVariantDescriptionWithLocale", {
+                name: variantLabel,
+                locale: localeLabel
+              })
+            : t("issueVariantDescription", { name: variantLabel })
         }
       }
     }
 
     if (path.startsWith("variants.")) {
-      return "Variantes"
+      return t("issueVariants")
     }
 
     if (path === "variants") {
-      return "Variantes"
+      return t("issueVariants")
     }
 
-    return "Formulario"
+    return t("issueForm")
   }
 
   const queryClient = useQueryClient()
@@ -574,15 +550,12 @@ export default function ItemForm({
   )
   const selectedCategoryName =
     categoryList.find(category => category.id === currentCategoryId)?.name ??
-    "Sin categoría"
-
-  const title = `${action === "new" ? "Crear" : "Editar"} Producto`
+    t("noCategory")
 
   const { guard: guardTranslationGeneration, dialog: proGuardDialog } =
     useProGuard(isPro, {
-      title: "Actualiza a Pro",
-      description:
-        "La traducción automática por producto está disponible solo en el plan Pro. Actualiza para completar las traducciones faltantes de este producto."
+      title: t("proGuardTitle"),
+      description: t("proGuardDescription")
     })
 
   const applyGeneratedTranslations = ({
@@ -730,7 +703,7 @@ export default function ItemForm({
         resetCategory()
       },
       onError: () => {
-        toast.error("No se pudo agregar la categoría")
+        toast.error(t("toasts.categoryAddError"))
         resetCategory()
       }
     }
@@ -746,14 +719,21 @@ export default function ItemForm({
         applyGeneratedTranslations(data.success)
 
         const translatedParts = [
-          data.success.itemTranslation ? "el producto" : null,
+          data.success.itemTranslation
+            ? t("toasts.translatePartProduct")
+            : null,
           data.success.variantTranslations.length > 0
-            ? `${data.success.variantTranslations.length} variante${data.success.variantTranslations.length === 1 ? "" : "s"}`
+            ? t("toasts.translatePartVariants", {
+                count: data.success.variantTranslations.length
+              })
             : null
         ].filter(Boolean)
 
         toast.success(
-          `Se tradujo ${translatedParts.join(" y ")} al ${getLocaleLabel(data.success.locale)}`
+          t("toasts.translateSuccess", {
+            parts: translatedParts.join(` ${t("toasts.and")} `),
+            locale: getLocaleLabel(data.success.locale)
+          })
         )
         router.refresh()
       } else if (data?.failure?.reason) {
@@ -763,7 +743,7 @@ export default function ItemForm({
       resetTranslateItem()
     },
     onError: () => {
-      toast.error("No se pudo traducir el contenido faltante del producto")
+      toast.error(t("toasts.translateError"))
       resetTranslateItem()
     }
   })
@@ -779,7 +759,7 @@ export default function ItemForm({
 
   const handleOpenVariant = () => {
     if (form.formState.isDirty) {
-      toast("Guarda los cambios antes de agregar una variante")
+      toast(t("toasts.saveBeforeVariant"))
       return
     }
     setOpenVariant(true)
@@ -791,12 +771,12 @@ export default function ItemForm({
     }
 
     if (!item?.id) {
-      toast.error("No se pudo encontrar el producto para traducir")
+      toast.error(t("toasts.productNotFoundForTranslate"))
       return
     }
 
     if (form.formState.isDirty) {
-      toast("Guarda los cambios antes de generar traducciones")
+      toast(t("toasts.saveBeforeTranslate"))
       return
     }
 
@@ -839,7 +819,7 @@ export default function ItemForm({
       if (data?.success) {
         const { draftsUpdated, publishedUpdated } = data.success
         if (draftsUpdated || publishedUpdated) {
-          toast.success("Menú actualizado")
+          toast.success(tProducts("menuUpdated"))
         }
       } else if (data?.failure?.reason) {
         toast.error(data.failure.reason)
@@ -848,7 +828,7 @@ export default function ItemForm({
       setSyncPrompt(prev => ({ ...prev, open: false, rememberChoice: false }))
     },
     onError: () => {
-      toast.error("No se pudo actualizar los menús")
+      toast.error(tProducts("menuUpdateError"))
       setSyncPrompt(prev => ({ ...prev, open: false }))
     }
   })
@@ -857,10 +837,10 @@ export default function ItemForm({
     onSuccess: ({ data }) => {
       if (data?.success) {
         const syncMeta = data.success.sync
-        toast.success("Producto actualizado")
+        toast.success(t("toasts.productUpdated"))
 
         if (syncMeta?.publishedUpdated) {
-          toast.success("Menú publicado actualizado")
+          toast.success(tProducts("publishedMenuUpdated"))
         }
 
         if (syncMeta?.needsPublishedDecision) {
@@ -884,7 +864,7 @@ export default function ItemForm({
       reset()
     },
     onError: () => {
-      toast.error("No se pudo actualizar el producto")
+      toast.error(t("toasts.updateError"))
     }
   })
 
@@ -928,7 +908,7 @@ export default function ItemForm({
           }
         }
 
-        toast.error("Revisa la traducción activa antes de guardar")
+        toast.error(t("toasts.reviewActiveTranslation"))
         return
       }
 
@@ -970,7 +950,7 @@ export default function ItemForm({
           }
         }
 
-        toast.error("Revisa las traducciones de las variantes antes de guardar")
+        toast.error(t("toasts.reviewVariantTranslations"))
         return
       }
 
@@ -1027,7 +1007,7 @@ export default function ItemForm({
     const firstIssue = issues[0]
 
     if (!firstIssue) {
-      toast.error("Revisa los campos marcados antes de guardar")
+      toast.error(t("toasts.reviewMarkedFields"))
       return
     }
 
@@ -1054,7 +1034,7 @@ export default function ItemForm({
       }
     }
 
-    toast.error("Revisa los errores del formulario antes de guardar")
+    toast.error(t("toasts.reviewFormErrors"))
   }
 
   const handleSyncChoice = (updatePublished: boolean) => {
@@ -1079,10 +1059,8 @@ export default function ItemForm({
     return (
       <Alert variant="warning">
         <TriangleAlert className="size-4" />
-        <AlertTitle>Producto no encontrado</AlertTitle>
-        <AlertDescription>
-          El producto que buscas no existe o fue eliminado
-        </AlertDescription>
+        <AlertTitle>{t("notFoundTitle")}</AlertTitle>
+        <AlertDescription>{t("notFoundDescription")}</AlertDescription>
       </Alert>
     )
   }
@@ -1104,12 +1082,10 @@ export default function ItemForm({
           {form.formState.submitCount > 0 && validationIssues.length > 0 && (
             <Alert variant="warning">
               <TriangleAlert className="size-4" />
-              <AlertTitle>No se pudo guardar el producto</AlertTitle>
+              <AlertTitle>{t("saveFailedTitle")}</AlertTitle>
               <AlertDescription>
                 <div className="flex flex-col gap-2 text-sm">
-                  <p className="text-pretty">
-                    Corrige los campos marcados antes de volver a guardar.
-                  </p>
+                  <p className="text-pretty">{t("saveFailedDescription")}</p>
                   <ul className="list-disc pl-5">
                     {validationIssues.slice(0, 5).map(issue => (
                       <li key={`${issue.path}-${issue.message}`}>
@@ -1141,24 +1117,23 @@ export default function ItemForm({
                     className="bg-muted/40 grid grid-cols-2 rounded-xl p-1"
                   >
                     <TabsTrigger value="details" className="rounded-lg">
-                      Detalles
+                      {t("tabs.details")}
                     </TabsTrigger>
                     <TabsTrigger value="translations" className="rounded-lg">
-                      Traducciones
+                      {t("tabs.translations")}
                     </TabsTrigger>
                   </TabsList>
                   {form.formState.isDirty && (
                     <span
-                      aria-label="Cambios sin guardar"
-                      title="Cambios sin guardar"
+                      aria-label={t("unsavedChanges")}
+                      title={t("unsavedChanges")}
                       className="size-2 rounded-full bg-yellow-500"
                     />
                   )}
                   {form.formState.submitCount > 0 &&
                     validationIssues.length > 0 && (
                       <Badge variant="destructive">
-                        {validationIssues.length} pendiente
-                        {validationIssues.length === 1 ? "" : "s"}
+                        {t("pendingCount", { count: validationIssues.length })}
                       </Badge>
                     )}
                 </div>
@@ -1170,7 +1145,7 @@ export default function ItemForm({
                     size="sm"
                     onClick={() => router.back()}
                   >
-                    Cerrar
+                    {t("close")}
                   </Button>
                   <Button
                     disabled={status === "executing"}
@@ -1181,7 +1156,7 @@ export default function ItemForm({
                       <Loader className="mr-2 size-4 animate-spin" />
                     )}
                     <TextMorph>
-                      {status === "executing" ? "Guardando" : "Guardar"}
+                      {status === "executing" ? t("saving") : t("save")}
                     </TextMorph>
                   </Button>
                 </div>
@@ -1199,9 +1174,9 @@ export default function ItemForm({
                       @min-[38rem]/item-main:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.85fr)]"
                   >
                     <FieldSet>
-                      <FieldLegend>Detalles del producto</FieldLegend>
+                      <FieldLegend>{t("productDetailsLegend")}</FieldLegend>
                       <FieldDescription className="text-pretty">
-                        Nombre y descripción base.
+                        {t("productDetailsDescription")}
                       </FieldDescription>
                       <FieldGroup>
                         <Controller
@@ -1212,13 +1187,13 @@ export default function ItemForm({
                               data-invalid={fieldState.invalid || undefined}
                             >
                               <FieldLabel htmlFor={field.name}>
-                                Nombre
+                                {t("nameLabel")}
                               </FieldLabel>
                               <Input
                                 {...field}
                                 id={field.name}
                                 aria-invalid={fieldState.invalid || undefined}
-                                placeholder="Nombre del producto"
+                                placeholder={t("namePlaceholder")}
                               />
                               {fieldState.invalid && (
                                 <FieldError errors={[fieldState.error]} />
@@ -1234,13 +1209,13 @@ export default function ItemForm({
                               data-invalid={fieldState.invalid || undefined}
                             >
                               <FieldLabel htmlFor={field.name}>
-                                Descripción
+                                {t("descriptionLabel")}
                               </FieldLabel>
                               <Textarea
                                 {...field}
                                 id={field.name}
                                 aria-invalid={fieldState.invalid || undefined}
-                                placeholder="Agrega una descripción. Describe detalles como ingredientes, sabor, etc."
+                                placeholder={t("descriptionPlaceholder")}
                               />
                               {fieldState.invalid && (
                                 <FieldError errors={[fieldState.error]} />
@@ -1252,9 +1227,9 @@ export default function ItemForm({
                     </FieldSet>
 
                     <FieldSet>
-                      <FieldLegend>Imagen del producto</FieldLegend>
+                      <FieldLegend>{t("imageLegend")}</FieldLegend>
                       <FieldDescription className="text-pretty">
-                        Imagen usada en el catálogo y el menú.
+                        {t("imageDescription")}
                       </FieldDescription>
                       <div className="h-full min-h-64">
                         {item?.image ? (
@@ -1289,9 +1264,9 @@ export default function ItemForm({
                     py-5 shadow-xs @min-[40rem]/item-main:px-6"
                 >
                   <FieldSet>
-                    <FieldLegend>Disponibilidad y visibilidad</FieldLegend>
+                    <FieldLegend>{t("availabilityLegend")}</FieldLegend>
                     <FieldDescription className="text-pretty">
-                      Estado, moneda y visibilidad del producto.
+                      {t("availabilityDescription")}
                     </FieldDescription>
                     <FieldContent
                       className="grid gap-0 divide-y
@@ -1308,23 +1283,23 @@ export default function ItemForm({
                               py-4 @min-[38rem]/item-main:px-5
                               @min-[38rem]/item-main:py-0"
                           >
-                            <FieldLegend>Estatus del producto</FieldLegend>
+                            <FieldLegend>{t("statusLegend")}</FieldLegend>
                             <Select
                               onValueChange={field.onChange}
                               value={field.value}
                             >
                               <SelectTrigger className="mt-3 w-full">
-                                <SelectValue placeholder="Seleccionar estado" />
+                                <SelectValue placeholder={t("selectStatus")} />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value={MenuItemStatus.ACTIVE}>
-                                  Activo
+                                  {tProducts("statusActive")}
                                 </SelectItem>
                                 <SelectItem value={MenuItemStatus.DRAFT}>
-                                  Borrador
+                                  {tProducts("statusDraft")}
                                 </SelectItem>
                                 <SelectItem value={MenuItemStatus.ARCHIVED}>
-                                  Archivado
+                                  {tProducts("statusArchived")}
                                 </SelectItem>
                               </SelectContent>
                             </Select>
@@ -1340,13 +1315,15 @@ export default function ItemForm({
                               py-4 @min-[38rem]/item-main:px-5
                               @min-[38rem]/item-main:py-0"
                           >
-                            <FieldLegend>Moneda</FieldLegend>
+                            <FieldLegend>{t("currencyLegend")}</FieldLegend>
                             <Select
                               onValueChange={field.onChange}
                               value={field.value}
                             >
                               <SelectTrigger className="mt-3 w-full">
-                                <SelectValue placeholder="Seleccionar moneda" />
+                                <SelectValue
+                                  placeholder={t("selectCurrency")}
+                                />
                               </SelectTrigger>
                               <SelectContent>
                                 <SelectItem value="KZT">KZT</SelectItem>
@@ -1370,9 +1347,9 @@ export default function ItemForm({
                               className="flex items-start justify-between gap-4"
                             >
                               <div className="min-w-0 space-y-2">
-                                <FieldLegend>Recomendado</FieldLegend>
+                                <FieldLegend>{t("featuredLegend")}</FieldLegend>
                                 <FieldDescription className="mt-2">
-                                  Mostrar en recomendados.
+                                  {t("featuredDescription")}
                                 </FieldDescription>
                               </div>
 
@@ -1397,9 +1374,9 @@ export default function ItemForm({
                       px-5 py-5 shadow-xs @min-[40rem]/item-main:px-6"
                   >
                     <FieldSet>
-                      <FieldLegend>Variantes</FieldLegend>
+                      <FieldLegend>{t("variantsLegend")}</FieldLegend>
                       <FieldDescription className="text-pretty">
-                        Opciones como tamaño o presentación.
+                        {t("variantsDescription")}
                       </FieldDescription>
                       <FieldGroup>
                         <VariantForm fieldArray={fields} parentForm={form} />
@@ -1410,7 +1387,7 @@ export default function ItemForm({
                           className="w-full gap-1"
                         >
                           <PlusCircle className="size-3.5" />
-                          Crear variante
+                          {t("createVariant")}
                         </Button>
                       </FieldGroup>
                     </FieldSet>
@@ -1421,9 +1398,9 @@ export default function ItemForm({
                       px-5 py-5 shadow-xs @min-[40rem]/item-main:px-6"
                   >
                     <FieldSet>
-                      <FieldLegend>Categoría</FieldLegend>
+                      <FieldLegend>{t("categoryLegend")}</FieldLegend>
                       <FieldDescription className="text-pretty">
-                        Agrupa este producto dentro del menú.
+                        {t("categoryDescription")}
                       </FieldDescription>
                       <Controller
                         name="categoryId"
@@ -1437,7 +1414,7 @@ export default function ItemForm({
                                     label: category.name,
                                     value: category.id
                                   }))}
-                                  type="Categoría"
+                                  type={t("categoryType")}
                                   value={field.value}
                                   onValueChange={(val: string) => {
                                     form.setValue("categoryId", val)
@@ -1448,7 +1425,7 @@ export default function ItemForm({
                                     <ComboboxInput
                                       value={searchCategory}
                                       onValueChange={setSearchCategory}
-                                      placeholder="Buscar categoría..."
+                                      placeholder={t("searchCategory")}
                                     />
                                     <ComboboxList>
                                       <ComboboxEmpty>
@@ -1486,7 +1463,7 @@ export default function ItemForm({
                                   type="button"
                                   variant="outline"
                                   size="icon"
-                                  aria-label="Limpiar categoría"
+                                  aria-label={t("clearCategory")}
                                   onClick={() => {
                                     form.setValue("categoryId", "")
                                   }}
@@ -1507,9 +1484,9 @@ export default function ItemForm({
                     py-5 shadow-xs @min-[40rem]/item-main:px-6"
                 >
                   <FieldSet>
-                    <FieldLegend>Alérgenos e indicadores</FieldLegend>
+                    <FieldLegend>{t("allergensLegend")}</FieldLegend>
                     <FieldDescription className="text-pretty">
-                      Marca alergias o atributos especiales.
+                      {t("allergensDescription")}
                     </FieldDescription>
                     <Controller
                       name="allergens"
@@ -1528,7 +1505,7 @@ export default function ItemForm({
                                 form.setValue("allergens", v)
                               }
                             >
-                              <TagsTrigger placeholder="Buscar alérgenos o indicadores">
+                              <TagsTrigger placeholder={t("searchAllergens")}>
                                 {values.map(val => (
                                   <TagsValue
                                     variant="indigo"
@@ -1544,7 +1521,7 @@ export default function ItemForm({
                                 ))}
                               </TagsTrigger>
                               <TagsContent>
-                                <TagsInput placeholder="Buscar alérgenos o indicadores" />
+                                <TagsInput placeholder={t("searchAllergens")} />
                                 <TagsList>
                                   <TagsEmpty className="p-2" />
                                   <TagsGroup>
@@ -1584,10 +1561,10 @@ export default function ItemForm({
               <div className="space-y-4">
                 <div className="space-y-2">
                   <h2 className="text-base font-medium">
-                    Traducciones disponibles
+                    {t("translationsTitle")}
                   </h2>
                   <FieldDescription className="text-pretty">
-                    Edita los idiomas ya creados.
+                    {t("translationsDescription")}
                   </FieldDescription>
                 </div>
                 {availableLocales.length > 0 ? (
@@ -1596,17 +1573,27 @@ export default function ItemForm({
                       <Alert variant="warning">
                         <Sparkles className="size-4" />
                         <AlertTitle>
-                          Faltan traducciones en {activeLocaleLabel}
+                          {t("missingTranslationsTitle", {
+                            locale: activeLocaleLabel
+                          })}
                         </AlertTitle>
                         <AlertDescription>
                           <div className="flex flex-col gap-3 text-sm">
                             <p className="text-pretty">
                               {hasMissingItemTranslation &&
                               inactiveVariantTranslationCount > 0
-                                ? `Aun no existe el texto del producto ni ${inactiveVariantTranslationCount} variante${inactiveVariantTranslationCount === 1 ? "" : "s"} en ${activeLocaleLabel}.`
+                                ? t("missingProductAndVariants", {
+                                    count: inactiveVariantTranslationCount,
+                                    locale: activeLocaleLabel
+                                  })
                                 : hasMissingItemTranslation
-                                  ? `Aun no existe el texto del producto en ${activeLocaleLabel}.`
-                                  : `Aun faltan ${inactiveVariantTranslationCount} variante${inactiveVariantTranslationCount === 1 ? "" : "s"} por traducir en ${activeLocaleLabel}.`}
+                                  ? t("missingProductOnly", {
+                                      locale: activeLocaleLabel
+                                    })
+                                  : t("missingVariantsOnly", {
+                                      count: inactiveVariantTranslationCount,
+                                      locale: activeLocaleLabel
+                                    })}
                             </p>
                             <div className="flex flex-wrap items-center gap-2">
                               <Button
@@ -1624,13 +1611,13 @@ export default function ItemForm({
                                 )}
                                 <TextMorph>
                                   {translateItemStatus === "executing"
-                                    ? "Traduciendo"
-                                    : "Traducir con IA"}
+                                    ? t("translating")
+                                    : t("translateWithAi")}
                                 </TextMorph>
                               </Button>
                               {!isPro && (
                                 <Badge variant="outline">
-                                  Disponible en Pro
+                                  {t("availableOnPro")}
                                 </Badge>
                               )}
                             </div>
@@ -1650,16 +1637,16 @@ export default function ItemForm({
                         >
                           <div className="space-y-2">
                             <h3 className="text-base font-medium">
-                              Idioma activo
+                              {t("activeLocaleTitle")}
                             </h3>
                             <FieldDescription className="text-pretty">
-                              Selecciona el idioma que quieres revisar.
+                              {t("activeLocaleDescription")}
                             </FieldDescription>
                           </div>
                           <FieldGroup>
                             <Field>
                               <FieldLabel htmlFor="translation-locale">
-                                Idioma
+                                {t("languageLabel")}
                               </FieldLabel>
                               <Select
                                 value={activeLocale}
@@ -1673,7 +1660,9 @@ export default function ItemForm({
                                   id="translation-locale"
                                   className="w-full"
                                 >
-                                  <SelectValue placeholder="Selecciona un idioma" />
+                                  <SelectValue
+                                    placeholder={t("selectLanguage")}
+                                  />
                                 </SelectTrigger>
                                 <SelectContent>
                                   <SelectGroup>
@@ -1699,9 +1688,9 @@ export default function ItemForm({
                                               text-xs"
                                           >
                                             {localeOption.hasItemTranslation
-                                              ? "Producto"
-                                              : "Sin producto"}
-                                            {` · ${localeOption.translatedVariantsCount} variantes`}
+                                              ? t("localeProduct")
+                                              : t("localeNoProduct")}
+                                            {` · ${t("localeVariantsCount", { count: localeOption.translatedVariantsCount })}`}
                                           </span>
                                         </span>
                                       </SelectItem>
@@ -1710,23 +1699,24 @@ export default function ItemForm({
                                 </SelectContent>
                               </Select>
                               <FieldDescription className="text-pretty">
-                                Los nuevos idiomas se agregan desde traducciones
-                                del menú.
+                                {t("newLocalesHint")}
                               </FieldDescription>
                             </Field>
 
                             <div className="flex flex-wrap gap-2">
                               {shouldShowVariantTranslationSection && (
                                 <Badge variant="indigo">
-                                  {activeVariantTranslationCount} variantes
-                                  editables
+                                  {t("editableVariantsBadge", {
+                                    count: activeVariantTranslationCount
+                                  })}
                                 </Badge>
                               )}
                               {shouldShowVariantTranslationSection &&
                                 inactiveVariantTranslationCount > 0 && (
                                   <Badge variant="outline">
-                                    {inactiveVariantTranslationCount} sin
-                                    traducción aquí
+                                    {t("missingHereBadge", {
+                                      count: inactiveVariantTranslationCount
+                                    })}
                                   </Badge>
                                 )}
                             </div>
@@ -1736,11 +1726,12 @@ export default function ItemForm({
                         <section className="border-border rounded-xl border p-4">
                           <div className="space-y-2">
                             <h3 className="text-base font-medium">
-                              Texto del producto
+                              {t("productTextTitle")}
                             </h3>
                             <FieldDescription className="text-pretty">
-                              Texto visible en{" "}
-                              {activeLocaleLabel || "este idioma"}.
+                              {t("productTextDescription", {
+                                locale: activeLocaleLabel || t("thisLocale")
+                              })}
                             </FieldDescription>
                           </div>
                           {selectedTranslationIndex >= 0 ? (
@@ -1759,7 +1750,7 @@ export default function ItemForm({
                                     }
                                   >
                                     <FieldLabel htmlFor={field.name}>
-                                      Título traducido
+                                      {t("translatedTitleLabel")}
                                     </FieldLabel>
                                     <Input
                                       {...field}
@@ -1767,7 +1758,9 @@ export default function ItemForm({
                                       aria-invalid={
                                         fieldState.invalid || undefined
                                       }
-                                      placeholder={`Nombre en ${activeLocaleLabel}`}
+                                      placeholder={t("nameInLocale", {
+                                        locale: activeLocaleLabel
+                                      })}
                                     />
                                     {fieldState.invalid && (
                                       <FieldError errors={[fieldState.error]} />
@@ -1787,7 +1780,7 @@ export default function ItemForm({
                                     }
                                   >
                                     <FieldLabel htmlFor={field.name}>
-                                      Descripción traducida
+                                      {t("translatedDescriptionLabel")}
                                     </FieldLabel>
                                     <Textarea
                                       {...field}
@@ -1796,7 +1789,9 @@ export default function ItemForm({
                                       aria-invalid={
                                         fieldState.invalid || undefined
                                       }
-                                      placeholder={`Descripción en ${activeLocaleLabel}`}
+                                      placeholder={t("descriptionInLocale", {
+                                        locale: activeLocaleLabel
+                                      })}
                                     />
                                     {fieldState.invalid && (
                                       <FieldError errors={[fieldState.error]} />
@@ -1809,11 +1804,10 @@ export default function ItemForm({
                             <Alert>
                               <Languages className="size-4" />
                               <AlertTitle>
-                                Sin traducción del producto
+                                {t("noProductTranslationTitle")}
                               </AlertTitle>
                               <AlertDescription>
-                                Este idioma todavía no tiene texto para este
-                                producto.
+                                {t("noProductTranslationDescription")}
                               </AlertDescription>
                             </Alert>
                           )}
@@ -1829,20 +1823,23 @@ export default function ItemForm({
                           >
                             <div className="flex flex-col gap-1">
                               <h3 className="text-base font-medium">
-                                Traducciones de variantes
+                                {t("variantTranslationsTitle")}
                               </h3>
                               <FieldDescription className="text-pretty">
-                                Variantes editables en este idioma.
+                                {t("variantTranslationsDescription")}
                               </FieldDescription>
                             </div>
                             <div className="flex flex-wrap gap-2">
                               <Badge variant="indigo">
-                                {activeVariantTranslationCount} editables
+                                {t("editableBadge", {
+                                  count: activeVariantTranslationCount
+                                })}
                               </Badge>
                               {inactiveVariantTranslationCount > 0 && (
                                 <Badge variant="outline">
-                                  {inactiveVariantTranslationCount} pendientes
-                                  en otro idioma
+                                  {t("pendingOtherLocaleBadge", {
+                                    count: inactiveVariantTranslationCount
+                                  })}
                                 </Badge>
                               )}
                             </div>
@@ -1888,7 +1885,7 @@ export default function ItemForm({
                                               }
                                             >
                                               <FieldLabel htmlFor={field.name}>
-                                                Nombre de la variante
+                                                {t("variantNameLabel")}
                                               </FieldLabel>
                                               <Input
                                                 {...field}
@@ -1897,7 +1894,9 @@ export default function ItemForm({
                                                   fieldState.invalid ||
                                                   undefined
                                                 }
-                                                placeholder={`Nombre en ${activeLocaleLabel}`}
+                                                placeholder={t("nameInLocale", {
+                                                  locale: activeLocaleLabel
+                                                })}
                                               />
                                               {fieldState.invalid && (
                                                 <FieldError
@@ -1917,11 +1916,12 @@ export default function ItemForm({
                             <Alert>
                               <Languages className="size-4" />
                               <AlertTitle>
-                                Sin traducciones de variantes
+                                {t("noVariantTranslationsTitle")}
                               </AlertTitle>
                               <AlertDescription>
-                                No hay variantes editables en
-                                {` ${activeLocaleLabel || "este idioma"}`}.
+                                {t("noVariantTranslationsDescription", {
+                                  locale: activeLocaleLabel || t("thisLocale")
+                                })}
                               </AlertDescription>
                             </Alert>
                           )}
@@ -1939,18 +1939,17 @@ export default function ItemForm({
                         <Languages />
                       </EmptyMedia>
                       <EmptyTitle className="text-balance">
-                        Sin traducciones para editar
+                        {t("emptyTranslationsTitle")}
                       </EmptyTitle>
                       <EmptyDescription className="text-pretty">
-                        Agrega un idioma en traducciones del menú para editarlo
-                        aquí.
+                        {t("emptyTranslationsDescription")}
                       </EmptyDescription>
                     </EmptyHeader>
                     <EmptyContent className="items-start">
                       <Button asChild variant="outline">
                         <Link href="/dashboard/menu-items/translations">
                           <Languages data-icon="inline-start" />
-                          Administrar traducciones
+                          {t("manageTranslations")}
                         </Link>
                       </Button>
                     </EmptyContent>
@@ -1970,16 +1969,18 @@ export default function ItemForm({
             className="border-border bg-background rounded-2xl border px-5 py-5
               shadow-xs"
           >
-            <FieldLegend>Resumen operativo</FieldLegend>
+            <FieldLegend>{t("summaryLegend")}</FieldLegend>
             <dl className="mt-4 space-y-4 text-sm">
               <div className="flex items-start justify-between gap-3">
-                <dt className="text-muted-foreground">Estado</dt>
+                <dt className="text-muted-foreground">{t("summaryStatus")}</dt>
                 <dd>
                   <Badge variant={statusMeta.variant}>{statusMeta.label}</Badge>
                 </dd>
               </div>
               <div className="flex items-start justify-between gap-3">
-                <dt className="text-muted-foreground">Categoría</dt>
+                <dt className="text-muted-foreground">
+                  {t("summaryCategory")}
+                </dt>
                 <dd>
                   <Badge
                     variant="outline"
@@ -1990,21 +1991,28 @@ export default function ItemForm({
                 </dd>
               </div>
               <div className="flex items-start justify-between gap-3">
-                <dt className="text-muted-foreground">Variantes</dt>
+                <dt className="text-muted-foreground">
+                  {t("summaryVariants")}
+                </dt>
                 <dd>
                   <Badge variant="secondary">
                     {fields.length > 0
-                      ? `${fields.length} configurada${fields.length === 1 ? "" : "s"}`
-                      : "Sin variantes"}
+                      ? t("variantsConfigured", { count: fields.length })
+                      : t("noVariants")}
                   </Badge>
                 </dd>
               </div>
               <div className="flex items-start justify-between gap-3">
-                <dt className="text-muted-foreground">Cobertura</dt>
+                <dt className="text-muted-foreground">
+                  {t("summaryCoverage")}
+                </dt>
                 <dd className="max-w-44 text-right font-medium text-pretty">
                   {availableLocales.length > 0
-                    ? `${availableLocales.length} idioma${availableLocales.length === 1 ? "" : "s"}, ${activeVariantTranslationCount} variante${activeVariantTranslationCount === 1 ? "" : "s"} editables`
-                    : "Sin traducciones cargadas"}
+                    ? t("coverageSummary", {
+                        localeCount: availableLocales.length,
+                        variantCount: activeVariantTranslationCount
+                      })
+                    : t("noTranslationsLoaded")}
                 </dd>
               </div>
             </dl>

@@ -1,4 +1,6 @@
-import { useEffect, useState } from "react"
+"use client"
+
+import { useEffect, useMemo, useState } from "react"
 import {
   Joyride,
   type BeaconRenderProps,
@@ -8,84 +10,93 @@ import {
 } from "react-joyride"
 import { useAtom } from "jotai"
 import { Check, Play, QrCode } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"
 import { tourModeAtom } from "@/lib/atoms"
 
-const steps: Step[] = [
-  {
-    target: ".editor-topbar",
-    title: "Barra Superior",
-    content: (
-      <div>
-        Accede a las opciones de guardado, vista previa y exportación de tu
-        menú.
-        <ul className="my-4 space-y-3">
-          <li className="flex items-center gap-2">
-            <Play className="size-4 text-orange-400 dark:text-white" />
-            <span>Visualiza tu menú</span>
-          </li>
-          <li className="flex items-center gap-2">
-            <Check className="size-4 text-green-400 dark:text-white" />
-            <span>Guarda los cambios</span>
-          </li>
-          <li className="flex items-center gap-2">
-            <QrCode className="size-4 text-blue-400 dark:text-white" />
-            <span>Genera tu código QR</span>
-          </li>
-          <li className="flex items-center gap-2">
-            <strong className="dark:text-white">Publicar</strong>
-            <span>Publica tu menú en la web</span>
-          </li>
-        </ul>
-      </div>
-    ),
-    placement: "bottom"
-  },
-  {
-    target: ".editor-toolbar",
-    title: "Barra de Herramientas",
-    content: "Accede rápidamente a funciones como deshacer/rehacer.",
-    placement: "top"
-  },
-  {
-    target: ".editor-bottombar",
-    title: "Barra Inferior",
-    content: (
-      <div>
-        Accede a las opciones de elementos y temas para personalizar tu menú.
-        <ul className="mt-2 space-y-2">
-          <li className="flex flex-col gap-2">
-            <strong className="text-white">Elementos</strong>
-            <span>Agrega elementos como encabezados y texto libre.</span>
-          </li>
-          <li className="flex flex-col gap-2">
-            <strong className="text-white">Temas</strong>
-            <span>Elige un tema de color y fuente para tu menú.</span>
-          </li>
-          <li className="flex flex-col gap-2">
-            <strong className="text-white">Secciones</strong>
-            <span>
-              Lista los elementos de tu menú y cambia el orden de los mismos.
-            </span>
-          </li>
-          <li className="flex flex-col gap-2">
-            <strong className="text-white">Ajustes</strong>
-            <span>
-              Selecciona un elemento de tu menú para despúes cambiar su
-              configuración.
-            </span>
-          </li>
-        </ul>
-      </div>
-    ),
-    placement: "top"
-  }
-]
-
 export default function MenuTourMobile() {
+  const t = useTranslations("menuEditor.tourMobile")
   const [tourMode, setTourMode] = useAtom(tourModeAtom)
   const [isMounted, setIsMounted] = useState(false)
+
+  const steps = useMemo<Step[]>(
+    () => [
+      {
+        target: ".editor-topbar",
+        title: t("steps.topbar.title"),
+        content: (
+          <div>
+            {t("steps.topbar.intro")}
+            <ul className="my-4 space-y-3">
+              <li className="flex items-center gap-2">
+                <Play className="size-4 text-orange-400 dark:text-white" />
+                <span>{t("steps.topbar.previewItem")}</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Check className="size-4 text-green-400 dark:text-white" />
+                <span>{t("steps.topbar.saveItem")}</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <QrCode className="size-4 text-blue-400 dark:text-white" />
+                <span>{t("steps.topbar.qrItem")}</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <strong className="dark:text-white">
+                  {t("steps.topbar.publishLabel")}
+                </strong>
+                <span>{t("steps.topbar.publishItem")}</span>
+              </li>
+            </ul>
+          </div>
+        ),
+        placement: "bottom"
+      },
+      {
+        target: ".editor-toolbar",
+        title: t("steps.toolbar.title"),
+        content: t("steps.toolbar.content"),
+        placement: "top"
+      },
+      {
+        target: ".editor-bottombar",
+        title: t("steps.bottombar.title"),
+        content: (
+          <div>
+            {t("steps.bottombar.intro")}
+            <ul className="mt-2 space-y-2">
+              <li className="flex flex-col gap-2">
+                <strong className="text-white">
+                  {t("steps.bottombar.elementsLabel")}
+                </strong>
+                <span>{t("steps.bottombar.elementsContent")}</span>
+              </li>
+              <li className="flex flex-col gap-2">
+                <strong className="text-white">
+                  {t("steps.bottombar.themesLabel")}
+                </strong>
+                <span>{t("steps.bottombar.themesContent")}</span>
+              </li>
+              <li className="flex flex-col gap-2">
+                <strong className="text-white">
+                  {t("steps.bottombar.sectionsLabel")}
+                </strong>
+                <span>{t("steps.bottombar.sectionsContent")}</span>
+              </li>
+              <li className="flex flex-col gap-2">
+                <strong className="text-white">
+                  {t("steps.bottombar.settingsLabel")}
+                </strong>
+                <span>{t("steps.bottombar.settingsContent")}</span>
+              </li>
+            </ul>
+          </div>
+        ),
+        placement: "top"
+      }
+    ],
+    [t]
+  )
 
   useEffect(() => {
     setIsMounted(true)
@@ -110,23 +121,22 @@ export default function MenuTourMobile() {
         zIndex: 1000
       }}
       beaconComponent={Beacon}
-      tooltipComponent={Tooltip}
+      tooltipComponent={props => <Tooltip {...props} />}
       floatingOptions={{
         hideArrow: true
       }}
       locale={{
-        back: "Anterior",
-        close: "Cerrar",
-        last: "Último",
-        next: "Siguiente",
-        skip: "Saltar",
-        open: "Abre el cuadro de diálogo de ayuda"
+        back: t("back"),
+        close: t("close"),
+        last: t("last"),
+        next: t("next"),
+        skip: t("skip"),
+        open: t("openHelp")
       }}
     />
   )
 }
 
-// Reuse the same Tooltip and Beacon components
 function Tooltip({
   backProps,
   index,
@@ -137,6 +147,8 @@ function Tooltip({
   step,
   tooltipProps
 }: TooltipRenderProps) {
+  const t = useTranslations("menuEditor.tourMobile")
+
   return (
     <div
       {...tooltipProps}
@@ -149,21 +161,21 @@ function Tooltip({
       </div>
       <div className="mt-4 flex items-center justify-between">
         <div className="text-xs text-gray-500">
-          {index + 1} de {size}
+          {t("progress", { current: index + 1, total: size })}
         </div>
         <div className="flex justify-end gap-x-2">
           {!isLastStep && (
             <Button {...skipProps} variant="link" size="xs">
-              Saltar
+              {t("skip")}
             </Button>
           )}
           {index > 0 && (
             <Button {...backProps} variant="secondary" size="xs">
-              Anterior
+              {t("back")}
             </Button>
           )}
           <Button {...primaryProps} size="xs">
-            {isLastStep ? "Terminar" : "Siguiente"}
+            {isLastStep ? t("finish") : t("next")}
           </Button>
         </div>
       </div>

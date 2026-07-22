@@ -1,18 +1,24 @@
 import { Suspense } from "react"
-import { type Metadata } from "next"
+import { Link } from "@/i18n/navigation"
+import { getTranslations } from "next-intl/server"
 import Image from "next/image"
-import Link from "next/link"
 
 import Spinner from "@/components/ui/spinner"
 import LoginForm from "@/app/(auth)/login/login-form"
 
-export const metadata: Metadata = {
-  title: "Iniciar sesión",
-  description: "Iniciar sesión en Biztro"
+export async function generateMetadata() {
+  const t = await getTranslations("auth.login")
+
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription")
+  }
 }
 
 // skipcq: JS-0116
 export default async function LoginPage() {
+  const t = await getTranslations("auth.login")
+
   return (
     <div className="flex min-h-full flex-1">
       <div
@@ -34,12 +40,12 @@ export default async function LoginPage() {
               className="font-display mt-4 text-3xl leading-9 font-medium
                 tracking-tight text-gray-900 dark:text-gray-200"
             >
-              Bienvenido
+              {t("welcome")}
             </h2>
             <span
               className="mt-2 block text-sm text-gray-600 dark:text-gray-400"
             >
-              Inicia sesión con tu cuenta de Biztro
+              {t("subtitle")}
             </span>
           </div>
           <div className="mt-10">
@@ -52,7 +58,6 @@ export default async function LoginPage() {
       <div className="relative hidden w-0 flex-1 lg:block">
         <Image
           className="absolute inset-0 h-full w-full object-cover"
-          // src="https://images.unsplash.com/photo-1421622548261-c45bfe178854?q=80&w=2938&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           src="https://images.unsplash.com/photo-1653084019129-1f2303bb5bc0?q=80&w=1800&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
           alt=""
           fill

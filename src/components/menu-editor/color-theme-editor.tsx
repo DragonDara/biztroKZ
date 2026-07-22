@@ -1,4 +1,6 @@
-import { useState } from "react"
+"use client"
+
+import { useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -18,6 +20,7 @@ import {
   WandSparkles
 } from "lucide-react"
 import { nanoid } from "nanoid"
+import { useTranslations } from "next-intl"
 // import { Avatar, AvatarImage } from "@/components/ui/avatar"
 import { useAction } from "next-safe-action/hooks"
 import * as z from "zod/v4"
@@ -74,6 +77,7 @@ export function ColorThemeEditor({
   setTheme: (theme: ColorTheme) => void
   removeTheme: (themeId: string) => void
 }) {
+  const t = useTranslations("menuEditor.theme")
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [themeState, setThemeState] = useState(theme)
   const [isExtracting, setIsExtracting] = useState(false)
@@ -94,12 +98,12 @@ export function ColorThemeEditor({
       }
       if (data?.success) {
         setTheme(JSON.parse(data.success.themeJSON))
-        toast.success("Tema guardado")
+        toast.success(t("themeSaved"))
       }
       reset()
     },
     onError: () => {
-      toast.error("Algo salió mal al guardar el tema")
+      toast.error(t("themeSaveError"))
       reset()
     }
   })
@@ -117,12 +121,12 @@ export function ColorThemeEditor({
 
       if (data?.success) {
         setTheme(JSON.parse(data.success.themeJSON))
-        toast.success("Tema guardado")
+        toast.success(t("themeSaved"))
       }
       resetStatus()
     },
     onError: () => {
-      toast.error("Algo salió mal al guardar el tema")
+      toast.error(t("themeSaveError"))
       resetStatus()
     }
   })
@@ -138,11 +142,11 @@ export function ColorThemeEditor({
         return
       }
       removeTheme(themeState.id)
-      toast.success("Tema eliminado")
+      toast.success(t("themeDeleted"))
       resetDeleteStatus()
     },
     onError: () => {
-      toast.error("Algo salió mal al eliminar el tema")
+      toast.error(t("themeDeleteError"))
       resetDeleteStatus()
     }
   })
@@ -182,7 +186,7 @@ export function ColorThemeEditor({
 
   const extractColorsFromImage = async () => {
     if (!menu?.organization.logo) {
-      toast.error("No hay logo para extraer colores")
+      toast.error(t("noLogoToExtract"))
       return
     }
     try {
@@ -195,7 +199,7 @@ export function ColorThemeEditor({
         })
       } catch {
         setIsExtracting(false)
-        toast.error("Error al extraer colores")
+        toast.error(t("extractColorsError"))
         return
       }
 
@@ -211,26 +215,8 @@ export function ColorThemeEditor({
         textColor: colors[3]?.hex || prev.textColor,
         mutedColor: colors[4]?.hex || prev.mutedColor
       }))
-
-      // Update colorPresets when colors are extracted
-      setColorPresets([
-        {
-          color: colors[0]?.hex || themeState.surfaceColor,
-          title: "Fondo"
-        },
-        {
-          color: colors[1]?.hex || themeState.brandColor,
-          title: "Marca"
-        },
-        {
-          color: colors[2]?.hex || themeState.accentColor,
-          title: "Acento"
-        },
-        { color: colors[3]?.hex || themeState.textColor, title: "Texto" },
-        { color: colors[4]?.hex || themeState.mutedColor, title: "Tenue" }
-      ])
     } catch {
-      toast.error("Error al extraer colores")
+      toast.error(t("extractColorsError"))
     } finally {
       setIsExtracting(false)
     }
@@ -247,13 +233,34 @@ export function ColorThemeEditor({
     }))
   }
 
-  const [colorPresets, setColorPresets] = useState<SwatchPresetColor[]>([
-    { color: themeState.brandColor, title: "Marca" },
-    { color: themeState.accentColor, title: "Acento" },
-    { color: themeState.surfaceColor, title: "Fondo" },
-    { color: themeState.textColor, title: "Texto" },
-    { color: themeState.mutedColor, title: "Tenue" }
-  ])
+  const colorPresets = useMemo<SwatchPresetColor[]>(
+    () => [
+      { color: themeState.brandColor, title: t("colorBrand") },
+      { color: themeState.accentColor, title: t("colorAccent") },
+      { color: themeState.surfaceColor, title: t("colorSurface") },
+      { color: themeState.textColor, title: t("colorText") },
+      { color: themeState.mutedColor, title: t("colorMuted") }
+    ],
+    [
+      themeState.brandColor,
+      themeState.accentColor,
+      themeState.surfaceColor,
+      themeState.textColor,
+      themeState.mutedColor,
+      t
+    ]
+  )
+
+  const drawerColorTitles = useMemo(
+    () => ({
+      surfaceColor: t("surfaceColorTitle"),
+      brandColor: t("brandColorTitle"),
+      accentColor: t("accentColorTitle"),
+      textColor: t("textColorTitle"),
+      mutedColor: t("mutedColorTitle")
+    }),
+    [t]
+  )
 
   return (
     <>
@@ -271,13 +278,13 @@ export function ColorThemeEditor({
           <DrawerContent>
             <DrawerHeader className="text-left">
               <DrawerTitle>
-                {drawerColorKey === "surfaceColor" && "Color de Fondo"}
-                {drawerColorKey === "brandColor" && "Color de Marca"}
-                {drawerColorKey === "accentColor" && "Color de Acento"}
-                {drawerColorKey === "textColor" && "Color de Texto"}
-                {drawerColorKey === "mutedColor" && "Color Tenue"}
+                {drawerColorKey
+                  ? drawerColorTitles[
+                      drawerColorKey as keyof typeof drawerColorTitles
+                    ]
+                  : null}
               </DrawerTitle>
-              <DrawerDescription>Selecciona un color.</DrawerDescription>
+              <DrawerDescription>{t("selectColor")}</DrawerDescription>
             </DrawerHeader>
             <div className="px-4 pb-4">
               <div
@@ -307,7 +314,7 @@ export function ColorThemeEditor({
                   className="w-full"
                   onClick={() => setDrawerColorKey(null)}
                 >
-                  Listo
+                  {t("done")}
                 </Button>
               </div>
             </div>
@@ -324,10 +331,12 @@ export function ColorThemeEditor({
         <fieldset
           className="rounded-lg border border-gray-200 p-4 dark:border-gray-700"
         >
-          <legend className="-ml-1 px-1 text-sm font-medium">Colores</legend>
+          <legend className="-ml-1 px-1 text-sm font-medium">
+            {t("colors")}
+          </legend>
           <div className="grid grid-cols-4 items-center gap-2">
             <dt>
-              <Label size="xs">Fondo</Label>
+              <Label size="xs">{t("colorSurface")}</Label>
             </dt>
             <dd className="flex items-center">
               {isMobile ? (
@@ -336,7 +345,7 @@ export function ColorThemeEditor({
                   className="h-5 w-12 rounded-sm border border-black/20
                     dark:border-white/20"
                   style={{ backgroundColor: themeState.surfaceColor }}
-                  aria-label="Seleccionar color de fondo"
+                  aria-label={t("selectSurfaceColor")}
                   onClick={() => setDrawerColorKey("surfaceColor")}
                 />
               ) : (
@@ -347,7 +356,7 @@ export function ColorThemeEditor({
                       className="h-5 w-12 rounded-sm border border-black/20
                         dark:border-white/20"
                       style={{ backgroundColor: themeState.surfaceColor }}
-                      aria-label="Seleccionar color de fondo"
+                      aria-label={t("selectSurfaceColor")}
                     />
                   </PopoverTrigger>
                   <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
@@ -367,7 +376,7 @@ export function ColorThemeEditor({
               )}
             </dd>
             <dt>
-              <Label size="xs">Marca</Label>
+              <Label size="xs">{t("colorBrand")}</Label>
             </dt>
             <dd className="flex items-center">
               {isMobile ? (
@@ -376,7 +385,7 @@ export function ColorThemeEditor({
                   className="h-5 w-12 rounded-sm border border-black/20
                     dark:border-white/20"
                   style={{ backgroundColor: themeState.brandColor }}
-                  aria-label="Seleccionar color de marca"
+                  aria-label={t("selectBrandColor")}
                   onClick={() => setDrawerColorKey("brandColor")}
                 />
               ) : (
@@ -387,7 +396,7 @@ export function ColorThemeEditor({
                       className="h-5 w-12 rounded-sm border border-black/20
                         dark:border-white/20"
                       style={{ backgroundColor: themeState.brandColor }}
-                      aria-label="Seleccionar color de marca"
+                      aria-label={t("selectBrandColor")}
                     />
                   </PopoverTrigger>
                   <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
@@ -407,7 +416,7 @@ export function ColorThemeEditor({
               )}
             </dd>
             <dt>
-              <Label size="xs">Acento</Label>
+              <Label size="xs">{t("colorAccent")}</Label>
             </dt>
             <dd className="flex items-center">
               {isMobile ? (
@@ -416,7 +425,7 @@ export function ColorThemeEditor({
                   className="h-5 w-12 rounded-sm border border-black/20
                     dark:border-white/20"
                   style={{ backgroundColor: themeState.accentColor }}
-                  aria-label="Seleccionar color de acento"
+                  aria-label={t("selectAccentColor")}
                   onClick={() => setDrawerColorKey("accentColor")}
                 />
               ) : (
@@ -427,7 +436,7 @@ export function ColorThemeEditor({
                       className="h-5 w-12 rounded-sm border border-black/20
                         dark:border-white/20"
                       style={{ backgroundColor: themeState.accentColor }}
-                      aria-label="Seleccionar color de acento"
+                      aria-label={t("selectAccentColor")}
                     />
                   </PopoverTrigger>
                   <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
@@ -447,7 +456,7 @@ export function ColorThemeEditor({
               )}
             </dd>
             <dt>
-              <Label size="xs">Texto</Label>
+              <Label size="xs">{t("colorText")}</Label>
             </dt>
             <dd className="flex items-center">
               {isMobile ? (
@@ -456,7 +465,7 @@ export function ColorThemeEditor({
                   className="h-5 w-12 rounded-sm border border-black/20
                     dark:border-white/20"
                   style={{ backgroundColor: themeState.textColor }}
-                  aria-label="Seleccionar color de texto"
+                  aria-label={t("selectTextColor")}
                   onClick={() => setDrawerColorKey("textColor")}
                 />
               ) : (
@@ -467,7 +476,7 @@ export function ColorThemeEditor({
                       className="h-5 w-12 rounded-sm border border-black/20
                         dark:border-white/20"
                       style={{ backgroundColor: themeState.textColor }}
-                      aria-label="Seleccionar color de texto"
+                      aria-label={t("selectTextColor")}
                     />
                   </PopoverTrigger>
                   <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
@@ -487,7 +496,7 @@ export function ColorThemeEditor({
               )}
             </dd>
             <dt>
-              <Label size="xs">Tenue</Label>
+              <Label size="xs">{t("colorMuted")}</Label>
             </dt>
             <dd className="flex items-center">
               {isMobile ? (
@@ -496,7 +505,7 @@ export function ColorThemeEditor({
                   className="h-5 w-12 rounded-sm border border-black/20
                     dark:border-white/20"
                   style={{ backgroundColor: themeState.mutedColor }}
-                  aria-label="Seleccionar color tenue"
+                  aria-label={t("selectMutedColor")}
                   onClick={() => setDrawerColorKey("mutedColor")}
                 />
               ) : (
@@ -507,7 +516,7 @@ export function ColorThemeEditor({
                       className="h-5 w-12 rounded-sm border border-black/20
                         dark:border-white/20"
                       style={{ backgroundColor: themeState.mutedColor }}
-                      aria-label="Seleccionar color tenue"
+                      aria-label={t("selectMutedColor")}
                     />
                   </PopoverTrigger>
                   <PopoverContent className="w-[218px] border-0 p-0 shadow-none">
@@ -540,7 +549,7 @@ export function ColorThemeEditor({
             ) : (
               <WandSparkles className="mr-2 size-4" />
             )}
-            Extraer colores
+            {t("extractColors")}
           </Button>
           <Button
             variant="outline"
@@ -548,7 +557,7 @@ export function ColorThemeEditor({
             onClick={invertColors}
           >
             <Contrast className="mr-2 size-4" />
-            Invertir colores
+            {t("invertColors")}
           </Button>
 
           <ButtonGroup className="w-full">
@@ -564,7 +573,7 @@ export function ColorThemeEditor({
               onClick={() => setIsDialogOpen(true)}
             >
               <FilePlus className="mr-2 size-4" />
-              Crear
+              {t("create")}
             </Button>
             <Button
               variant="outline"
@@ -583,7 +592,7 @@ export function ColorThemeEditor({
               ) : (
                 <Save className="mr-2 size-4" />
               )}
-              Guardar
+              {t("save")}
             </Button>
             <Button
               variant="outline"
@@ -604,7 +613,7 @@ export function ColorThemeEditor({
               ) : (
                 <Trash2 className="mr-2 size-4" />
               )}
-              Eliminar
+              {t("delete")}
             </Button>
           </ButtonGroup>
         </div>
@@ -624,6 +633,8 @@ function ThemePreview({
   fontText?: string
   theme: ColorTheme
 }) {
+  const t = useTranslations("menuEditor.theme")
+
   return (
     <div
       className="flex flex-col gap-4 rounded-lg border-2 border-black/10 p-4
@@ -644,7 +655,7 @@ function ThemePreview({
         )} */}
         <FontWrapper fontFamily={fontDisplay}>
           <h1 className="text-xl font-semibold">
-            {menu?.organization?.name || "Negocio"}
+            {menu?.organization?.name || t("businessFallback")}
           </h1>
         </FontWrapper>
       </div>
@@ -656,7 +667,7 @@ function ThemePreview({
               color: theme.accentColor
             }}
           >
-            Categoría
+            {t("previewCategory")}
           </h3>
         </FontWrapper>
         <div className="flex flex-row justify-between gap-2">
@@ -667,7 +678,7 @@ function ThemePreview({
                   color: theme.textColor
                 }}
               >
-                Producto
+                {t("previewProduct")}
               </span>
             </FontWrapper>
             <FontWrapper fontFamily={fontText}>
@@ -677,7 +688,7 @@ function ThemePreview({
                   color: theme.mutedColor
                 }}
               >
-                Descripción del producto...
+                {t("previewDescription")}
               </span>
             </FontWrapper>
           </div>
@@ -696,17 +707,6 @@ function ThemePreview({
   )
 }
 
-const schema = z.object({
-  name: z
-    .string()
-    .min(1, "Nombre es requerido")
-    .max(50)
-    .regex(
-      /^[a-zA-Z0-9 ]*$/,
-      "Nombre solo puede contener letras, números y espacios"
-    )
-})
-
 type ThemeNameDialogProps = {
   isOpen: boolean
   onClose: () => void
@@ -718,7 +718,20 @@ export function ThemeNameDialog({
   onClose,
   onSubmit
 }: ThemeNameDialogProps) {
+  const t = useTranslations("menuEditor.theme")
+  const tCommon = useTranslations("dashboard.common")
   const isMobile = useIsMobile()
+  const schema = useMemo(
+    () =>
+      z.object({
+        name: z
+          .string()
+          .min(1, t("nameRequired"))
+          .max(50)
+          .regex(/^[a-zA-Z0-9 ]*$/, t("nameInvalidChars"))
+      }),
+    [t]
+  )
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema)
   })
@@ -733,10 +746,8 @@ export function ThemeNameDialog({
       <Drawer open={isOpen} onOpenChange={onClose}>
         <DrawerContent>
           <DrawerHeader className="text-left">
-            <DrawerTitle>Nombre del Tema</DrawerTitle>
-            <DrawerDescription>
-              Por favor, ingresa un nombre para el tema.
-            </DrawerDescription>
+            <DrawerTitle>{t("themeNameTitle")}</DrawerTitle>
+            <DrawerDescription>{t("themeNameDescription")}</DrawerDescription>
           </DrawerHeader>
           <div className="px-4 pb-4">
             <form onSubmit={form.handleSubmit(handleFormSubmit)}>
@@ -745,8 +756,8 @@ export function ThemeNameDialog({
                 control={form.control}
                 render={({ field, fieldState }) => (
                   <Field>
-                    <FieldLabel>Nombre Tema</FieldLabel>
-                    <Input {...field} placeholder="Nombre Tema" />
+                    <FieldLabel>{t("themeNameLabel")}</FieldLabel>
+                    <Input {...field} placeholder={t("themeNamePlaceholder")} />
                     {fieldState.invalid && (
                       <FieldError errors={[fieldState.error]} />
                     )}
@@ -755,7 +766,7 @@ export function ThemeNameDialog({
               />
               <div className="mt-6 flex">
                 <Button type="submit" className="w-full">
-                  Guardar
+                  {t("save")}
                 </Button>
               </div>
             </form>
@@ -769,10 +780,8 @@ export function ThemeNameDialog({
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Nombre del Tema</DialogTitle>
-          <DialogDescription>
-            Por favor, ingresa un nombre para el tema.
-          </DialogDescription>
+          <DialogTitle>{t("themeNameTitle")}</DialogTitle>
+          <DialogDescription>{t("themeNameDescription")}</DialogDescription>
         </DialogHeader>
         <form onSubmit={form.handleSubmit(handleFormSubmit)}>
           <Controller
@@ -780,8 +789,8 @@ export function ThemeNameDialog({
             control={form.control}
             render={({ field, fieldState }) => (
               <Field>
-                <FieldLabel>Nombre Tema</FieldLabel>
-                <Input {...field} placeholder="Nombre Tema" />
+                <FieldLabel>{t("themeNameLabel")}</FieldLabel>
+                <Input {...field} placeholder={t("themeNamePlaceholder")} />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -791,10 +800,10 @@ export function ThemeNameDialog({
           <div className="mt-6 flex justify-end gap-2">
             <DialogClose asChild>
               <Button variant="secondary" type="button">
-                Cancelar
+                {tCommon("cancel")}
               </Button>
             </DialogClose>
-            <Button type="submit">Guardar</Button>
+            <Button type="submit">{t("save")}</Button>
           </div>
         </form>
       </DialogContent>

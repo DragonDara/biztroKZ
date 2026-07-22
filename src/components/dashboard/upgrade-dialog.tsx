@@ -2,6 +2,7 @@
 
 import { useCallback, useState } from "react"
 import { Crown } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 
 import { RainbowButton } from "@/components/magicui/rainbow-button"
@@ -28,6 +29,7 @@ export function UpgradeDialog({
   title,
   description
 }: UpgradeDialogProps) {
+  const t = useTranslations("dashboard.upgrade")
   const router = useRouter()
 
   return (
@@ -58,14 +60,14 @@ export function UpgradeDialog({
           <RainbowButton
             onClick={() => router.push("/dashboard/settings/billing")}
           >
-            Actualizar a Pro
+            {t("cta")}
           </RainbowButton>
           <Button
             variant="link"
             onClick={onClose}
             className="dark:text-indigo-300"
           >
-            Seguir en el plan gratuito
+            {t("stayFree")}
           </Button>
         </DialogFooter>
       </DialogContent>
@@ -73,13 +75,11 @@ export function UpgradeDialog({
   )
 }
 
-// Hook to guard actions behind the Pro plan.
-// Usage: const { guard, openDialog, dialog } = useProGuard(isPro)
-// then call `guard(() => doProAction())` or render `dialog` anywhere in the tree.
 export function useProGuard(
   isPro: boolean,
   opts?: { title?: string; description?: string }
 ) {
+  const t = useTranslations("dashboard.upgrade")
   const [open, setOpen] = useState(false)
   const onClose = useCallback(() => setOpen(false), [])
 
@@ -99,16 +99,14 @@ export function useProGuard(
     <UpgradeDialog
       open={open}
       onClose={onClose}
-      title={opts?.title ?? "Actualizar a Pro"}
-      description={opts?.description ?? "Esta función requiere Pro."}
+      title={opts?.title ?? t("defaultTitle")}
+      description={opts?.description ?? t("defaultDescription")}
     />
   )
 
   return { guard, openDialog: () => setOpen(true), dialog }
 }
 
-// Simple wrapper component to conditionally render children for Pro users,
-// otherwise opens the UpgradeDialog when the children are interacted with.
 export function ProGuard({
   isPro,
   children,
@@ -120,6 +118,7 @@ export function ProGuard({
   title?: string
   description?: string
 }) {
+  const t = useTranslations("dashboard.upgrade")
   const [open, setOpen] = useState(false)
   const onClose = useCallback(() => setOpen(false), [])
 
@@ -148,8 +147,8 @@ export function ProGuard({
       <UpgradeDialog
         open={open}
         onClose={onClose}
-        title={title ?? "Actualizar a Pro"}
-        description={description ?? "Esta función requiere Pro."}
+        title={title ?? t("defaultTitle")}
+        description={description ?? t("defaultDescription")}
       />
     </>
   )

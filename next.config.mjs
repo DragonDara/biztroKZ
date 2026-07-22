@@ -3,6 +3,7 @@ import withBundleAnalyzer from "@next/bundle-analyzer"
 import { withSentryConfig } from "@sentry/nextjs"
 import { withVercelToolbar } from "@vercel/toolbar/plugins/next"
 import { withAxiom } from "next-axiom"
+import createNextIntlPlugin from "next-intl/plugin"
 
 /**
  * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
@@ -10,8 +11,10 @@ import { withAxiom } from "next-axiom"
  */
 await import("./src/env.mjs")
 
+const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts")
+
 /** @type {import("next").NextConfig} */
-const config = {
+const config = withNextIntl({
   cacheComponents: true,
   reactStrictMode: true,
   experimental: {
@@ -81,7 +84,7 @@ const config = {
     removeConsole:
       process.env.NODE_ENV === "production" ? { exclude: ["error"] } : false
   }
-}
+})
 
 // Only enable the bundle analyzer when ANALYZE=true is set in the environment.
 const enableBundleAnalyzer = process.env.ANALYZE === "true"

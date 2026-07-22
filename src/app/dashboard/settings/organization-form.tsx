@@ -6,6 +6,7 @@ import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useQueryClient } from "@tanstack/react-query"
 import { Loader } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
@@ -53,6 +54,9 @@ export default function OrganizationForm({
   data: NonNullable<Awaited<ReturnType<typeof getCurrentOrganization>>>
   enabled: boolean
 }) {
+  const t = useTranslations("dashboard.settings.organization")
+  const tCommon = useTranslations("dashboard.common")
+
   const form = useForm<z.infer<typeof orgSchema>>({
     resolver: zodResolver(orgSchema),
     defaultValues: {
@@ -72,7 +76,7 @@ export default function OrganizationForm({
   const { execute, status, reset } = useAction(updateOrg, {
     onSuccess: ({ data }) => {
       if (data?.success) {
-        toast.success("Información actualizada")
+        toast.success(t("updated"))
         queryClient.invalidateQueries({
           queryKey: ["workgroup", "current"]
         })
@@ -83,7 +87,7 @@ export default function OrganizationForm({
       reset()
     },
     onError: () => {
-      toast.error("No se pudo actualizar la información del negocio")
+      toast.error(t("updateError"))
     }
   })
 
@@ -134,12 +138,12 @@ export default function OrganizationForm({
               >
                 <DialogTrigger asChild>
                   <Button type="button" variant="outline">
-                    Cambiar imágen
+                    {t("changeImage")}
                   </Button>
                 </DialogTrigger>
                 <DialogContent className="max-w-xl">
                   <DialogHeader>
-                    <DialogTitle>Subir imágen</DialogTitle>
+                    <DialogTitle>{t("uploadImage")}</DialogTitle>
                   </DialogHeader>
                   <FileUploader
                     organizationId={data.id}
@@ -151,7 +155,7 @@ export default function OrganizationForm({
                 </DialogContent>
               </Dialog>
               <p className="text-muted-foreground mt-2 text-xs">
-                Se recomienda un tamaño de 500x500 en formato JPG o PNG.
+                {t("logoHint")}
               </p>
             </div>
           </div>
@@ -160,12 +164,14 @@ export default function OrganizationForm({
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Nombre del negocio</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {t("businessName")}
+                </FieldLabel>
                 <Input
                   {...field}
                   id={field.name}
                   aria-invalid={fieldState.invalid}
-                  placeholder="Nombre del negocio"
+                  placeholder={t("businessNamePlaceholder")}
                 />
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
@@ -178,16 +184,16 @@ export default function OrganizationForm({
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Descripción</FieldLabel>
+                <FieldLabel htmlFor={field.name}>
+                  {t("descriptionLabel")}
+                </FieldLabel>
                 <Textarea
                   {...field}
                   id={field.name}
                   aria-invalid={fieldState.invalid}
-                  placeholder="Descripción"
+                  placeholder={t("descriptionPlaceholder")}
                 />
-                <FieldDescription>
-                  Escribe una breve descripción de tu negocio
-                </FieldDescription>
+                <FieldDescription>{t("descriptionHint")}</FieldDescription>
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -199,7 +205,7 @@ export default function OrganizationForm({
             control={form.control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
-                <FieldLabel htmlFor={field.name}>Sitio web</FieldLabel>
+                <FieldLabel htmlFor={field.name}>{t("website")}</FieldLabel>
                 <InputGroup>
                   <InputGroupAddon>
                     <InputGroupText>https://</InputGroupText>
@@ -208,7 +214,7 @@ export default function OrganizationForm({
                     {...field}
                     id={field.name}
                     aria-invalid={fieldState.invalid}
-                    placeholder="tu-sitio"
+                    placeholder={t("websitePlaceholder")}
                     className="pl-1!"
                   />
                   <InputGroupAddon align="inline-end">
@@ -217,10 +223,7 @@ export default function OrganizationForm({
                     </InputGroupText>
                   </InputGroupAddon>
                 </InputGroup>
-                <FieldDescription>
-                  Este es el nombre de tu sitio web. Cambiarlo puede afectar tu
-                  SEO
-                </FieldDescription>
+                <FieldDescription>{t("websiteHint")}</FieldDescription>
                 {fieldState.invalid && (
                   <FieldError errors={[fieldState.error]} />
                 )}
@@ -228,7 +231,7 @@ export default function OrganizationForm({
             )}
           />
           <div className="space-y-2">
-            <FieldLabel>Imágen de portada</FieldLabel>
+            <FieldLabel>{t("coverImage")}</FieldLabel>
             {data.banner ? (
               <ImageField
                 src={data.banner}
@@ -249,10 +252,7 @@ export default function OrganizationForm({
                 }}
               />
             )}
-            <FieldDescription>
-              La imágen de portada se mostrará en tu sitio web de manera
-              prominente. Se recomienda un tamaño de 1200x800 en formato JPG.
-            </FieldDescription>
+            <FieldDescription>{t("coverImageHint")}</FieldDescription>
           </div>
           <Field orientation="responsive">
             <Button disabled={status === "executing"} type="submit">
@@ -260,7 +260,7 @@ export default function OrganizationForm({
                 <Loader className="mr-2 animate-spin" />
               )}
               <TextMorph>
-                {status === "executing" ? "Guardando..." : "Guardar"}
+                {status === "executing" ? t("saving") : tCommon("save")}
               </TextMorph>
             </Button>
           </Field>

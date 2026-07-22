@@ -2,6 +2,7 @@
 
 import { useMemo, useState, useSyncExternalStore } from "react"
 import { Check } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import FontWrapper from "@/components/menu-editor/font-wrapper"
 import {
@@ -304,6 +305,7 @@ export default function PresetSelector({
   currentBgImage?: string
   onSelect: (fontTheme: string, colorTheme: string, bgImage?: string) => void
 }) {
+  const t = useTranslations("menuEditor.theme")
   const isMobile = useIsMobile()
   const [open, setOpen] = useState(false)
 
@@ -344,10 +346,10 @@ export default function PresetSelector({
     <Tabs defaultValue="solid" className="flex flex-col gap-3">
       <TabsList className="w-full">
         <TabsTrigger value="solid" className="flex-1">
-          Sólido
+          {t("solidTab")}
         </TabsTrigger>
         <TabsTrigger value="image" className="flex-1">
-          Con imagen
+          {t("imageTab")}
         </TabsTrigger>
       </TabsList>
 
@@ -391,9 +393,9 @@ export default function PresetSelector({
         focus-visible:outline-none dark:border-gray-800 dark:bg-gray-950
         dark:hover:bg-gray-800"
     >
-      <span className="text-sm">{activePresetName ?? "Elegir tema"}</span>
+      <span className="text-sm">{activePresetName ?? t("chooseTheme")}</span>
       <span className="text-xs text-gray-500">
-        {activePresetName ? "Activo" : ""}
+        {activePresetName ? t("active") : ""}
       </span>
     </button>
   )
@@ -413,7 +415,7 @@ export default function PresetSelector({
         <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
         <DrawerContent className="px-4 pb-8">
           <DrawerHeader>
-            <DrawerTitle>Temas predefinidos</DrawerTitle>
+            <DrawerTitle>{t("presetThemesTitle")}</DrawerTitle>
           </DrawerHeader>
           <ScrollArea
             className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y
@@ -431,7 +433,7 @@ export default function PresetSelector({
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
       <DialogContent className="max-h-[90vh] sm:max-w-[660px]">
         <DialogHeader>
-          <DialogTitle>Temas predefinidos</DialogTitle>
+          <DialogTitle>{t("presetThemesTitle")}</DialogTitle>
         </DialogHeader>
         <ScrollArea
           className="**:data-[slot=radix-scroll-area-viewport]:scroll-fade-effect-y

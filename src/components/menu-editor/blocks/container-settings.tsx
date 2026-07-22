@@ -1,8 +1,11 @@
-import { useRef, useState } from "react"
+"use client"
+
+import { useMemo, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import { useNode } from "@craftjs/core"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { ImageUp } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useParams } from "next/navigation"
 
 import { FileUploader } from "@/components/dashboard/file-uploader"
@@ -75,11 +78,14 @@ function BackgroundPreview({
 
 function BackgroundSelector({
   onClose,
-  uploadedBackgrounds
+  uploadedBackgrounds,
+  patterns
 }: {
   onClose: () => void
   uploadedBackgrounds: Awaited<ReturnType<typeof getUploadedBackgrounds>>
+  patterns: { name: string; image: string }[]
 }) {
+  const t = useTranslations("menuEditor.blocks")
   const {
     actions: { setProp },
     backgroundImage
@@ -95,7 +101,7 @@ function BackgroundSelector({
   return (
     <div className="grid gap-4">
       <div>
-        <h4 className="mb-2 text-sm font-medium">Patrones</h4>
+        <h4 className="mb-2 text-sm font-medium">{t("container.patterns")}</h4>
         <div className="grid grid-cols-3 gap-2">
           {patterns.map(pattern => (
             <BackgroundPreview
@@ -109,7 +115,7 @@ function BackgroundSelector({
         </div>
       </div>
       <div>
-        <h4 className="mb-2 text-sm font-medium">Imágenes</h4>
+        <h4 className="mb-2 text-sm font-medium">{t("container.images")}</h4>
         <div className="grid grid-cols-3 gap-2">
           {BgImages.map(image => (
             <BackgroundPreview
@@ -126,13 +132,15 @@ function BackgroundSelector({
         <>
           <Separator />
           <div>
-            <h4 className="mb-2 text-sm font-medium">Mis imágenes</h4>
+            <h4 className="mb-2 text-sm font-medium">
+              {t("container.myImages")}
+            </h4>
             <div className="grid grid-cols-3 gap-2">
               {uploadedBackgrounds.map(bg => (
                 <BackgroundPreview
                   key={bg.storageKey}
                   src={bg.url}
-                  name="Subida"
+                  name={t("container.uploaded")}
                   active={
                     backgroundImage === bg.url ||
                     backgroundImage === bg.storageKey
@@ -149,10 +157,20 @@ function BackgroundSelector({
 }
 
 export default function ContainerSettings() {
+  const t = useTranslations("menuEditor.blocks")
   const [open, setOpen] = useState(false)
   const [uploadOpen, setUploadOpen] = useState(false)
   const isMobile = useIsMobile()
   const queryClient = useQueryClient()
+
+  const patterns = useMemo(
+    () =>
+      PATTERN_DEFS.map(({ key, image }) => ({
+        name: t(`patterns.${key}`),
+        image
+      })),
+    [t]
+  )
 
   const { backgroundImage } = useNode(node => ({
     backgroundImage: node.data.props.backgroundImage
@@ -190,7 +208,7 @@ export default function ContainerSettings() {
         (props: ContainerBlockProps) => (props.backgroundImage = latest.url)
       )
     }
-    toast.success("Imagen subida exitosamente")
+    toast.success(t("container.uploadSuccess"))
 
     // Reset the guard after a short delay so future uploads can notify again
     setTimeout(() => {
@@ -203,16 +221,19 @@ export default function ContainerSettings() {
       bg => bg.storageKey === backgroundImage || bg.url === backgroundImage
     )
 
-    let label = "Seleccionar fondo"
+    let label = t("container.selectBackground")
     if (backgroundImage === "none") {
-      label = "Sólido"
+      label = t("container.solid")
     } else if (patterns.find(p => p.image === backgroundImage)) {
-      label = patterns.find(p => p.image === backgroundImage)?.name ?? "Patrón"
+      label =
+        patterns.find(p => p.image === backgroundImage)?.name ??
+        t("container.pattern")
     } else if (BgImages.find(img => img.image === backgroundImage)) {
       label =
-        BgImages.find(img => img.image === backgroundImage)?.name ?? "Imagen"
+        BgImages.find(img => img.image === backgroundImage)?.name ??
+        t("container.image")
     } else if (isUploaded) {
-      label = "Personalizado"
+      label = t("container.custom")
     }
 
     return (
@@ -227,10 +248,10 @@ export default function ContainerSettings() {
   })()
 
   return (
-    <SideSection title="Sitio">
+    <SideSection title={t("common.site")}>
       <div className="grid grid-cols-3 items-center gap-2">
         <dt>
-          <Label size="xs">Fondo</Label>
+          <Label size="xs">{t("common.background")}</Label>
         </dt>
         <dd className="col-span-2">
           {isMobile ? (
@@ -238,12 +259,13 @@ export default function ContainerSettings() {
               <DrawerTrigger asChild>{triggerButton}</DrawerTrigger>
               <DrawerContent className="max-h-[90vh]">
                 <DrawerHeader className="px-6 py-4">
-                  <DrawerTitle>Seleccionar fondo</DrawerTitle>
+                  <DrawerTitle>{t("container.selectBackground")}</DrawerTitle>
                 </DrawerHeader>
                 <div className="custom-scrollbar overflow-y-auto px-6 pb-6">
                   <BackgroundSelector
                     onClose={() => setOpen(false)}
                     uploadedBackgrounds={uploadedBackgrounds}
+                    patterns={patterns}
                   />
                 </div>
               </DrawerContent>
@@ -253,7 +275,7 @@ export default function ContainerSettings() {
               <DialogTrigger asChild>{triggerButton}</DialogTrigger>
               <DialogContent className="max-h-[90vh] sm:max-w-[625px]">
                 <DialogHeader>
-                  <DialogTitle>Seleccionar fondo</DialogTitle>
+                  <DialogTitle>{t("container.selectBackground")}</DialogTitle>
                 </DialogHeader>
                 <div
                   className="no-scrollbar max-h-[calc(90vh-8rem)]
@@ -262,6 +284,7 @@ export default function ContainerSettings() {
                   <BackgroundSelector
                     onClose={() => setOpen(false)}
                     uploadedBackgrounds={uploadedBackgrounds}
+                    patterns={patterns}
                   />
                 </div>
               </DialogContent>
@@ -274,15 +297,14 @@ export default function ContainerSettings() {
           <DialogTrigger asChild>
             <Button variant="secondary" size="sm" className="w-full">
               <ImageUp className="mr-2 size-4" />
-              Subir imagen de fondo
+              {t("container.uploadBackground")}
             </Button>
           </DialogTrigger>
           <DialogContent className="max-w-xl">
             <DialogHeader>
-              <DialogTitle>Subir imagen de fondo</DialogTitle>
+              <DialogTitle>{t("container.uploadTitle")}</DialogTitle>
               <DialogDescription>
-                Sube una imagen personalizada para usar como fondo de tu menú.
-                Tamaño máximo: 1920px, 3MB.
+                {t("container.uploadDescription")}
               </DialogDescription>
             </DialogHeader>
             <FileUploader
@@ -304,18 +326,18 @@ export default function ContainerSettings() {
       <UpgradeDialog
         open={showUpgrade}
         onClose={() => setShowUpgrade(false)}
-        title="Función Pro"
-        description="Subir imagen de fondo está disponible en el plan Pro. Actualiza para desbloquear esta función."
+        title={t("container.proTitle")}
+        description={t("container.proDescription")}
       />
     </SideSection>
   )
 }
 
-const patterns = [
-  { name: "Sólido", image: "none" },
-  { name: "Textura", image: "noise.svg" },
-  { name: "Terreno", image: "topography.svg" },
-  { name: "Snacks", image: "food.svg" },
-  { name: "Nubes", image: "clouds.svg" },
-  { name: "Hojas", image: "leaf.svg" }
-]
+const PATTERN_DEFS = [
+  { key: "solid", image: "none" },
+  { key: "texture", image: "noise.svg" },
+  { key: "terrain", image: "topography.svg" },
+  { key: "snacks", image: "food.svg" },
+  { key: "clouds", image: "clouds.svg" },
+  { key: "leaves", image: "leaf.svg" }
+] as const

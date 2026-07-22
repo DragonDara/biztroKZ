@@ -1,11 +1,12 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import toast from "react-hot-toast"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as Sentry from "@sentry/nextjs"
 import { Loader, UserPlus } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import { TextMorph } from "torph/react"
 import { z } from "zod/v4"
@@ -25,15 +26,20 @@ import { Form } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { inviteMember } from "@/server/actions/user/mutations"
 
-const emailSchema = z.object({
-  email: z.email({
-    error: "Por favor, introduce un correo electrónico válido"
-  })
-})
-
 export default function MemberInvite({ isPro }: { isPro: boolean }) {
+  const t = useTranslations("dashboard.settings.members")
   const [open, setOpen] = useState(false)
   const [upgradeOpen, setUpgradeOpen] = useState(false)
+
+  const emailSchema = useMemo(
+    () =>
+      z.object({
+        email: z.email({
+          error: t("emailInvalid")
+        })
+      }),
+    [t]
+  )
 
   const { execute, status, reset } = useAction(inviteMember, {
     onSuccess: ({ data }) => {
@@ -41,7 +47,7 @@ export default function MemberInvite({ isPro }: { isPro: boolean }) {
         toast.error(data.failure.reason)
         return
       }
-      toast.success("Invitación enviada")
+      toast.success(t("inviteSent"))
       setOpen(false)
       reset()
     },
@@ -50,7 +56,7 @@ export default function MemberInvite({ isPro }: { isPro: boolean }) {
       Sentry.captureException(error, {
         tags: { section: "member-invite" }
       })
-      toast.error("Falló el envío de la invitación")
+      toast.error(t("inviteError"))
     }
   })
 
@@ -67,22 +73,22 @@ export default function MemberInvite({ isPro }: { isPro: boolean }) {
     await execute(data)
   }
 
+  const inviteButton = (
+    <Button className="gap-2">
+      <UserPlus className="size-4" />
+      {t("invite")}
+    </Button>
+  )
+
   return (
     <div>
       {isPro ? (
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button className="gap-2">
-              <UserPlus className="size-4" />
-              Invitar miembro
-            </Button>
-          </DialogTrigger>
+          <DialogTrigger asChild>{inviteButton}</DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Invitar miembro</DialogTitle>
-              <DialogDescription>
-                Introduce el correo electrónico del miembro que deseas invitar.
-              </DialogDescription>
+              <DialogTitle>{t("inviteTitle")}</DialogTitle>
+              <DialogDescription>{t("inviteDescription")}</DialogDescription>
             </DialogHeader>
             <Form {...form}>
               <form
@@ -94,28 +100,26 @@ export default function MemberInvite({ isPro }: { isPro: boolean }) {
                   name="email"
                   render={({ field, fieldState }) => (
                     <Field>
-                      <FieldLabel htmlFor={field.name}>Email</FieldLabel>
+                      <FieldLabel htmlFor={field.name}>{t("email")}</FieldLabel>
                       <Input
                         {...field}
                         type="email"
-                        placeholder="correo@ejemplo.com"
+                        placeholder={t("emailPlaceholder")}
                         className="mb-4"
                       />
-                      {fieldState.invalid && (
+                      {fieldState.invalid ? (
                         <FieldError errors={[fieldState.error]} />
-                      )}
+                      ) : null}
                     </Field>
                   )}
                 />
                 <div className="flex justify-end">
                   <Button type="submit" disabled={status === "executing"}>
-                    {status === "executing" && (
+                    {status === "executing" ? (
                       <Loader className="mr-2 size-4 animate-spin" />
-                    )}
+                    ) : null}
                     <TextMorph>
-                      {status === "executing"
-                        ? "Enviando..."
-                        : "Enviar invitación"}
+                      {status === "executing" ? t("sending") : t("sendInvite")}
                     </TextMorph>
                   </Button>
                 </div>
@@ -125,17 +129,12 @@ export default function MemberInvite({ isPro }: { isPro: boolean }) {
         </Dialog>
       ) : (
         <Dialog open={upgradeOpen} onOpenChange={setUpgradeOpen}>
-          <DialogTrigger asChild>
-            <Button className="gap-2">
-              <UserPlus className="size-4" />
-              Invitar miembro
-            </Button>
-          </DialogTrigger>
+          <DialogTrigger asChild>{inviteButton}</DialogTrigger>
           <UpgradeDialog
             open={upgradeOpen}
             onClose={() => setUpgradeOpen(false)}
-            title="Obtén más con el plan Pro"
-            description="Actualiza a Pro para colaborar con tu equipo e invitar miembros sin límites."
+            title={t("upgradeTitle")}
+            description={t("upgradeDescription")}
           />
         </Dialog>
       )}

@@ -1,3 +1,6 @@
+"use client"
+
+import { useTranslations } from "next-intl"
 import Link from "next/link"
 
 import Footer from "@/components/marketing/footer"
@@ -5,6 +8,8 @@ import Navbar from "@/components/marketing/nav-bar"
 import { Button } from "@/components/ui/button"
 
 export default function NotFound() {
+  const t = useTranslations("errors.notFound")
+
   return (
     <div className="flex h-dvh w-full flex-col">
       <Navbar />
@@ -19,11 +24,11 @@ export default function NotFound() {
           404
         </h1>
         <div className="space-y-2 text-center text-gray-500">
-          <h2 className="text-2xl sm:text-3xl">Página no encontrada</h2>
-          <p>No encontramos la página que estas buscando.</p>
+          <h2 className="text-2xl sm:text-3xl">{t("title")}</h2>
+          <p>{t("description")}</p>
         </div>
         <Link href="/" prefetch={false}>
-          <Button>Volver al inicio</Button>
+          <Button>{t("backHome")}</Button>
         </Link>
       </div>
       <div className="w-full">

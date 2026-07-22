@@ -1,9 +1,12 @@
+"use client"
+
 import { useState } from "react"
 import { toast } from "react-hot-toast"
 import type { Category } from "@/generated/prisma-client/client"
 import * as Sentry from "@sentry/nextjs"
 import type { Table } from "@tanstack/react-table"
 import { Combine, Loader, Star, Trash2, X } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 
 import { MenuSyncDialog } from "@/components/dashboard/menu-sync-dialog"
@@ -44,6 +47,8 @@ function FloatingToolbar({
   table: Table<Awaited<ReturnType<typeof getMenuItems>>[0]>
   categories: Category[]
 }) {
+  const t = useTranslations("dashboard.menuItems.products")
+  const tCommon = useTranslations("dashboard.common")
   const rows = table.getFilteredSelectedRowModel().rows
   const selectedIds = rows.map(row => row.original.id)
   const orgId = rows[0]?.original.organizationId
@@ -65,7 +70,7 @@ function FloatingToolbar({
       if (data?.success) {
         const { draftsUpdated, publishedUpdated } = data.success
         if (draftsUpdated || publishedUpdated) {
-          toast.success("Menú actualizado")
+          toast.success(t("menuUpdated"))
         }
       } else if (data?.failure?.reason) {
         toast.error(data.failure.reason)
@@ -75,7 +80,7 @@ function FloatingToolbar({
       table.toggleAllRowsSelected(false)
     },
     onError: () => {
-      toast.error("No se pudo actualizar los menús")
+      toast.error(t("menuUpdateError"))
       setSyncPrompt(prev => ({ ...prev, open: false }))
     }
   })
@@ -88,11 +93,11 @@ function FloatingToolbar({
           toast.error(data.failure.reason)
           return
         }
-        toast.success("Categorías actualizadas")
+        toast.success(t("categoriesUpdated"))
 
         const syncMeta = data?.success?.sync
         if (syncMeta?.publishedUpdated) {
-          toast.success("Menú publicado actualizado")
+          toast.success(t("publishedMenuUpdated"))
         }
 
         if (syncMeta?.needsPublishedDecision) {
@@ -117,7 +122,7 @@ function FloatingToolbar({
           toast.error(data.failure.reason)
           return
         }
-        toast.success("Productos eliminados")
+        toast.success(t("productsDeleted"))
         table.toggleAllRowsSelected(false)
       }
     }
@@ -130,11 +135,11 @@ function FloatingToolbar({
           toast.error(data.failure.reason)
           return
         }
-        toast.success("Productos actualizados")
+        toast.success(t("productsUpdated"))
 
         const syncMeta = data?.success?.sync
         if (syncMeta?.publishedUpdated) {
-          toast.success("Menú publicado actualizado")
+          toast.success(t("publishedMenuUpdated"))
         }
 
         if (syncMeta?.needsPublishedDecision) {
@@ -219,10 +224,10 @@ function FloatingToolbar({
           border-gray-600 pr-1 pl-2.5 dark:border-gray-700"
       >
         <span className="text-xs whitespace-nowrap">
-          {rows.length} seleccionado(s)
+          {t("selectedCount", { count: rows.length })}
         </span>
         <Separator orientation="vertical" className="mr-1 ml-2 bg-gray-600" />
-        <TooltipHelper content="Deseleccionar todo">
+        <TooltipHelper content={t("deselectAll")}>
           <Button
             variant="ghost"
             size="icon"
@@ -235,7 +240,7 @@ function FloatingToolbar({
       </div>
       <Separator orientation="vertical" className="mx-1" />
       <DropdownMenu>
-        <TooltipHelper content="Actualizar categoría">
+        <TooltipHelper content={t("updateCategory")}>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
@@ -252,7 +257,7 @@ function FloatingToolbar({
           </DropdownMenuTrigger>
         </TooltipHelper>
         <DropdownMenuContent>
-          <DropdownMenuLabel>Categorías</DropdownMenuLabel>
+          <DropdownMenuLabel>{t("filterCategory")}</DropdownMenuLabel>
           <DropdownMenuSeparator />
           {categories.map(category => (
             <DropdownMenuItem
@@ -265,7 +270,7 @@ function FloatingToolbar({
           ))}
         </DropdownMenuContent>
       </DropdownMenu>
-      <TooltipHelper content="Recomendado">
+      <TooltipHelper content={t("recommended")}>
         <Button
           variant="ghost"
           size="icon"
@@ -280,7 +285,7 @@ function FloatingToolbar({
           )}
         </Button>
       </TooltipHelper>
-      <TooltipHelper content="Eliminar">
+      <TooltipHelper content={tCommon("delete")}>
         <Button
           variant="ghost"
           size="icon"
@@ -299,19 +304,18 @@ function FloatingToolbar({
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>¿Confirmar eliminación?</AlertDialogTitle>
+            <AlertDialogTitle>{t("bulkDeleteTitle")}</AlertDialogTitle>
             <AlertDialogDescription>
-              Esta acción no se puede deshacer. Se eliminarán{" "}
-              {selectedIds.length} productos seleccionados.
+              {t("bulkDeleteDescription", { count: selectedIds.length })}
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
             <AlertDialogAction
               className={cn(buttonVariants({ variant: "destructive" }))}
               onClick={handleDelete}
             >
-              Eliminar
+              {tCommon("delete")}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

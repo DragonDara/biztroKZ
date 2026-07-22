@@ -1,52 +1,23 @@
-import { Store } from "lucide-react"
 import { type Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 import { notFound } from "next/navigation"
 
-import PageSubtitle from "@/components/dashboard/page-subtitle"
-import { Badge } from "@/components/ui/badge"
 import {
   getCurrentOrganization,
   safeHasPermission
 } from "@/server/actions/user/queries"
 import OrganizationDelete from "@/app/dashboard/settings/organization-delete"
 import OrganizationForm from "@/app/dashboard/settings/organization-form"
-import { SubscriptionStatus } from "@/lib/types/billing"
+import { SettingsOrganizationHeader } from "@/app/dashboard/settings/settings-organization-header"
+import { type SubscriptionStatus } from "@/lib/types/billing"
 
-export const metadata: Metadata = {
-  title: "Mi Organización",
-  description: "Información general del negocio"
-}
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("dashboard.settings.organization")
 
-function StatusBadge({ status }: { status: SubscriptionStatus }) {
-  const variants: Record<
-    SubscriptionStatus,
-    { label: string; variant: "green" | "yellow" | "destructive" | "violet" }
-  > = {
-    [SubscriptionStatus.ACTIVE]: { label: "Activo", variant: "green" },
-    [SubscriptionStatus.TRIALING]: {
-      label: "Periodo de prueba",
-      variant: "violet"
-    },
-    [SubscriptionStatus.CANCELED]: {
-      label: "Cancelado",
-      variant: "destructive"
-    },
-    [SubscriptionStatus.INCOMPLETE]: { label: "Incompleto", variant: "yellow" },
-    [SubscriptionStatus.INCOMPLETE_EXPIRED]: {
-      label: "Expirado",
-      variant: "destructive"
-    },
-    [SubscriptionStatus.PAST_DUE]: {
-      label: "Pago pendiente",
-      variant: "yellow"
-    },
-    [SubscriptionStatus.UNPAID]: { label: "No pagado", variant: "destructive" },
-    [SubscriptionStatus.PAUSED]: { label: "Pausado", variant: "yellow" },
-    [SubscriptionStatus.SPONSORED]: { label: "Patrocinado", variant: "green" }
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription")
   }
-
-  const { label, variant } = variants[status]
-  return <Badge variant={variant}>{label}</Badge>
 }
 
 export default async function SettingsPage() {
@@ -61,16 +32,9 @@ export default async function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
-      <div className="flex items-center justify-between">
-        <PageSubtitle>
-          <PageSubtitle.Icon icon={Store} />
-          <PageSubtitle.Title>Mi Organización</PageSubtitle.Title>
-          <PageSubtitle.Description>
-            Información general del negocio
-          </PageSubtitle.Description>
-        </PageSubtitle>
-        <StatusBadge status={currentOrg.status as SubscriptionStatus} />
-      </div>
+      <SettingsOrganizationHeader
+        status={currentOrg.status as SubscriptionStatus}
+      />
       <OrganizationForm data={currentOrg} enabled />
       {canDeleteOrg?.success && (
         <OrganizationDelete organizationId={currentOrg.id} />

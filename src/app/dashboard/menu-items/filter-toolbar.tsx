@@ -1,31 +1,25 @@
 "use client"
 
 import { type Category } from "@/generated/prisma-client/client"
+import { useTranslations } from "next-intl"
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs"
 
 import { DataTableFilter } from "@/components/data-table/data-table-filter"
 import { MenuItemStatus } from "@/lib/types/menu-item"
-
-const status = [
-  {
-    value: MenuItemStatus.ACTIVE,
-    label: "Activo"
-  },
-  {
-    value: MenuItemStatus.DRAFT,
-    label: "Borrador"
-  },
-  {
-    value: MenuItemStatus.ARCHIVED,
-    label: "Archivado"
-  }
-]
 
 export default function FilterToolbar({
   categories
 }: {
   categories: Category[]
 }) {
+  const t = useTranslations("dashboard.menuItems.products")
+
+  const status = [
+    { value: MenuItemStatus.ACTIVE, label: t("statusActive") },
+    { value: MenuItemStatus.DRAFT, label: t("statusDraft") },
+    { value: MenuItemStatus.ARCHIVED, label: t("statusArchived") }
+  ]
+
   const [categoryValue, setCategoryValue] = useQueryState(
     "category",
     parseAsArrayOf(parseAsString)
@@ -49,13 +43,13 @@ export default function FilterToolbar({
   return (
     <div className="flex grow flex-row items-center gap-x-2">
       <DataTableFilter
-        title="Estatus"
+        title={t("filterStatus")}
         options={status}
         value={statusValue}
         onChange={setStatusValue}
       />
       <DataTableFilter
-        title="Categoría"
+        title={t("filterCategory")}
         options={categories?.map(d => ({ value: d.id, label: d.name })) ?? []}
         value={categoryValue}
         onChange={setCategoryValue}

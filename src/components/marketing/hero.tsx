@@ -1,9 +1,10 @@
 "use client"
 
 import { useRef } from "react"
+import { Link } from "@/i18n/navigation"
 import { ArrowRightIcon } from "lucide-react"
 import { motion, useInView } from "motion/react"
-import Link from "next/link"
+import { useTranslations } from "next-intl"
 
 import {
   Announcement,
@@ -13,6 +14,7 @@ import {
 import Waitlist from "@/components/marketing/waitlist"
 
 export default function Hero() {
+  const t = useTranslations("marketing.hero")
   const fadeInRef = useRef(null)
   const fadeInInView = useInView(fadeInRef, {
     once: true
@@ -52,12 +54,10 @@ export default function Hero() {
             className="mt-20 grid grid-cols-1 gap-x-8 gap-y-8 pb-8
               md:grid-cols-3"
           >
-            {/* Badge + H1: spans cols 1–2 */}
             <div
               className="flex flex-col items-center gap-6 text-center
                 md:col-span-2 md:items-start md:text-left"
             >
-              {/* Top announcement */}
               <motion.div
                 animate={fadeInInView ? "animate" : "hidden"}
                 variants={fadeUpVariants}
@@ -73,10 +73,10 @@ export default function Hero() {
                     className="inset-ring-taupe-950/20 hover:ring-taupe-950/30"
                   >
                     <AnnouncementTag className="bg-taupe-200 text-taupe-700">
-                      Nuevo
+                      {t("announcementNew")}
                     </AnnouncementTag>
                     <AnnouncementTitle className="pr-0.5">
-                      Funciones IA para tu menú
+                      {t("announcementTitle")}
                       <ArrowRightIcon
                         className="ml-1 size-3 transition-transform duration-300
                           ease-in-out group-hover:translate-x-1"
@@ -102,11 +102,10 @@ export default function Hero() {
                   type: "spring"
                 }}
               >
-                Crea tu menú digital y publícalo en minutos
+                {t("title")}
               </motion.h1>
             </div>
 
-            {/* Tagline: cols 1–2, row 2 */}
             <motion.p
               className="text-center text-lg tracking-tight text-balance
                 text-taupe-700 md:col-span-2 md:col-start-1 md:row-start-2
@@ -121,11 +120,9 @@ export default function Hero() {
                 type: "spring"
               }}
             >
-              Diseña un menú QR profesional para tu restaurante o cafetería,
-              actualízalo cuando quieras y compártelo sin complicarte.
+              {t("subtitle")}
             </motion.p>
 
-            {/* CTA: col 3, rows 1–2, centered */}
             <motion.div
               animate={fadeInInView ? "animate" : "initial"}
               variants={fadeUpVariants}
@@ -140,7 +137,7 @@ export default function Hero() {
               }}
             >
               <span className="px-3.5 text-taupe-500 dark:text-taupe-400">
-                Solicita acceso anticipado
+                {t("waitlistLabel")}
               </span>
               <Waitlist />
             </motion.div>

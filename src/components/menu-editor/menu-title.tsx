@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import { Controller, useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ChevronDown } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useOptimisticAction } from "next-safe-action/hooks"
 import { z } from "zod/v4"
 
@@ -19,18 +20,24 @@ import {
 import { updateMenuName } from "@/server/actions/menu/mutations"
 import type { getMenuById } from "@/server/actions/menu/queries"
 
-const nameSchema = z.object({
-  name: z.string().min(1, "El nombre es requerido")
-})
-
 export default function MenuTitle({
   menu
 }: {
   menu: NonNullable<Awaited<ReturnType<typeof getMenuById>>>
 }) {
+  const t = useTranslations("menuEditor.menuMeta")
+
+  const nameSchema = useMemo(
+    () =>
+      z.object({
+        name: z.string().min(1, t("nameRequired"))
+      }),
+    [t]
+  )
+
   const form = useForm<z.infer<typeof nameSchema>>({
     resolver: zodResolver(nameSchema),
-    defaultValues: { name: menu.name ?? "Sin nombre" },
+    defaultValues: { name: menu.name ?? t("noName") },
     mode: "onBlur"
   })
   const [name, setName] = useState(menu.name)
@@ -53,7 +60,6 @@ export default function MenuTitle({
 
   const onSubmit = (data: z.infer<typeof nameSchema>) => {
     setName(data.name)
-    // console.log("onSubmit", data)
   }
 
   return (
@@ -72,12 +78,12 @@ export default function MenuTitle({
               control={form.control}
               render={({ field, fieldState }) => (
                 <Field>
-                  <FieldLabel htmlFor={field.name}>Nombre</FieldLabel>
+                  <FieldLabel htmlFor={field.name}>{t("nameLabel")}</FieldLabel>
                   <Input
                     {...field}
                     id={field.name}
                     className="h-8"
-                    placeholder="Nombre"
+                    placeholder={t("nameLabel")}
                   />
                   {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />

@@ -1,3 +1,7 @@
+"use client"
+
+import { useTranslations } from "next-intl"
+
 import {
   Accordion,
   AccordionContent,
@@ -5,30 +9,17 @@ import {
   AccordionTrigger
 } from "@/components/ui/accordion"
 
-const FAQ = [
-  {
-    question: "¿Qué es un menú QR?",
-    answer: `Es un menú digital que tus clientes abren al escanear un código QR con la cámara de su teléfono.`
-  },
-  {
-    question: "¿Cómo funcionan los menús QR para los restaurantes?",
-    answer: `Publicas tu menú una sola vez, colocas el código QR en tu negocio y tus clientes lo abren en el navegador. Si haces cambios, el QR sigue siendo el mismo.`
-  },
-  {
-    question: "¿Cómo creo un código QR para el menú de mi restaurante?",
-    answer: `Primero publicas tu menú y después descargas el código QR desde Biztro. Luego puedes imprimirlo y usarlo en mesas, mostrador o material promocional.`
-  },
-  {
-    question: "¿Puedo actualizar el menú sin reimprimir el código QR?",
-    answer: `Sí. Puedes cambiar productos, precios o descripciones cuando quieras y el mismo código QR seguirá funcionando.`
-  },
-  {
-    question: "¿Mis clientes necesitan una app para abrir el menú?",
-    answer: `No. Solo necesitan abrir la cámara de su teléfono y escanear el código QR. El menú se abre en el navegador, como cualquier página web.`
-  }
-]
+const CONTACT_EMAIL = "contacto@biztro.co"
+
+type FaqItem = {
+  question: string
+  answer: string
+}
 
 export default function Faq() {
+  const t = useTranslations("marketing.faq")
+  const items = t.raw("items") as FaqItem[]
+
   return (
     <section id="faq" className="pt-20 pb-28 sm:py-32">
       <div
@@ -39,11 +30,11 @@ export default function Faq() {
           className="font-display text-3xl tracking-tight text-balance
             text-taupe-950 sm:text-4xl dark:text-taupe-50"
         >
-          Preguntas frecuentes
+          {t("title")}
         </h2>
         <div>
           <Accordion type="single" collapsible>
-            {FAQ.map((faq, index) => (
+            {items.map((faq, index) => (
               <AccordionItem
                 key={index}
                 value={`faq-${index}`}
@@ -66,12 +57,12 @@ export default function Faq() {
         </div>
         <div className="col-span-full">
           <p className="text-center text-taupe-700 dark:text-taupe-300">
-            ¿Te quedó alguna duda? Escríbenos a{" "}
+            {t("contactPrefix")}{" "}
             <a
-              href="mailto:contacto@biztro.co"
+              href={`mailto:${CONTACT_EMAIL}`}
               className="text-taupe-600 hover:underline focus-visible:underline"
             >
-              contacto@biztro.co
+              {CONTACT_EMAIL}
             </a>
           </p>
         </div>

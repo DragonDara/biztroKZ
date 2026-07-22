@@ -1,6 +1,7 @@
 "use client"
 
 import toast from "react-hot-toast"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 
 import {
@@ -27,9 +28,12 @@ export default function MemberDelete({
   open: boolean
   setOpen: (open: boolean) => void
 }) {
+  const t = useTranslations("dashboard.settings.members")
+  const tCommon = useTranslations("dashboard.common")
+
   const { execute, reset } = useAction(removeMember, {
     onExecute: () => {
-      toast.loading("Eliminando miembro...")
+      toast.loading(t("deleting"))
     },
     onSuccess: ({ data }) => {
       if (data?.failure?.reason) {
@@ -37,12 +41,12 @@ export default function MemberDelete({
         toast.error(data.failure.reason)
       } else if (data?.success) {
         toast.dismiss()
-        toast.success("Miembro eliminado con éxito")
+        toast.success(t("deleted"))
       }
       reset()
     },
     onError: () => {
-      toast.error("Algo salió mal")
+      toast.error(tCommon("genericError"))
       reset()
     }
   })
@@ -55,15 +59,14 @@ export default function MemberDelete({
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Eliminar Miembro</AlertDialogTitle>
+          <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
           <AlertDialogDescription>
-            ¿Estás seguro de que deseas eliminar a este miembro? Esta acción no
-            se puede deshacer.
+            {t("deleteDescription")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel onClick={event => event.stopPropagation()}>
-            Cancelar
+            {tCommon("cancel")}
           </AlertDialogCancel>
           <AlertDialogAction
             className={cn(buttonVariants({ variant: "destructive" }))}
@@ -72,7 +75,7 @@ export default function MemberDelete({
               onDeleteMember()
             }}
           >
-            Eliminar
+            {tCommon("delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

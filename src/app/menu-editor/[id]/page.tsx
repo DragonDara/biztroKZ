@@ -5,39 +5,50 @@ import {
   QueryClient
 } from "@tanstack/react-query"
 import type { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 import { cookies } from "next/headers"
 import { notFound } from "next/navigation"
 
-import Workbench from "@/components/menu-editor/workbench"
+import WorkbenchLoader from "@/components/menu-editor/workbench-loader"
 import {
   getCategoriesWithItems,
   getFeaturedItems,
   getMenuItemsWithoutCategory
 } from "@/server/actions/item/queries"
 import { getDefaultLocation } from "@/server/actions/location/queries"
-import { getMenuById, getThemes } from "@/server/actions/menu/queries"
+import {
+  getMenuById,
+  getMenuTitleById,
+  getThemes
+} from "@/server/actions/menu/queries"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
+import { debugLog } from "@/lib/debug-log"
 
 export async function generateMetadata(props: {
   params: Promise<{ id: string }>
 }): Promise<Metadata> {
   const params = await props.params
-  const menu = await getMenuById(params.id)
+  const menuName = await getMenuTitleById(params.id)
 
-  if (menu) {
-    return {
-      title: menu.name
-    }
-  } else {
-    return {
-      title: "Menú no encontrado"
-    }
+  if (menuName) {
+    return { title: menuName }
   }
+
+  const t = await getTranslations("menuEditor.menuMeta")
+  return { title: t("notFound") }
 }
 
 export default async function MenuEditorPage(props: {
   params: Promise<{ id: string }>
 }) {
+  const pageStart = Date.now()
+  debugLog({
+    hypothesisId: "H",
+    location: "menu-editor/page.tsx:start",
+    message: "MenuEditorPage started",
+    data: { elapsedMs: 0 }
+  })
+
   const params = await props.params
   const queryClient = new QueryClient()
 
@@ -61,23 +72,32 @@ export default async function MenuEditorPage(props: {
       getMenuById(params.id)
     ])
 
+  debugLog({
+    hypothesisId: "H",
+    location: "menu-editor/page.tsx:after-data",
+    message: "Menu editor data loaded",
+    data: {
+      menuId: params.id,
+      hasMenu: Boolean(menu),
+      elapsedMs: Date.now() - pageStart
+    },
+    runId: "post-fix"
+  })
+
   if (!menu || !currentOrg) {
     return notFound()
   }
 
-  // Read saved layout from cookies for SSR
   const cookieStore = await cookies()
   const layoutCookie = cookieStore.get(
     "react-resizable-panels:layout:menu-editor-workbench"
   )
-  // Layout shape used by react-resizable-panels: { [panelId: string]: number }
-  // Accept either the legacy array shape (number[]) or the new map shape and normalize to Layout
+
   let defaultLayout: Layout | undefined
   if (layoutCookie?.value) {
     try {
       const parsed = JSON.parse(decodeURIComponent(layoutCookie.value))
       if (Array.isArray(parsed)) {
-        // Legacy format: convert array -> map with numeric string keys
         const layout: Layout = {}
         parsed.forEach((v: number, i: number) => {
           layout[i.toString()] = v
@@ -85,18 +105,15 @@ export default async function MenuEditorPage(props: {
         defaultLayout = layout
       } else if (parsed && typeof parsed === "object") {
         defaultLayout = parsed as Layout
-      } else {
-        defaultLayout = undefined
       }
     } catch {
-      // If cookie is malformed, ignore and use default layout
       defaultLayout = undefined
     }
   }
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Workbench
+      <WorkbenchLoader
         menu={menu}
         organization={currentOrg}
         location={location}

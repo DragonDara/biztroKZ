@@ -1,4 +1,7 @@
+"use client"
+
 import { LayoutList, Settings2, SquarePlus, SwatchBook } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { PanelType } from "@/components/menu-editor/workbench"
 import { Button } from "@/components/ui/button"
@@ -18,6 +21,8 @@ export function BottomBar({
   isOpen,
   getPanelContent
 }: BottomBarProps) {
+  const t = useTranslations("menuEditor.mobileNav")
+
   return (
     <>
       <div
@@ -38,7 +43,7 @@ export function BottomBar({
             <SquarePlus className="size-6" />
           </Button>
           <span className="text-xs text-gray-600 dark:text-gray-300">
-            Elementos
+            {t("elements")}
           </span>
         </div>
         <div className="flex flex-col items-center">
@@ -54,7 +59,7 @@ export function BottomBar({
             <SwatchBook className="size-6" />
           </Button>
           <span className="text-xs text-gray-600 dark:text-gray-300">
-            Temas
+            {t("themes")}
           </span>
         </div>
         <div className="flex flex-col items-center">
@@ -70,7 +75,7 @@ export function BottomBar({
             <LayoutList className="size-6" />
           </Button>
           <span className="text-xs text-gray-600 dark:text-gray-300">
-            Secciones
+            {t("sections")}
           </span>
         </div>
         <div className="flex flex-col items-center">
@@ -86,7 +91,7 @@ export function BottomBar({
             <Settings2 className="size-6" />
           </Button>
           <span className="text-xs text-gray-600 dark:text-gray-300">
-            Ajustes
+            {t("settings")}
           </span>
         </div>
       </div>

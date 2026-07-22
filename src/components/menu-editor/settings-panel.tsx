@@ -1,8 +1,12 @@
+"use client"
+
 import React from "react"
 import { useEditor } from "@craftjs/core"
 import { Mouse } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 export default function SettingsPanel() {
+  const t = useTranslations("menuEditor.settings")
   const { active, related } = useEditor((state, query) => {
     const currentlySelectedNodeId = query.getEvent("selected").first()
     return {
@@ -27,7 +31,7 @@ export default function SettingsPanel() {
             <Mouse className="size-6" />
           </div>
           <span className="text-sm text-gray-500 dark:text-gray-400">
-            Selecciona un componente para editar
+            {t("selectComponent")}
           </span>
         </div>
       )}

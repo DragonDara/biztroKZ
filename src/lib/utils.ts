@@ -23,28 +23,33 @@ export function getInitials(name: string | undefined | null) {
     .join("")
 }
 
-export const getBaseUrl = () => {
-  if (process.env.BETTER_AUTH_URL) return process.env.BETTER_AUTH_URL
-  if (process.env.NEXT_PUBLIC_VERCEL_ENV === "production")
+export const getBaseUrl = (): string => {
+  if (process.env.NODE_ENV === "development") return "http://localhost:3000"
+  if (
+    process.env.NODE_ENV === "production" &&
+    process.env.NEXT_PUBLIC_ROOT_DOMAIN
+  )
+    return `https://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
+  /* if (process.env.NEXT_PUBLIC_VERCEL_ENV === "production")
     return `https://${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
   if (
     process.env.NEXT_PUBLIC_VERCEL_ENV === "preview" &&
     process.env.NEXT_PUBLIC_VERCEL_URL
   )
-    return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}`
-  return "http://localhost:3000"
+    return `https://${process.env.NEXT_PUBLIC_VERCEL_URL}` */
+  return process.env.BETTER_AUTH_URL ?? ""
 }
 
-export const getPublishedMenuUrl = (subdomain: string) => {
+export const getPublishedMenuUrl = (subdomain: string): string => {
   const baseUrl = getBaseUrl()
   if (!subdomain) return baseUrl
 
   try {
     const url = new URL(baseUrl ?? "")
-    const isBiztroHost =
+    const isAppHost =
       url.hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN ||
       url.hostname.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)
-    if (!isBiztroHost) return `${baseUrl}/${subdomain}`
+    if (!isAppHost) return `${baseUrl}/${subdomain}`
 
     return `${url.protocol}//${subdomain}.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`
   } catch {

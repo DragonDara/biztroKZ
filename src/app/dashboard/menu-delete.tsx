@@ -2,6 +2,7 @@
 
 import toast from "react-hot-toast"
 import type { Menu } from "@/generated/prisma-client/client"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 
 import {
@@ -27,21 +28,24 @@ export default function MenuDelete({
   open: boolean
   setOpen: (open: boolean) => void
 }) {
+  const t = useTranslations("dashboard.menus")
+  const tCommon = useTranslations("dashboard.common")
+
   const { execute, reset } = useAction(deleteMenu, {
     onExecute: () => {
-      toast.loading("Eliminando Menú...")
+      toast.loading(t("deleteLoading"))
     },
     onSuccess: ({ data }) => {
       toast.dismiss()
       if (data?.failure?.reason) {
         toast.error(data.failure.reason)
       } else if (data?.success) {
-        toast.success("Menú eliminado")
+        toast.success(t("deleted"))
       }
       reset()
     },
     onError: () => {
-      toast.error("Algo salió mal")
+      toast.error(tCommon("genericError"))
       reset()
     }
   })
@@ -54,19 +58,18 @@ export default function MenuDelete({
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle>Eliminar Menú</AlertDialogTitle>
+          <AlertDialogTitle>{t("deleteTitle")}</AlertDialogTitle>
           <AlertDialogDescription>
-            ¿Estás seguro de eliminar este menú? Esta acción no se puede
-            deshacer
+            {t("deleteDescription")}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancelar</AlertDialogCancel>
+          <AlertDialogCancel>{tCommon("cancel")}</AlertDialogCancel>
           <AlertDialogAction
             className={cn(buttonVariants({ variant: "destructive" }))}
             onClick={() => onDeleteMenu()}
           >
-            Eliminar
+            {tCommon("delete")}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>

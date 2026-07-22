@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"
 import { DataTable } from "@/components/data-table/data-table"
 import type { getCategories, getMenuItems } from "@/server/actions/item/queries"
 import { useDataTable } from "@/hooks/use-data-table"
-import { columns } from "@/app/dashboard/menu-items/columns"
+import { useMenuItemColumns } from "@/app/dashboard/menu-items/columns"
 import FilterToolbar from "@/app/dashboard/menu-items/filter-toolbar"
 import FloatingToolbar from "@/app/dashboard/menu-items/floating-toolbar"
 
@@ -17,6 +17,7 @@ export default function ItemTable({
   categories: Awaited<ReturnType<typeof getCategories>>
 }) {
   const router = useRouter()
+  const columns = useMenuItemColumns()
   const { table, globalFilter, setGlobalFilter } = useDataTable({
     data,
     columns

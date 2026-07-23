@@ -289,7 +289,7 @@ export const sendOrganizationInvitation = async ({
   const baseUrl = getBaseUrl()
 
   const { error } = await resend.emails.send({
-    from: "noreply@biztro.co",
+    from: "noreply@qrmenu.bron.cafe",
     to: email,
     subject: `Invitación a unirse a ${teamName}`,
     react: InviteUserEmail({

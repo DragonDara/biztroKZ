@@ -1,5 +1,6 @@
 "use client"
 
+import { useMemo } from "react"
 import { useTranslations } from "next-intl"
 
 export function useMenuEditorUnsavedCopy() {
@@ -8,18 +9,30 @@ export function useMenuEditorUnsavedCopy() {
 
   const dismissButtonLabel = tCommon("cancel")
   const proceedLinkLabel = t("discardChanges")
+  const editorLeaveMessage = t("editorLeave")
+  const dataGridSaveMessage = t("dataGridSave")
+  const dataGridWarning = t("dataGridWarning")
 
-  return {
-    editorLeave: {
-      message: t("editorLeave"),
+  return useMemo(
+    () => ({
+      editorLeave: {
+        message: editorLeaveMessage,
+        dismissButtonLabel,
+        proceedLinkLabel
+      },
+      dataGridSave: {
+        message: dataGridSaveMessage,
+        dismissButtonLabel,
+        proceedLinkLabel
+      },
+      dataGridWarning
+    }),
+    [
       dismissButtonLabel,
-      proceedLinkLabel
-    },
-    dataGridSave: {
-      message: t("dataGridSave"),
-      dismissButtonLabel,
-      proceedLinkLabel
-    },
-    dataGridWarning: t("dataGridWarning")
-  }
+      proceedLinkLabel,
+      editorLeaveMessage,
+      dataGridSaveMessage,
+      dataGridWarning
+    ]
+  )
 }

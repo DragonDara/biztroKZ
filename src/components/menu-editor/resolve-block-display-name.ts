@@ -1,25 +1,28 @@
 "use client"
 
+import { useCallback } from "react"
 import { useTranslations } from "next-intl"
 
-const CANONICAL_DISPLAY_NAMES = {
-  Sitio: "site",
-  Cabecera: "header",
-  Categoría: "category",
-  Producto: "product",
-  Navegación: "navigation",
-  Recomendados: "featured",
-  Encabezado: "heading",
-  Texto: "text"
-} as const
+import { resolveBlockDisplayNameKey } from "@/lib/menu-editor/block-display-names"
+
+export {
+  BLOCK_DISPLAY_NAME,
+  DISPLAY_NAME_ALIASES,
+  canonicalizeBlockDisplayName,
+  isBlockDisplayName,
+  resolveBlockDisplayNameKey
+} from "@/lib/menu-editor/block-display-names"
+export type { BlockDisplayNameKey } from "@/lib/menu-editor/block-display-names"
 
 export function useResolveBlockDisplayName() {
   const t = useTranslations("menuEditor.blocks.displayNames")
 
-  return (name: string | undefined) => {
-    if (!name) return ""
-    const key =
-      CANONICAL_DISPLAY_NAMES[name as keyof typeof CANONICAL_DISPLAY_NAMES]
-    return key ? t(key) : name
-  }
+  return useCallback(
+    (name: string | undefined) => {
+      if (!name) return ""
+      const key = resolveBlockDisplayNameKey(name)
+      return key ? t(key) : name
+    },
+    [t]
+  )
 }

@@ -21,6 +21,7 @@ import {
   type MenuBlockIconKey
 } from "@/components/menu-editor/block-icons"
 import { LayerName } from "@/components/menu-editor/layers/layer-name"
+import { useResolveBlockDisplayName } from "@/components/menu-editor/resolve-block-display-name"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -38,11 +39,13 @@ import {
 } from "@/components/ui/drawer"
 import { Input } from "@/components/ui/input"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { canonicalizeBlockDisplayName } from "@/lib/menu-editor/block-display-names"
 import { cn } from "@/lib/utils"
 
 export default function LayerHeader() {
   const t = useTranslations("menuEditor.layers")
   const tCommon = useTranslations("dashboard.common")
+  const resolveBlockDisplayName = useResolveBlockDisplayName()
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [tempName, setTempName] = useState("")
 
@@ -75,7 +78,8 @@ export default function LayerHeader() {
       ? state.nodes[id]?.data.custom.displayName
       : state.nodes[id]?.data.displayName
     const iconKey = state.nodes[id]?.data.custom.iconKey as
-      MenuBlockIconKey | undefined
+      | MenuBlockIconKey
+      | undefined
 
     return {
       hidden: state.nodes[id]?.data.hidden,
@@ -107,7 +111,9 @@ export default function LayerHeader() {
   }, [layerHeader])
 
   const handleSaveName = () => {
-    actions.setCustom(id, custom => (custom.displayName = tempName))
+    actions.setCustom(id, custom => {
+      custom.displayName = canonicalizeBlockDisplayName(tempName)
+    })
     setIsEditDialogOpen(false)
   }
 
@@ -193,7 +199,7 @@ export default function LayerHeader() {
           open={isEditDialogOpen}
           onOpenChange={open => {
             setIsEditDialogOpen(open)
-            if (open) setTempName(displayName)
+            if (open) setTempName(resolveBlockDisplayName(displayName))
           }}
         >
           <DrawerContent>
@@ -220,7 +226,7 @@ export default function LayerHeader() {
           open={isEditDialogOpen}
           onOpenChange={open => {
             setIsEditDialogOpen(open)
-            if (open) setTempName(displayName)
+            if (open) setTempName(resolveBlockDisplayName(displayName))
           }}
         >
           <DialogContent>

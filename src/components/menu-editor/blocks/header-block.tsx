@@ -483,7 +483,7 @@ function SocialMedia({
 }
 
 HeaderBlock.craft = {
-  displayName: "Cabecera",
+  displayName: "header",
   props: {
     fontFamily: "Inter",
     color: { r: 38, g: 50, b: 56, a: 1 },

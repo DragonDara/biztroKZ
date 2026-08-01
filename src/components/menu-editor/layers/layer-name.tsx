@@ -6,6 +6,7 @@ import { useEditor } from "@craftjs/core"
 import { useLayer } from "@craftjs/layers"
 
 import { useResolveBlockDisplayName } from "@/components/menu-editor/resolve-block-display-name"
+import { canonicalizeBlockDisplayName } from "@/lib/menu-editor/block-display-names"
 
 export const LayerName = () => {
   const { id } = useLayer()
@@ -19,50 +20,80 @@ export const LayerName = () => {
   }))
 
   const [editingName, setEditingName] = useState(false)
+  const [draftName, setDraftName] = useState("")
   const nameDOM = useRef<HTMLElement | null>(null)
-
-  const clickOutside = useCallback((e: MouseEvent) => {
-    if (nameDOM.current && !nameDOM.current.contains(e.target as Node)) {
-      setEditingName(false)
-    }
-  }, [])
-
-  useEffect(() => {
-    return () => {
-      window.removeEventListener("click", clickOutside)
-    }
-  }, [clickOutside])
-
   const contentEditableRef = useRef<ContentEditable | null>(null)
 
+  const commitEdit = useCallback(() => {
+    const nextName = canonicalizeBlockDisplayName(draftName)
+    actions.setCustom(id, custom => {
+      custom.displayName = nextName
+    })
+    setEditingName(false)
+  }, [actions, draftName, id])
+
+  const clickOutside = useCallback(
+    (e: MouseEvent) => {
+      if (nameDOM.current && !nameDOM.current.contains(e.target as Node)) {
+        commitEdit()
+      }
+    },
+    [commitEdit]
+  )
+
   useEffect(() => {
+    if (!editingName) return
+
     const ref = contentEditableRef.current
     if (ref) {
       nameDOM.current = ref.el.current
-      window.removeEventListener("click", clickOutside)
-      window.addEventListener("click", clickOutside)
     }
-  }, [clickOutside])
+
+    // Defer so the opening double-click does not immediately close edit mode
+    const timer = window.setTimeout(() => {
+      window.addEventListener("click", clickOutside)
+    }, 0)
+
+    return () => {
+      window.clearTimeout(timer)
+      window.removeEventListener("click", clickOutside)
+    }
+  }, [editingName, clickOutside])
+
+  const resolvedName = resolveBlockDisplayName(displayName)
 
   if (!editingName) {
     return (
-      <h2 className="line-clamp-1" onDoubleClick={() => setEditingName(true)}>
-        {resolveBlockDisplayName(displayName)}
+      <h2
+        className="line-clamp-1"
+        onDoubleClick={() => {
+          setDraftName(resolvedName)
+          setEditingName(true)
+        }}
+      >
+        {resolvedName}
       </h2>
     )
   }
 
   return (
     <ContentEditable
-      html={displayName ?? ""}
+      html={draftName}
       disabled={false}
       ref={contentEditableRef}
-      onChange={e => {
-        actions.setCustom(id, custom => (custom.displayName = e.target.value))
+      onChange={e => setDraftName(e.target.value)}
+      onKeyDown={(e: React.KeyboardEvent<HTMLElement>) => {
+        if (e.key === "Enter") {
+          e.preventDefault()
+          commitEdit()
+        }
+        if (e.key === "Escape") {
+          e.preventDefault()
+          setEditingName(false)
+        }
       }}
       tagName="h2"
       className="line-clamp-1"
-      onDoubleClick={() => setEditingName(true)}
     />
   )
 }

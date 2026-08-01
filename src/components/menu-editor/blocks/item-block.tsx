@@ -301,7 +301,7 @@ export function ItemView({
 }
 
 ItemBlock.craft = {
-  displayName: "Producto",
+  displayName: "product",
   props: {
     backgroundMode: "none",
     categoryFontSize: 20,

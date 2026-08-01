@@ -314,7 +314,7 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
           <DrawerContent className="max-h-[85%]">
             <DrawerHeader>
-              <DrawerTitle>Navegación</DrawerTitle>
+              <DrawerTitle>{t("displayNames.navigation")}</DrawerTitle>
             </DrawerHeader>
             <nav className="no-scrollbar overflow-y-auto px-4 pb-8">
               <ul className="flex flex-col space-y-2">
@@ -347,7 +347,7 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
 }
 
 NavigatorBlock.craft = {
-  displayName: "Navegación",
+  displayName: "navigation",
   props: {
     color: { r: 255, g: 255, b: 255, a: 1 }
   },

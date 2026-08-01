@@ -58,7 +58,7 @@ export default function HeadingElement({
 }
 
 HeadingElement.craft = {
-  displayName: "Encabezado",
+  displayName: "heading",
   props: {
     fontSize: 20,
     color: { r: 38, g: 50, b: 56, a: 1 },

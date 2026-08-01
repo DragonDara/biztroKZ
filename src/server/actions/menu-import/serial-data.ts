@@ -2,6 +2,7 @@ import lz from "lzutf8"
 
 import type { getDefaultLocation } from "@/server/actions/location/queries"
 import type { getCurrentOrganization } from "@/server/actions/user/queries"
+import { BLOCK_DISPLAY_NAME } from "@/lib/menu-editor/block-display-names"
 import type {
   MenuImportCategoryDesignPattern,
   MenuImportGeneratedColorTheme,
@@ -151,7 +152,7 @@ function createCategoryNode({
       showImage: false,
       data: category
     },
-    displayName: "Categoría",
+    displayName: BLOCK_DISPLAY_NAME.category,
     custom: {
       iconKey: "category",
       displayName: category.name
@@ -194,7 +195,7 @@ export function buildGeneratedMenuSerialData({
         backgroundImage: visualPackage.backgroundImage,
         color: textColor
       },
-      displayName: "Sitio",
+      displayName: BLOCK_DISPLAY_NAME.site,
       custom: {},
       hidden: false,
       nodes: [headerId, ...categoryNodeIds],
@@ -215,7 +216,7 @@ export function buildGeneratedMenuSerialData({
         organization,
         location: location ?? undefined
       },
-      displayName: "Cabecera",
+      displayName: BLOCK_DISPLAY_NAME.header,
       custom: {
         iconKey: "header"
       },

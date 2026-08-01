@@ -54,7 +54,7 @@ export default function TextElement({
 }
 
 TextElement.craft = {
-  displayName: "Texto",
+  displayName: "text",
   props: {
     fontSize: 16,
     color: { r: 38, g: 50, b: 56, a: 1 },

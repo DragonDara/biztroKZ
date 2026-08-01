@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { useEditor } from "@craftjs/core"
 import { useAtom } from "jotai"
 import {
@@ -36,6 +36,13 @@ export default function FloatingBar() {
   const [propsCopy, setPropsCopy] = useAtom(elementPropsAtom)
 
   const [historyPointer, setHistoryPointer] = useState(store.history.pointer)
+  const clearHistoryRef = useRef<() => void>(() => undefined)
+
+  useEffect(() => {
+    clearHistoryRef.current = () => {
+      actions.history.clear()
+    }
+  })
 
   useEffect(() => {
     return store.subscribe(_state => store.history.pointer, setHistoryPointer)
@@ -69,7 +76,7 @@ export default function FloatingBar() {
       setUnsavedChanges({
         ...unsavedCopy.editorLeave,
         proceedAction: () => {
-          actions.history.clear()
+          clearHistoryRef.current()
         }
       })
     } else {
@@ -80,7 +87,6 @@ export default function FloatingBar() {
     clearUnsavedChanges,
     canUndo,
     historyPointer,
-    actions.history,
     unsavedCopy.editorLeave
   ])
 

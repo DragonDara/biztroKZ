@@ -202,7 +202,7 @@ export default function FeaturedBlock({
 }
 
 FeaturedBlock.craft = {
-  displayName: "Recomendados",
+  displayName: "featured",
   props: {
     autoPlay: true,
     itemFontWeight: "500",

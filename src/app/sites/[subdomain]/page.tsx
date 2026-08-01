@@ -19,6 +19,7 @@ import {
 } from "@/server/actions/organization/queries"
 import PublicMenuTracker from "@/app/sites/[subdomain]/public-menu-tracker"
 import ResolveEditor from "@/app/sites/[subdomain]/resolve-editor"
+import { isBlockDisplayName } from "@/lib/menu-editor/block-display-names"
 import { normalizePublicMenuItems } from "@/lib/menu-search"
 import { extractMenuDataFromNodes } from "@/lib/sync-status"
 import { SubscriptionStatus } from "@/lib/types/billing"
@@ -288,10 +289,10 @@ async function getCachedMenuRenderData(menuId: string, snapshot: string) {
     if (!isRecord(node)) return
     const displayName = node.displayName as string | undefined
     const props = isRecord(node.props) ? node.props : undefined
-    if (displayName === "Sitio") {
+    if (isBlockDisplayName(displayName, "site")) {
       backgroundColor = props?.backgroundColor as RgbaColor
     }
-    if (displayName === "Cabecera") {
+    if (isBlockDisplayName(displayName, "header")) {
       textColor = props?.color as RgbaColor
     }
   })

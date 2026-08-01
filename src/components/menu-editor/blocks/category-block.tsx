@@ -180,7 +180,7 @@ export default function CategoryBlock({
 }
 
 CategoryBlock.craft = {
-  displayName: "Categoría",
+  displayName: "category",
   props: {
     backgroundMode: "none",
     categoryFontSize: 20,

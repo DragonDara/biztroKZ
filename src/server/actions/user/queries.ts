@@ -91,11 +91,19 @@ export const getMembers = async (organizationId: string) => {
   }
 
   // Direct fetch without Next.js unstable cache wrapper
-  const members = await auth.api.listMembers({
-    headers: await headers()
-  })
-
-  return members
+  try {
+    const members = await auth.api.listMembers({
+      query: { organizationId },
+      headers: await headers()
+    })
+    return members
+  } catch (err) {
+    console.error("Failed to list members", err)
+    Sentry.captureException(err, {
+      tags: { section: "user-queries" }
+    })
+    return []
+  }
 }
 
 export const getCurrentMembership = async () => {
@@ -191,55 +199,63 @@ export async function isProMember() {
   "use cache: private"
   cacheLife({ stale: 60 })
 
-  const org = await getCurrentOrganization()
+  try {
+    const org = await getCurrentOrganization()
 
-  if (!org) {
+    if (!org) {
+      return false
+    }
+
+    cacheTag(`organization-${org.id}-subscription`)
+
+    const subscriptions = await auth.api.listActiveSubscriptions({
+      query: { referenceId: org?.id },
+      headers: await headers()
+    })
+
+    const activeSubscription = subscriptions.find(
+      sub => sub.status === "active" || sub.status === "trialing"
+    )
+
+    // Update the plan in the organization record if it differs from the subscription plan, if the status is sponsored,
+    // it means the organization is on a sponsored PRO plan
+    if (
+      org &&
+      activeSubscription &&
+      org.plan?.toUpperCase() !== activeSubscription.plan?.toUpperCase() &&
+      org.status !== SubscriptionStatus.SPONSORED
+    ) {
+      try {
+        await auth.api.updateOrganization({
+          body: {
+            data: {
+              plan: activeSubscription.plan.toUpperCase(),
+              status: activeSubscription.status.toUpperCase()
+            },
+            organizationId: org.id
+          },
+          headers: await headers()
+        })
+      } catch (error) {
+        console.error("Failed to update organization plan", error)
+        Sentry.captureException(error, {
+          tags: { section: "user-queries" },
+          extra: { organizationId: org.id, plan: activeSubscription.plan }
+        })
+      }
+    }
+
+    return (
+      activeSubscription?.plan.toUpperCase() === "PRO" ||
+      org?.status === SubscriptionStatus.SPONSORED
+    )
+  } catch (err) {
+    console.error("Failed to check if user is pro member", err)
+    Sentry.captureException(err, {
+      tags: { section: "user-queries" }
+    })
     return false
   }
-
-  cacheTag(`organization-${org.id}-subscription`)
-
-  const subscriptions = await auth.api.listActiveSubscriptions({
-    query: { referenceId: org?.id },
-    headers: await headers()
-  })
-
-  const activeSubscription = subscriptions.find(
-    sub => sub.status === "active" || sub.status === "trialing"
-  )
-
-  // Update the plan in the organization record if it differs from the subscription plan, if the status is sponsored,
-  // it means the organization is on a sponsored PRO plan
-  if (
-    org &&
-    activeSubscription &&
-    org.plan?.toUpperCase() !== activeSubscription.plan?.toUpperCase() &&
-    org.status !== SubscriptionStatus.SPONSORED
-  ) {
-    try {
-      await auth.api.updateOrganization({
-        body: {
-          data: {
-            plan: activeSubscription.plan.toUpperCase(),
-            status: activeSubscription.status.toUpperCase()
-          },
-          organizationId: org.id
-        },
-        headers: await headers()
-      })
-    } catch (error) {
-      console.error("Failed to update organization plan", error)
-      Sentry.captureException(error, {
-        tags: { section: "user-queries" },
-        extra: { organizationId: org.id, plan: activeSubscription.plan }
-      })
-    }
-  }
-
-  return (
-    activeSubscription?.plan.toUpperCase() === "PRO" ||
-    org?.status === SubscriptionStatus.SPONSORED
-  )
 }
 
 function isTransientPermissionError(err: unknown): boolean {

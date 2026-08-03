@@ -24,12 +24,13 @@ export default async function MembersPage() {
   const currentOrg = await getCurrentOrganization()
   if (!currentOrg) return notFound()
 
-  const [canInviteMember, canDeleteMember, isPro, data] = await Promise.all([
+  const [canInviteMember, canDeleteMember, data] = await Promise.all([
     safeHasPermission({ invitation: ["create"] }),
     safeHasPermission({ member: ["delete"] }),
-    isProMember(),
     getMembers(currentOrg.id)
   ])
+
+  const isPro = canInviteMember?.success ? await isProMember() : false
 
   const ROLES = ["member", "admin", "owner"] as const
   type Role = (typeof ROLES)[number]

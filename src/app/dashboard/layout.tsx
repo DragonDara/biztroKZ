@@ -12,6 +12,7 @@ import {
   SidebarProvider,
   SidebarTrigger
 } from "@/components/ui/sidebar"
+import { ensureActiveOrganization } from "@/server/actions/user/mutations"
 import {
   getCurrentOrganization,
   hasOrganizations
@@ -29,6 +30,11 @@ export default async function Layout({
 
   if (!organization && !organizationCount) {
     redirect("/new-org")
+  }
+
+  if (!organization && organizationCount > 0) {
+    await ensureActiveOrganization()
+    redirect("/dashboard")
   }
 
   return (

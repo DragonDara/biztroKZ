@@ -6,6 +6,7 @@ import { headers } from "next/headers"
 import { z } from "zod/v4"
 
 import { auth } from "@/lib/auth"
+import prisma from "@/lib/prisma"
 import { authActionClient } from "@/lib/safe-actions"
 
 export const switchOrganization = authActionClient
@@ -96,6 +97,13 @@ export const inviteMember = authActionClient
       })
 
       if (data) {
+        const normalized = email.trim().toLowerCase()
+        await prisma.waitlist.upsert({
+          where: { email: normalized },
+          create: { email: normalized, enabled: true },
+          update: { enabled: true }
+        })
+
         const activeOrg = await auth.api.getFullOrganization({
           headers: requestHeaders
         })
@@ -151,19 +159,44 @@ export const acceptInvite = authActionClient
         }
       }
 
+      // Better Auth обычно отдаёт member и/или invitation
+      const organizationId =
+        data.member?.organizationId ?? data.invitation?.organizationId ?? null
+      if (organizationId) {
+        const activated = await auth.api.setActiveOrganization({
+          body: { organizationId },
+          headers: requestHeaders
+        })
+        if (!activated) {
+          return {
+            failure: {
+              reason: "No se pudo establecer la organización activa"
+            }
+          }
+        }
+      }
+
       const activeOrg = await auth.api.getFullOrganization({
         headers: requestHeaders
       })
 
       updateTag(`invitation:${id}`)
       updateTag("organization:current")
+      updateTag("organization-current")
+      updateTag("organizations-list")
       updateTag("membership:current")
+      updateTag("membership-current")
       updateTag("membership:current:role")
+      updateTag("membership-current-role")
       updateTag("permissions:all")
+      updateTag("permissions-all")
       if (activeOrg?.id) {
         updateTag(`organization:${activeOrg.id}:members`)
+        updateTag(`organization-${activeOrg.id}-members`)
         updateTag(`organization:${activeOrg.id}`)
+        updateTag(`organization-${activeOrg.id}`)
         updateTag(`organization:${activeOrg.id}:subscription`)
+        updateTag(`organization-${activeOrg.id}-subscription`)
         updateTag(`page:settings:${activeOrg.id}`)
         updateTag(`page:settings:members:${activeOrg.id}`)
       }
@@ -236,3 +269,47 @@ export const removeMember = authActionClient
       }
     }
   })
+
+export async function ensureActiveOrganization() {
+  const requestHeaders = await headers()
+
+  const current = await auth.api
+    .getFullOrganization({
+      headers: requestHeaders
+    })
+    .catch(() => null)
+
+  if (current?.id) {
+    return current
+  }
+
+  const orgs = await auth.api.listOrganizations({
+    headers: requestHeaders
+  })
+
+  if (!Array.isArray(orgs) || orgs.length === 0) {
+    return null
+  }
+
+  const firstOrgId = orgs[0]?.id
+  if (!firstOrgId) {
+    return null
+  }
+
+  await auth.api.setActiveOrganization({
+    body: { organizationId: firstOrgId },
+    headers: requestHeaders
+  })
+
+  updateTag("organization:current")
+  updateTag("organization-current")
+  updateTag("organizations-list")
+  updateTag("membership:current")
+  updateTag("membership-current")
+  updateTag("permissions:all")
+  updateTag("permissions-all")
+
+  return auth.api.getFullOrganization({
+    headers: requestHeaders
+  })
+}

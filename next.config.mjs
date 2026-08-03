@@ -33,6 +33,24 @@ const config = withNextIntl({
       },
       {
         protocol: "https",
+        hostname: "**.r2.dev",
+        port: "",
+        pathname: "/*/**"
+      },
+      {
+        protocol: "https",
+        hostname: "**.bron.cafe",
+        port: "",
+        pathname: "/*/**"
+      },
+      {
+        protocol: "https",
+        hostname: "bron.cafe",
+        port: "",
+        pathname: "/*/**"
+      },
+      {
+        protocol: "https",
         hostname: "images.unsplash.com",
         port: ""
       },

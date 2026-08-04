@@ -3,12 +3,14 @@ import { localePathSegments, staticParamsPlaceholder } from "@/i18n/routing"
 import lz from "lzutf8"
 import { type Metadata, type ResolvingMetadata } from "next"
 import { cacheLife, cacheTag } from "next/cache"
-import Image from "next/image"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 
 import { PublicMenuProvider } from "@/components/menu-editor/public-menu-context"
-import PublishedAtLabel from "@/components/menu-editor/published-at-label"
+import {
+  PublicMenuLastUpdated,
+  PublicMenuPoweredBy
+} from "@/components/menu-editor/public-menu-footer"
 import { TranslationProvider } from "@/components/menu-editor/translation-provider"
 import { getAvailableTranslations } from "@/server/actions/item/translations"
 // import GradientBlur from "@/components/flare-ui/gradient-blur"
@@ -200,28 +202,23 @@ export default async function SitePage(props: {
             }}
           >
             <div className="z-20 rounded-full px-3 py-1 backdrop-blur-md">
-              Últ. actualización:{" "}
-              <PublishedAtLabel
+              <PublicMenuLastUpdated
                 publishedAt={siteMenu.publishedAt?.getTime() ?? null}
               />
             </div>
             <div className="z-20 flex items-center gap-2">
-              <Link href="https://biztro.co" target="_blank" prefetch={false}>
+              <Link
+                href="https://qrmenu.bron.cafe"
+                target="_blank"
+                prefetch={false}
+              >
                 <div
                   className="flex items-center justify-center gap-x-2
                     rounded-full bg-black/50 px-3 py-1"
                 >
-                  <Image
-                    src="/safari-pinned-tab.svg"
-                    alt="Logo"
-                    width={12}
-                    height={12}
-                    className="opacity-90 invert"
-                    unoptimized
-                  />
                   <span className="text-xs text-gray-100">
-                    <em className="hidden not-italic sm:inline">Powered by </em>
-                    Biztro
+                    <PublicMenuPoweredBy />
+                    Bron
                   </span>
                 </div>
               </Link>

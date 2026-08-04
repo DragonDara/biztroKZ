@@ -1731,7 +1731,9 @@
   "publicMenu": {
     "originalLanguage": "Spanish (original)",
     "changeLanguage": "Change language",
-    "originalLanguageSr": "Original language"
+    "originalLanguageSr": "Original language",
+    "lastUpdated": "Last updated:",
+    "poweredBy": "Powered by "
   },
   "emails": {
     "invite": {

@@ -2,6 +2,7 @@
 
 import * as Sentry from "@sentry/nextjs"
 import { gateway, generateText, Output } from "ai"
+import { getTranslations } from "next-intl/server"
 import { cacheTag, updateTag } from "next/cache"
 import { z } from "zod/v4"
 
@@ -80,11 +81,12 @@ const itemTranslationOutputSchema = z.object({
 export const translateMenuItems = authMemberActionClient
   .inputSchema(translateMenuItemsInputSchema)
   .action(async ({ parsedInput: { locale }, ctx: { member } }) => {
+    const t = await getTranslations("errors.actions")
     const currentOrgId = member.organizationId
 
     if (!currentOrgId) {
       return {
-        failure: { reason: "No se pudo obtener la organización actual" }
+        failure: { reason: t("noCurrentOrg") }
       }
     }
 
@@ -92,7 +94,7 @@ export const translateMenuItems = authMemberActionClient
     if (!proMember) {
       return {
         failure: {
-          reason: "La traducción de menú es una función exclusiva del plan Pro"
+          reason: t("translationProOnly")
         }
       }
     }
@@ -100,8 +102,7 @@ export const translateMenuItems = authMemberActionClient
     if (!env.AI_GATEWAY_API_KEY) {
       return {
         failure: {
-          reason:
-            "La funcionalidad de traducción requiere configurar una clave de API del AI Gateway"
+          reason: t("translationApiKeyRequired")
         }
       }
     }
@@ -120,7 +121,7 @@ export const translateMenuItems = authMemberActionClient
     if (items.length === 0) {
       return {
         failure: {
-          reason: "No hay productos activos para traducir"
+          reason: t("noActiveProducts")
         }
       }
     }
@@ -170,7 +171,7 @@ ${JSON.stringify(itemsPayload, null, 2)}`
 
       if (!result.output) {
         return {
-          failure: { reason: "No se pudo obtener la traducción del modelo" }
+          failure: { reason: t("translationModelFailed") }
         }
       }
 
@@ -260,8 +261,7 @@ ${JSON.stringify(itemsPayload, null, 2)}`
       })
       return {
         failure: {
-          reason:
-            "No se pudo completar la traducción. Por favor intenta nuevamente."
+          reason: t("translationIncomplete")
         }
       }
     }
@@ -274,11 +274,12 @@ ${JSON.stringify(itemsPayload, null, 2)}`
 export const translateMenuItemForLocale = authMemberActionClient
   .inputSchema(translateMenuItemForLocaleInputSchema)
   .action(async ({ parsedInput: { itemId, locale }, ctx: { member } }) => {
+    const t = await getTranslations("errors.actions")
     const currentOrgId = member.organizationId
 
     if (!currentOrgId) {
       return {
-        failure: { reason: "No se pudo obtener la organización actual" }
+        failure: { reason: t("noCurrentOrg") }
       }
     }
 
@@ -286,8 +287,7 @@ export const translateMenuItemForLocale = authMemberActionClient
     if (!proMember) {
       return {
         failure: {
-          reason:
-            "La traducción automática por producto es una función exclusiva del plan Pro"
+          reason: t("productTranslationProOnly")
         }
       }
     }
@@ -295,8 +295,7 @@ export const translateMenuItemForLocale = authMemberActionClient
     if (!env.AI_GATEWAY_API_KEY) {
       return {
         failure: {
-          reason:
-            "La funcionalidad de traducción requiere configurar una clave de API del AI Gateway"
+          reason: t("translationApiKeyRequired")
         }
       }
     }
@@ -322,7 +321,7 @@ export const translateMenuItemForLocale = authMemberActionClient
 
     if (!item) {
       return {
-        failure: { reason: "No se pudo encontrar el producto a traducir" }
+        failure: { reason: t("productNotFoundForTranslate") }
       }
     }
 
@@ -334,8 +333,7 @@ export const translateMenuItemForLocale = authMemberActionClient
     if (!itemNeedsTranslation && variantsMissingTranslation.length === 0) {
       return {
         failure: {
-          reason:
-            "Este producto ya tiene todas las traducciones disponibles para ese idioma"
+          reason: t("productAlreadyTranslated")
         }
       }
     }
@@ -383,7 +381,7 @@ ${JSON.stringify(variantsPayload, null, 2)}`
 
       if (!result.output) {
         return {
-          failure: { reason: "No se pudo obtener la traducción del modelo" }
+          failure: { reason: t("translationModelFailed") }
         }
       }
 
@@ -477,8 +475,7 @@ ${JSON.stringify(variantsPayload, null, 2)}`
       if (!createdItemTranslation && createdVariantTranslations.length === 0) {
         return {
           failure: {
-            reason:
-              "No se generaron nuevas traducciones para este producto. Intenta de nuevo."
+            reason: t("productNoNewTranslations")
           }
         }
       }
@@ -501,8 +498,7 @@ ${JSON.stringify(variantsPayload, null, 2)}`
 
       return {
         failure: {
-          reason:
-            "No se pudo completar la traducción del producto. Por favor intenta nuevamente."
+          reason: t("productTranslationIncomplete")
         }
       }
     }
@@ -520,11 +516,12 @@ const supportedLocaleCodeSet = new Set<string>(SUPPORTED_LOCALE_CODES)
 export const deleteMenuTranslation = authMemberActionClient
   .inputSchema(deleteMenuTranslationInputSchema)
   .action(async ({ parsedInput: { locale }, ctx: { member } }) => {
+    const t = await getTranslations("errors.actions")
     const currentOrgId = member.organizationId
 
     if (!currentOrgId) {
       return {
-        failure: { reason: "No se pudo obtener la organización actual" }
+        failure: { reason: t("noCurrentOrg") }
       }
     }
 
@@ -566,7 +563,7 @@ export const deleteMenuTranslation = authMemberActionClient
         tags: { section: "menu-translate-delete" }
       })
       return {
-        failure: { reason: "No se pudo eliminar la traducción." }
+        failure: { reason: t("translationDeleteFailed") }
       }
     }
   })

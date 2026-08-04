@@ -1,22 +1,30 @@
 import { Store } from "lucide-react"
+import type { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 
 import PageSubtitle from "@/components/dashboard/page-subtitle"
 import NewOrgForm from "../../(auth)/new-org/new-org-form"
 
-export const metadata = {
-  title: "Crear Organización",
-  description: "Crea y configura tu negocio en Biztro"
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("auth.onboarding")
+
+  return {
+    title: t("createOrgTitle"),
+    description: t("createOrgDescription")
+  }
 }
 
-export default function Page() {
+export default async function Page() {
+  const t = await getTranslations("auth.onboarding")
+
   return (
     <div className="flex grow py-4">
       <div className="mx-auto flex max-w-2xl grow flex-col gap-4 px-4 sm:px-0">
         <PageSubtitle>
           <PageSubtitle.Icon icon={Store} />
-          <PageSubtitle.Title>Crear Organización</PageSubtitle.Title>
+          <PageSubtitle.Title>{t("createOrgTitle")}</PageSubtitle.Title>
           <PageSubtitle.Description>
-            Información básica del negocio
+            {t("createOrgSubtitle")}
           </PageSubtitle.Description>
         </PageSubtitle>
         <NewOrgForm />

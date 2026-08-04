@@ -12,6 +12,7 @@ import {
   ListFilter,
   Trash2
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -70,6 +71,7 @@ export function DataGridFilterMenu<TData>({
   className,
   ...props
 }: DataGridFilterMenuProps<TData>) {
+  const t = useTranslations("menuEditor.dataGrid.filter")
   const dir = useDirection()
   const id = React.useId()
   const labelId = React.useId()
@@ -205,7 +207,7 @@ export function DataGridFilterMenu<TData>({
             disabled={disabled}
           >
             <ListFilter className="text-muted-foreground" />
-            Filtrar
+            {t("filter")}
             {columnFilters.length > 0 && (
               <Badge
                 variant="secondary"
@@ -230,9 +232,7 @@ export function DataGridFilterMenu<TData>({
         >
           <div className="flex flex-col gap-1">
             <h4 id={labelId} className="leading-none font-medium">
-              {columnFilters.length > 0
-                ? "Filtrar por"
-                : "No hay filtros aplicados"}
+              {columnFilters.length > 0 ? t("filterBy") : t("noFilters")}
             </h4>
             <p
               id={descriptionId}
@@ -242,8 +242,8 @@ export function DataGridFilterMenu<TData>({
               )}
             >
               {columnFilters.length > 0
-                ? "Modifica los filtros para limitar los datos."
-                : "Agrega filtros para limitar los datos."}
+                ? t("modifyFilters")
+                : t("addFiltersHint")}
             </p>
           </div>
           {columnFilters.length > 0 && (
@@ -279,7 +279,7 @@ export function DataGridFilterMenu<TData>({
               onClick={onFilterAdd}
               disabled={columns.length === 0}
             >
-              Agregar filtro
+              {t("addFilter")}
             </Button>
             {columnFilters.length > 0 && (
               <Button
@@ -288,7 +288,7 @@ export function DataGridFilterMenu<TData>({
                 className="rounded"
                 onClick={onFiltersReset}
               >
-                Restablecer filtros
+                {t("resetFilters")}
               </Button>
             )}
           </div>
@@ -333,6 +333,7 @@ function DataGridFilterItem<TData>({
   onFilterUpdate,
   onFilterRemove
 }: DataGridFilterItemProps<TData>) {
+  const t = useTranslations("menuEditor.dataGrid.filter")
   const fieldListboxId = `${filterItemId}-field-listbox`
   const fieldTriggerId = `${filterItemId}-field-trigger`
   const operatorListboxId = `${filterItemId}-operator-listbox`
@@ -417,9 +418,9 @@ function DataGridFilterItem<TData>({
       >
         <div className="min-w-[72px] text-center">
           {index === 0 ? (
-            <span className="text-muted-foreground text-sm">Donde</span>
+            <span className="text-muted-foreground text-sm">{t("where")}</span>
           ) : (
-            <span className="text-muted-foreground text-sm">Y</span>
+            <span className="text-muted-foreground text-sm">{t("and")}</span>
           )}
         </div>
         <Popover open={showFieldSelector} onOpenChange={setShowFieldSelector}>
@@ -443,9 +444,9 @@ function DataGridFilterItem<TData>({
             className="w-40 p-0"
           >
             <Command>
-              <CommandInput placeholder="Buscar campos..." />
+              <CommandInput placeholder={t("searchFields")} />
               <CommandList>
-                <CommandEmpty>No se encontraron campos.</CommandEmpty>
+                <CommandEmpty>{t("noFields")}</CommandEmpty>
                 <CommandGroup>
                   {columns.map(column => (
                     <CommandItem
@@ -504,7 +505,7 @@ function DataGridFilterItem<TData>({
           <SelectContent id={operatorListboxId}>
             {operators.map(op => (
               <SelectItem key={op.value} value={op.value} className="lowercase">
-                {op.label}
+                {t(`operators.${op.value}`)}
               </SelectItem>
             ))}
           </SelectContent>
@@ -527,7 +528,9 @@ function DataGridFilterItem<TData>({
             <div
               id={inputId}
               role="status"
-              aria-label={`${columnLabels.get(filter.id)} está vacío`}
+              aria-label={t("isEmptyStatus", {
+                label: columnLabels.get(filter.id) ?? ""
+              })}
               aria-live="polite"
               className="dark:bg-input/30 h-8 w-full rounded border
                 bg-transparent"
@@ -570,7 +573,7 @@ function DataGridFilterInput<TData>({
   variant,
   operator,
   dir,
-  placeholder = "Value",
+  placeholder,
   value,
   endValue,
   column,
@@ -578,6 +581,8 @@ function DataGridFilterInput<TData>({
   onValueChange,
   onEndValueChange
 }: DataGridFilterInputProps<TData>) {
+  const t = useTranslations("menuEditor.dataGrid.filter")
+  const resolvedPlaceholder = placeholder ?? t("value")
   const [showValueSelector, setShowValueSelector] = React.useState(false)
   const [localValue, setLocalValue] = React.useState(value)
   const [localEndValue, setLocalEndValue] = React.useState(endValue)
@@ -615,7 +620,7 @@ function DataGridFilterInput<TData>({
             id={inputId}
             type="number"
             inputMode="numeric"
-            placeholder="Inicio"
+            placeholder={t("start")}
             value={(localValue as number | undefined) ?? ""}
             onChange={event => {
               const val = event.target.value
@@ -629,7 +634,7 @@ function DataGridFilterInput<TData>({
             id={`${inputId}-end`}
             type="number"
             inputMode="numeric"
-            placeholder="Fin"
+            placeholder={t("end")}
             value={(localEndValue as number | undefined) ?? ""}
             onChange={event => {
               const val = event.target.value
@@ -648,7 +653,7 @@ function DataGridFilterInput<TData>({
         id={inputId}
         type="number"
         inputMode="numeric"
-        placeholder={placeholder}
+        placeholder={resolvedPlaceholder}
         value={(localValue as number | undefined) ?? ""}
         onChange={event => {
           const val = event.target.value
@@ -684,7 +689,7 @@ function DataGridFilterInput<TData>({
           ? `${formatDate(startDate, { month: "short" })} - ${formatDate(endDate, { month: "short" })}`
           : startDate
             ? formatDate(startDate, { month: "short" })
-            : "Seleccionar rango"
+            : t("selectRange")
 
       return (
         <Popover open={showValueSelector} onOpenChange={setShowValueSelector}>
@@ -760,7 +765,7 @@ function DataGridFilterInput<TData>({
             <span className="truncate">
               {dateValue
                 ? formatDate(dateValue, { month: "short" })
-                : "Seleccionar fecha"}
+                : t("selectDate")}
             </span>
           </Button>
         </PopoverTrigger>
@@ -815,7 +820,9 @@ function DataGridFilterInput<TData>({
               className="h-8 w-full justify-start rounded font-normal"
             >
               {selectedOptions.length === 0 ? (
-                <span className="text-muted-foreground">{placeholder}</span>
+                <span className="text-muted-foreground">
+                  {resolvedPlaceholder}
+                </span>
               ) : (
                 <>
                   {selectedOptionsWithIcons.length > 0 && (
@@ -839,7 +846,7 @@ function DataGridFilterInput<TData>({
                   )}
                   <span className="truncate">
                     {selectedOptions.length > 1
-                      ? `${selectedOptions.length} seleccionados`
+                      ? t("selectedCount", { count: selectedOptions.length })
                       : selectedOptions[0]?.label}
                   </span>
                 </>
@@ -853,9 +860,9 @@ function DataGridFilterInput<TData>({
             className="w-48 p-0"
           >
             <Command>
-              <CommandInput placeholder="Buscar opciones..." />
+              <CommandInput placeholder={t("searchOptions")} />
               <CommandList>
-                <CommandEmpty>No se encontraron opciones.</CommandEmpty>
+                <CommandEmpty>{t("noOptions")}</CommandEmpty>
                 <CommandGroup>
                   {selectOptions.map(option => {
                     const isSelected = selectedValues.includes(option.value)
@@ -917,7 +924,9 @@ function DataGridFilterInput<TData>({
                 <span className="truncate">{selectedOption.label}</span>
               </>
             ) : (
-              <span className="text-muted-foreground">{placeholder}</span>
+              <span className="text-muted-foreground">
+                {resolvedPlaceholder}
+              </span>
             )}
           </Button>
         </PopoverTrigger>
@@ -928,9 +937,9 @@ function DataGridFilterInput<TData>({
           className="w-[200px] p-0"
         >
           <Command>
-            <CommandInput placeholder="Buscar opciones..." />
+            <CommandInput placeholder={t("searchOptions")} />
             <CommandList>
-              <CommandEmpty>No options found.</CommandEmpty>
+              <CommandEmpty>{t("noOptions")}</CommandEmpty>
               <CommandGroup>
                 {selectOptions.map(option => (
                   <CommandItem
@@ -970,7 +979,7 @@ function DataGridFilterInput<TData>({
         <Input
           id={inputId}
           type="text"
-          placeholder="Inicio"
+          placeholder={t("start")}
           className="h-8 w-full flex-1 rounded"
           value={(localValue as string | undefined) ?? ""}
           onChange={event => {
@@ -983,7 +992,7 @@ function DataGridFilterInput<TData>({
         <Input
           id={`${inputId}-end`}
           type="text"
-          placeholder="Fin"
+          placeholder={t("end")}
           className="h-8 w-full flex-1 rounded"
           value={(localEndValue as string | undefined) ?? ""}
           onChange={event => {
@@ -1001,7 +1010,7 @@ function DataGridFilterInput<TData>({
     <Input
       id={inputId}
       type="text"
-      placeholder={placeholder}
+      placeholder={resolvedPlaceholder}
       className="h-8 w-full rounded"
       value={(localValue as string | undefined) ?? ""}
       onChange={event => {

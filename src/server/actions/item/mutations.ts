@@ -110,12 +110,13 @@ export const createItem = authMemberActionClient
       },
       ctx: { member }
     }) => {
+      const t = await getTranslations("errors.actions")
       const currentOrgId = member.organizationId
 
       if (!currentOrgId) {
         return {
           failure: {
-            reason: "No se pudo obtener la organización actual"
+            reason: t("noCurrentOrg")
           }
         }
       }
@@ -127,8 +128,7 @@ export const createItem = authMemberActionClient
       if (!proMember && itemCount >= itemLimit) {
         return {
           failure: {
-            reason:
-              "Límite de 10 productos alcanzado. Actualiza a Pro para crear más.",
+            reason: t("productLimitReached", { limit: itemLimit }),
             code: BasicPlanLimits.ITEM_LIMIT_REACHED
           }
         }
@@ -145,7 +145,7 @@ export const createItem = authMemberActionClient
       // If the item already exists, generate a new name for it assigning a unique suffix
       if (existingItem) {
         let suffix = 1
-        let candidateName = `${name} (copia)`
+        let candidateName = `${name} (${t("copySuffix")})`
 
         // Check if the name with "copia" suffix already exists
         let nameExists = await prisma.menuItem.findFirst({
@@ -158,7 +158,7 @@ export const createItem = authMemberActionClient
         // If it exists, try incrementing numbers until we find an available name
         while (nameExists) {
           suffix++
-          candidateName = `${name} (copia ${suffix})`
+          candidateName = `${name} (${t("copySuffixNumbered", { n: suffix })})`
           nameExists = await prisma.menuItem.findFirst({
             where: {
               name: candidateName,
@@ -440,12 +440,13 @@ export const bulkCreateItems = authMemberActionClient
 
 export const exportMenuItems = authMemberActionClient.action(
   async ({ ctx: { member } }) => {
+    const t = await getTranslations("errors.actions")
     const currentOrgId = member.organizationId
 
     if (!currentOrgId) {
       return {
         failure: {
-          reason: "No se pudo obtener la organización actual"
+          reason: t("noCurrentOrg")
         }
       }
     }
@@ -477,7 +478,7 @@ export const exportMenuItems = authMemberActionClient.action(
       })
       return {
         failure: {
-          reason: error instanceof Error ? error.message : "Error desconocido"
+          reason: error instanceof Error ? error.message : t("exportItemsError")
         }
       }
     }
@@ -668,12 +669,13 @@ export const bulkUpdateItems = authMemberActionClient
       parsedInput: { items, updatePublishedMenus, rememberPublishedChoice },
       ctx: { member }
     }) => {
+      const t = await getTranslations("errors.actions")
       const currentOrgId = member.organizationId
 
       if (!currentOrgId) {
         return {
           failure: {
-            reason: "No se pudo obtener la organización actual"
+            reason: t("noCurrentOrg")
           }
         }
       }
@@ -713,7 +715,7 @@ export const bulkUpdateItems = authMemberActionClient
 
             successIds.push(itemId)
           } catch (error) {
-            let message = "Error desconocido"
+            let message = t("unknownError")
             if (typeof error === "string") {
               message = error
             } else if (error instanceof Prisma.PrismaClientKnownRequestError) {
@@ -764,7 +766,7 @@ export const bulkUpdateItems = authMemberActionClient
         })
         return {
           failure: {
-            reason: "Error al actualizar los productos"
+            reason: t("updateProductsError")
           }
         }
       }
@@ -838,11 +840,12 @@ export const deleteItem = authMemberActionClient
 export const createCategory = authMemberActionClient
   .inputSchema(categorySchema)
   .action(async ({ parsedInput: { name }, ctx: { member } }) => {
+    const t = await getTranslations("errors.actions")
     const currentOrgId = member.organizationId
     if (!currentOrgId) {
       return {
         failure: {
-          reason: "No se pudo obtener la organización actual"
+          reason: t("noCurrentOrg")
         }
       }
     }
@@ -969,6 +972,7 @@ export const deleteCategory = authMemberActionClient
   )
   .action(async ({ parsedInput: { id, organizationId } }) => {
     // const currentOrgId = member.organizationId
+    const t = await getTranslations("errors.actions")
     try {
       // Check if the category is being used by any item
       const items = await prisma.menuItem.findMany({
@@ -978,8 +982,7 @@ export const deleteCategory = authMemberActionClient
       if (items.length > 0) {
         return {
           failure: {
-            reason:
-              "No se puede eliminar una categoría que tiene productos asociados"
+            reason: t("categoryHasProducts")
           }
         }
       }
@@ -1023,10 +1026,11 @@ export const deleteCategory = authMemberActionClient
 export const createVariant = authMemberActionClient
   .inputSchema(variantSchema)
   .action(async ({ parsedInput: { name, price, menuItemId } }) => {
+    const t = await getTranslations("errors.actions")
     if (!menuItemId) {
       return {
         failure: {
-          reason: "No se pudo obtener el producto asociado"
+          reason: t("productNotFound")
         }
       }
     }
@@ -1131,6 +1135,7 @@ export const bulkUpdateCategory = authMemberActionClient
         rememberPublishedChoice
       }
     }) => {
+      const t = await getTranslations("errors.actions")
       try {
         await prisma.menuItem.updateMany({
           where: {
@@ -1162,7 +1167,7 @@ export const bulkUpdateCategory = authMemberActionClient
         })
         return {
           failure: {
-            reason: "Error al actualizar las categorías"
+            reason: t("updateCategoriesError")
           }
         }
       }
@@ -1180,6 +1185,7 @@ export const bulkDeleteItems = authMemberActionClient
     })
   )
   .action(async ({ parsedInput: { ids, organizationId } }) => {
+    const t = await getTranslations("errors.actions")
     try {
       // First get all items to delete their images
       const items = await prisma.menuItem.findMany({
@@ -1217,7 +1223,7 @@ export const bulkDeleteItems = authMemberActionClient
       })
       return {
         failure: {
-          reason: "Error al eliminar los productos"
+          reason: t("deleteProductsError")
         }
       }
     }
@@ -1246,6 +1252,7 @@ export const bulkToggleFeature = authMemberActionClient
         rememberPublishedChoice
       }
     }) => {
+      const t = await getTranslations("errors.actions")
       try {
         await prisma.menuItem.updateMany({
           where: {
@@ -1277,7 +1284,7 @@ export const bulkToggleFeature = authMemberActionClient
         })
         return {
           failure: {
-            reason: "Error al actualizar los productos destacados"
+            reason: t("updateFeaturedError")
           }
         }
       }

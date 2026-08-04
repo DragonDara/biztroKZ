@@ -13,64 +13,64 @@ export const TEXT_FILTER_OPERATORS: ReadonlyArray<{
   label: string
   value: TextFilterOperator
 }> = [
-  { label: "Contiene", value: "contains" },
-  { label: "No contiene", value: "notContains" },
-  { label: "Es", value: "equals" },
-  { label: "No es", value: "notEquals" },
-  { label: "Empieza con", value: "startsWith" },
-  { label: "Termina con", value: "endsWith" },
-  { label: "Está vacío", value: "isEmpty" },
-  { label: "No está vacío", value: "isNotEmpty" }
+  { label: "contains", value: "contains" },
+  { label: "notContains", value: "notContains" },
+  { label: "equals", value: "equals" },
+  { label: "notEquals", value: "notEquals" },
+  { label: "startsWith", value: "startsWith" },
+  { label: "endsWith", value: "endsWith" },
+  { label: "isEmpty", value: "isEmpty" },
+  { label: "isNotEmpty", value: "isNotEmpty" }
 ]
 
 export const NUMBER_FILTER_OPERATORS: ReadonlyArray<{
   label: string
   value: NumberFilterOperator
 }> = [
-  { label: "Es", value: "equals" },
-  { label: "No es", value: "notEquals" },
-  { label: "Es menor que", value: "lessThan" },
-  { label: "Es menor o igual que", value: "lessThanOrEqual" },
-  { label: "Es mayor que", value: "greaterThan" },
-  { label: "Es mayor o igual que", value: "greaterThanOrEqual" },
-  { label: "Está entre", value: "isBetween" },
-  { label: "Está vacío", value: "isEmpty" },
-  { label: "No está vacío", value: "isNotEmpty" }
+  { label: "equals", value: "equals" },
+  { label: "notEquals", value: "notEquals" },
+  { label: "lessThan", value: "lessThan" },
+  { label: "lessThanOrEqual", value: "lessThanOrEqual" },
+  { label: "greaterThan", value: "greaterThan" },
+  { label: "greaterThanOrEqual", value: "greaterThanOrEqual" },
+  { label: "isBetween", value: "isBetween" },
+  { label: "isEmpty", value: "isEmpty" },
+  { label: "isNotEmpty", value: "isNotEmpty" }
 ]
 
 export const DATE_FILTER_OPERATORS: ReadonlyArray<{
   label: string
   value: DateFilterOperator
 }> = [
-  { label: "Es", value: "equals" },
-  { label: "No es", value: "notEquals" },
-  { label: "Es anterior a", value: "before" },
-  { label: "Es posterior a", value: "after" },
-  { label: "Es en o antes de", value: "onOrBefore" },
-  { label: "Es en o después de", value: "onOrAfter" },
-  { label: "Está entre", value: "isBetween" },
-  { label: "Está vacío", value: "isEmpty" },
-  { label: "No está vacío", value: "isNotEmpty" }
+  { label: "equals", value: "equals" },
+  { label: "notEquals", value: "notEquals" },
+  { label: "before", value: "before" },
+  { label: "after", value: "after" },
+  { label: "onOrBefore", value: "onOrBefore" },
+  { label: "onOrAfter", value: "onOrAfter" },
+  { label: "isBetween", value: "isBetween" },
+  { label: "isEmpty", value: "isEmpty" },
+  { label: "isNotEmpty", value: "isNotEmpty" }
 ]
 
 export const SELECT_FILTER_OPERATORS: ReadonlyArray<{
   label: string
   value: SelectFilterOperator
 }> = [
-  { label: "Es", value: "is" },
-  { label: "No es", value: "isNot" },
-  { label: "Tiene cualquiera de", value: "isAnyOf" },
-  { label: "No tiene ninguno de", value: "isNoneOf" },
-  { label: "Está vacío", value: "isEmpty" },
-  { label: "No está vacío", value: "isNotEmpty" }
+  { label: "is", value: "is" },
+  { label: "isNot", value: "isNot" },
+  { label: "isAnyOf", value: "isAnyOf" },
+  { label: "isNoneOf", value: "isNoneOf" },
+  { label: "isEmpty", value: "isEmpty" },
+  { label: "isNotEmpty", value: "isNotEmpty" }
 ]
 
 export const BOOLEAN_FILTER_OPERATORS: ReadonlyArray<{
   label: string
   value: BooleanFilterOperator
 }> = [
-  { label: "Es verdadero", value: "isTrue" },
-  { label: "Es falso", value: "isFalse" }
+  { label: "isTrue", value: "isTrue" },
+  { label: "isFalse", value: "isFalse" }
 ]
 
 export function getDefaultOperator(variant: string): FilterOperator {

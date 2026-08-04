@@ -25,15 +25,15 @@ import { Separator } from "@/components/ui/separator"
 import { deleteOrganization } from "@/server/actions/organization/mutations"
 import { cn } from "@/lib/utils"
 
-const CONFIRMATION_WORD = "ELIMINAR"
-
 function OrganizationDelete({ organizationId }: { organizationId: string }) {
   const router = useRouter()
   const t = useTranslations("dashboard.settings.deleteOrganization")
   const tCommon = useTranslations("dashboard.common")
+  const confirmationWord = t("confirmWord")
   const [confirmation, setConfirmation] = useState("")
 
-  const hasConfirmed = confirmation.trim().toUpperCase() === CONFIRMATION_WORD
+  const hasConfirmed =
+    confirmation.trim().toUpperCase() === confirmationWord.toUpperCase()
 
   const { execute, reset } = useAction(deleteOrganization, {
     onExecute: () => {
@@ -108,10 +108,10 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
                     </div>
                     <div className="flex flex-col gap-2">
                       <p className="text-muted-foreground text-xs">
-                        {t("confirmHint", { word: CONFIRMATION_WORD })}
+                        {t("confirmHint", { word: confirmationWord })}
                       </p>
                       <Input
-                        placeholder={CONFIRMATION_WORD}
+                        placeholder={confirmationWord}
                         value={confirmation}
                         onChange={event => setConfirmation(event.target.value)}
                         aria-label={t("confirmAria")}

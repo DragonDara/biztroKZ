@@ -5,6 +5,7 @@ import { QRCode } from "react-qrcode-logo"
 import { MousePointerClick, QrCodeIcon, SwatchBook } from "lucide-react"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
+import Link from "next/link"
 
 import { BentoCard, BentoGrid } from "@/components/flare-ui/bento-grid"
 import GradientBlur from "@/components/flare-ui/gradient-blur"
@@ -46,22 +47,25 @@ export default function FeaturesBento() {
         cta: t("editor.cta"),
         background: (
           <div
-            className="absolute inset-x-0 top-1/3 flex items-start
+            className="absolute inset-x-0 top-1/3 z-20 flex items-start
               justify-center py-2 transition-all duration-300 ease-out
               group-hover:-translate-y-1 group-hover:scale-95 sm:inset-auto
               sm:top-4 sm:right-8"
           >
             <div className="relative flex items-center justify-center">
               <span
-                className="absolute inline-flex h-8 w-22 rounded-full
-                  bg-taupe-400 group-hover:animate-ping"
+                className="pointer-events-none absolute inline-flex h-8 w-22
+                  rounded-full bg-taupe-400 group-hover:animate-ping"
               ></span>
-              <button
+              <Link
+                href="/go/menu-editor"
+                prefetch={false}
                 className="relative inline-flex rounded-full bg-green-600 px-4
-                  py-2 font-medium text-green-50 shadow-lg shadow-green-600/30"
+                  py-2 font-medium text-green-50 shadow-lg shadow-green-600/30
+                  transition-colors hover:bg-green-500"
               >
                 {t("publishButton")}
-              </button>
+              </Link>
             </div>
           </div>
         ),

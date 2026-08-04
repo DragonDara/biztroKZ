@@ -1,3 +1,7 @@
+"use client"
+
+import { useTranslations } from "next-intl"
+
 import { Allergens as AllergenTypes } from "@/lib/types/menu-item"
 import { cn } from "@/lib/utils"
 
@@ -166,11 +170,13 @@ const allergenIcons: AllergenIcon = {
   )
 }
 
-function getAllergenLabel(value: string) {
-  return (
-    AllergenTypes.find(a => a.value.toLowerCase() === value.toLowerCase())
-      ?.label || value
+function useAllergenLabel(value: string) {
+  const t = useTranslations("dashboard.allergens")
+  const match = AllergenTypes.find(
+    a => a.value.toLowerCase() === value.toLowerCase()
   )
+  if (!match) return value
+  return t(match.value)
 }
 
 function getAllergenBgColor(value: string): string {
@@ -197,6 +203,8 @@ export function AllergenBadge({
   allergen: string
   showLabel?: boolean
 }) {
+  const label = useAllergenLabel(allergen)
+
   return (
     <div
       className={cn(
@@ -206,7 +214,7 @@ export function AllergenBadge({
       )}
     >
       {allergenIcons[allergen.toLowerCase()] || null}
-      {showLabel && <span>{getAllergenLabel(allergen)}</span>}
+      {showLabel && <span>{label}</span>}
     </div>
   )
 }

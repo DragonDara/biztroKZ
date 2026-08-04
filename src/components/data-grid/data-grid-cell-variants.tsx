@@ -4,6 +4,7 @@ import * as React from "react"
 import { toast } from "react-hot-toast"
 import type { DataGridCellProps, FileCellData } from "@/types/data-grid"
 import { Check, Pencil, Upload, X } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { DataGridCellWrapper } from "@/components/data-grid/data-grid-cell-wrapper"
 import { Badge } from "@/components/ui/badge"
@@ -559,7 +560,7 @@ export function NumberCell<TData>({
 }
 
 function formatPriceValue(value: number, currency: string) {
-  return new Intl.NumberFormat("es-MX", {
+  return new Intl.NumberFormat("ru-RU", {
     style: "currency",
     currency,
     minimumFractionDigits: 2,
@@ -605,6 +606,7 @@ export function PriceCell<TData>({
   isActiveSearchMatch,
   readOnly
 }: DataGridCellProps<TData>) {
+  const t = useTranslations("menuEditor.dataGrid")
   const originalRow = cell.row.original as TData
   const typedRow = originalRow as unknown as {
     currency?: string | null
@@ -664,7 +666,7 @@ export function PriceCell<TData>({
   }
 
   const label = getRangeLabel(originalRow)
-  const variantLabel = `${variantCount} variantes`
+  const variantLabel = t("variantCount", { count: variantCount })
 
   return (
     <DataGridCellWrapper<TData>
@@ -1184,6 +1186,7 @@ export function MultiSelectCell<TData>({
   isActiveSearchMatch,
   readOnly
 }: DataGridCellProps<TData>) {
+  const t = useTranslations("menuEditor.dataGrid.fileCell")
   const cellValue = React.useMemo(() => {
     const value = cell.getValue() as string[]
     return value ?? []
@@ -1400,12 +1403,12 @@ export function MultiSelectCell<TData>({
                   value={searchValue}
                   onValueChange={setSearchValue}
                   onKeyDown={onInputKeyDown}
-                  placeholder="Buscar..."
+                  placeholder={t("searchPlaceholder")}
                   className="h-auto flex-1 p-0"
                 />
               </div>
               <CommandList className="max-h-full">
-                <CommandEmpty>No se encontraron opciones.</CommandEmpty>
+                <CommandEmpty>{t("noOptionsFound")}</CommandEmpty>
                 <CommandGroup
                   className="max-h-[300px] scroll-py-1 overflow-x-hidden
                     overflow-y-auto"
@@ -1443,7 +1446,7 @@ export function MultiSelectCell<TData>({
                         onSelect={clearAll}
                         className="text-muted-foreground justify-center"
                       >
-                        Borrar todo
+                        {t("clearAll")}
                       </CommandItem>
                     </CommandGroup>
                   </>
@@ -1604,6 +1607,7 @@ export function FileCell<TData>({
   isActiveSearchMatch,
   readOnly
 }: DataGridCellProps<TData>) {
+  const t = useTranslations("menuEditor.dataGrid.fileCell")
   const cellValue = React.useMemo(
     () => (cell.getValue() as FileCellData[]) ?? [],
     [cell]
@@ -1677,7 +1681,7 @@ export function FileCell<TData>({
   const validateFile = React.useCallback(
     (file: File): string | null => {
       if (maxFileSize && file.size > maxFileSize) {
-        return `El tamaño del archivo excede ${formatFileSize(maxFileSize)}`
+        return t("fileSizeExceeds", { size: formatFileSize(maxFileSize) })
       }
       if (acceptedTypes) {
         const fileExtension = `.${file.name.split(".").pop()}`
@@ -1692,12 +1696,12 @@ export function FileCell<TData>({
           return file.type === type
         })
         if (!isAccepted) {
-          return "Tipo de archivo no aceptado"
+          return t("fileTypeNotAccepted")
         }
       }
       return null
     },
-    [maxFileSize, acceptedTypes]
+    [maxFileSize, acceptedTypes, t]
   )
 
   const addFiles = React.useCallback(
@@ -2158,7 +2162,7 @@ export function FileCell<TData>({
           >
             <div className="flex flex-col gap-2 p-3">
               <span id={labelId} className="sr-only">
-                Carga de archivos
+                {t("uploadLabel")}
               </span>
               <div
                 role="region"
@@ -2188,12 +2192,10 @@ export function FileCell<TData>({
                 <Upload className="text-muted-foreground size-8" />
                 <div className="text-center text-sm">
                   <p className="font-medium">
-                    {isDragging
-                      ? "Suelta los archivos aquí"
-                      : "Arrastra archivos aquí"}
+                    {isDragging ? t("dropFilesHere") : t("dragFilesHere")}
                   </p>
                   <p className="text-muted-foreground text-xs">
-                    o haz clic para buscar
+                    {t("clickToBrowse")}
                   </p>
                 </div>
                 <p id={descriptionId} className="text-muted-foreground text-xs">
@@ -2201,7 +2203,7 @@ export function FileCell<TData>({
                     ? `Max size: ${formatFileSize(maxFileSize)}${maxFiles ? ` • Max ${maxFiles} files` : ""}`
                     : maxFiles
                       ? `Max ${maxFiles} files`
-                      : "Selecciona archivos para subir"}
+                      : t("selectFilesToUpload")}
                 </p>
               </div>
               <input
@@ -2218,8 +2220,7 @@ export function FileCell<TData>({
                 <div className="flex flex-col gap-2">
                   <div className="flex items-center justify-between">
                     <p className="text-muted-foreground text-xs font-medium">
-                      {files.length}{" "}
-                      {files.length === 1 ? "archivo" : "archivos"}
+                      {t("fileCount", { count: files.length })}
                     </p>
                     <Button
                       type="button"
@@ -2229,7 +2230,7 @@ export function FileCell<TData>({
                       onClick={clearAll}
                       disabled={isPending}
                     >
-                      Borrar todo
+                      {t("clearAll")}
                     </Button>
                   </div>
                   <div className="max-h-[200px] space-y-1 overflow-y-auto">
@@ -2256,9 +2257,9 @@ export function FileCell<TData>({
                             <p className="truncate text-sm">{file.name}</p>
                             <p className="text-muted-foreground text-xs">
                               {isFileUploading
-                                ? "Subiendo..."
+                                ? t("uploading")
                                 : isFileDeleting
-                                  ? "Eliminando..."
+                                  ? t("deleting")
                                   : formatFileSize(file.size)}
                             </p>
                           </div>
@@ -2288,7 +2289,7 @@ export function FileCell<TData>({
             text-sm"
         >
           <Upload className="size-4" />
-          <span>Suelta archivos aquí</span>
+          <span>{t("dropFilesHere")}</span>
         </div>
       ) : files.length > 0 ? (
         <div className="flex flex-wrap items-center gap-1 overflow-hidden">

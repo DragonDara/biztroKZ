@@ -23,7 +23,7 @@ function formatBillingDate(
   if (!date) return "N/A"
 
   const localeTag =
-    locale === "es" ? "es-MX" : locale === "ru" ? "ru-RU" : "en-US"
+    locale === "es" ? "es-MX" : locale === "en" ? "en-US" : "ru-RU"
 
   return new Date(date).toLocaleDateString(localeTag, {
     day: "numeric",

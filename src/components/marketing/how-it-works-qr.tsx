@@ -2,6 +2,7 @@
 
 import { FunkyShadow } from "funky-shadow"
 import { CornerRightUp } from "lucide-react"
+import { useTranslations } from "next-intl"
 import Image from "next/image"
 import Link from "next/link"
 
@@ -10,6 +11,8 @@ import QRimage from "../../../public/qr-example.png"
 const exampleUrl = "https://la-bella-italia.biztro.co"
 
 export function HowItWorksQr() {
+  const t = useTranslations("marketing.howItWorks.qr")
+
   return (
     <div
       className="relative flex flex-col items-center justify-center gap-3
@@ -40,7 +43,7 @@ export function HowItWorksQr() {
         >
           <Image
             src={QRimage}
-            alt="Código QR de ejemplo"
+            alt={t("qrAlt")}
             style={{ clipPath: "inset(0 round 20px)", display: "block" }}
             width={300}
           />
@@ -50,7 +53,7 @@ export function HowItWorksQr() {
         className="z-10 mt-4 flex items-center gap-2 text-sm text-taupe-700
           dark:text-taupe-300"
       >
-        Escanea o{" "}
+        {t("scanPrefix")}{" "}
         <Link
           href={exampleUrl}
           target="_blank"
@@ -59,7 +62,7 @@ export function HowItWorksQr() {
           className="inline-flex items-center gap-1 text-taupe-600 underline
             underline-offset-2 hover:text-taupe-500 dark:text-taupe-400"
         >
-          abre el ejemplo
+          {t("openExample")}
           <CornerRightUp className="size-3" />
         </Link>
       </span>

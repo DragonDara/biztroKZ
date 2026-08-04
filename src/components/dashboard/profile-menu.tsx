@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react"
 import { Link, usePathname, useRouter } from "@/i18n/navigation"
 import type { AppLocale } from "@/i18n/routing"
-import { Globe, LogOut, SunMoon, User } from "lucide-react"
+import { Globe, Home, LogOut, SunMoon, User } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { useTheme } from "next-themes"
 
@@ -123,14 +123,14 @@ export default function ProfileMenu() {
                   router.replace(pathname, { locale: value as AppLocale })
                 }
               >
+                <DropdownMenuRadioItem value="ru">
+                  {tLocale("ru")}
+                </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="en">
                   {tLocale("en")}
                 </DropdownMenuRadioItem>
                 <DropdownMenuRadioItem value="es">
                   {tLocale("es")}
-                </DropdownMenuRadioItem>
-                <DropdownMenuRadioItem value="ru">
-                  {tLocale("ru")}
                 </DropdownMenuRadioItem>
               </DropdownMenuRadioGroup>
             </DropdownMenuSubContent>
@@ -138,7 +138,7 @@ export default function ProfileMenu() {
         </DropdownMenuSub>
         <DropdownMenuItem asChild>
           <Link href="/" prefetch={false}>
-            <Globe className="mr-2 size-4" />
+            <Home className="mr-2 size-4" />
             {t("home")}
           </Link>
         </DropdownMenuItem>

@@ -1,4 +1,4 @@
-const MENU_TEXT_LOCALE = "es-MX"
+const MENU_TEXT_LOCALE = "ru-RU"
 
 const MENU_LOWERCASE_WORDS = new Set([
   "a",

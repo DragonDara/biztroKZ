@@ -3,6 +3,7 @@
 import * as React from "react"
 import type { Direction } from "@/types/data-grid"
 import { Plus } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { DataGridColumnHeader } from "@/components/data-grid/data-grid-column-header"
 import { DataGridContextMenu } from "@/components/data-grid/data-grid-context-menu"
@@ -58,6 +59,7 @@ export function DataGrid<TData>({
   className,
   ...props
 }: DataGridProps<TData>) {
+  const t = useTranslations("menuEditor.dataGrid")
   const rows = table.getRowModel().rows
   const readOnly = tableMeta?.readOnly ?? false
   const columnVisibility = table.getState().columnVisibility
@@ -276,7 +278,7 @@ export function DataGrid<TData>({
                     items-center gap-2 px-3"
                 >
                   <Plus className="size-3.5" />
-                  <span className="text-sm">Agregar fila</span>
+                  <span className="text-sm">{t("addRow")}</span>
                 </div>
               </div>
             </div>

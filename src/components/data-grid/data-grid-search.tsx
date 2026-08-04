@@ -3,6 +3,7 @@
 import * as React from "react"
 import type { SearchState } from "@/types/data-grid"
 import { ChevronDown, ChevronUp, X } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -53,6 +54,7 @@ function DataGridSearchImpl({
   onNavigateToNextMatch,
   onNavigateToPrevMatch
 }: DataGridSearchProps) {
+  const t = useTranslations("menuEditor.dataGrid.search")
   const propsRef = useAsRef({
     onSearchOpenChange,
     onSearchQueryChange,
@@ -176,7 +178,7 @@ function DataGridSearchImpl({
           autoCorrect="off"
           autoCapitalize="off"
           spellCheck={false}
-          placeholder="Buscar en la tabla..."
+          placeholder={t("placeholder")}
           className="h-8 w-64"
           ref={inputRef}
           value={searchQuery}
@@ -185,7 +187,7 @@ function DataGridSearchImpl({
         />
         <div className="flex items-center gap-1">
           <Button
-            aria-label="Coincidencia anterior"
+            aria-label={t("previousMatch")}
             variant="ghost"
             size="icon"
             className="size-7"
@@ -196,7 +198,7 @@ function DataGridSearchImpl({
             <ChevronUp />
           </Button>
           <Button
-            aria-label="Siguiente coincidencia"
+            aria-label={t("nextMatch")}
             variant="ghost"
             size="icon"
             className="size-7"
@@ -207,7 +209,7 @@ function DataGridSearchImpl({
             <ChevronDown />
           </Button>
           <Button
-            aria-label="Cerrar búsqueda"
+            aria-label={t("close")}
             variant="ghost"
             size="icon"
             className="size-7"
@@ -223,12 +225,15 @@ function DataGridSearchImpl({
       >
         {searchMatches.length > 0 ? (
           <span>
-            {matchIndex + 1} de {searchMatches.length}
+            {t("matchOf", {
+              current: matchIndex + 1,
+              total: searchMatches.length
+            })}
           </span>
         ) : searchQuery ? (
-          <span>No hay resultados</span>
+          <span>{t("noResults")}</span>
         ) : (
-          <span>Escribe para buscar</span>
+          <span>{t("typeToSearch")}</span>
         )}
       </div>
     </div>

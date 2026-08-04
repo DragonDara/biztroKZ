@@ -64,7 +64,7 @@ function toMenuName(value: string | undefined, fallback: string) {
   const trimmed = value?.trim()
   if (trimmed) return trimmed
 
-  return fallback.trim() || "Menú importado"
+  return fallback.trim() || "Импортированное меню"
 }
 
 function groupImportItems(items: BulkImportItem[]) {

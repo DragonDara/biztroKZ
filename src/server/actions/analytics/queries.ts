@@ -1,6 +1,7 @@
 "use server"
 
 import * as Sentry from "@sentry/nextjs"
+import { getTranslations } from "next-intl/server"
 import { z } from "zod/v4"
 
 import { getCurrentOrganization } from "@/server/actions/user/queries"
@@ -20,12 +21,13 @@ export const getOrganizationAnalytics = authActionClient
     })
   )
   .action(async ({ parsedInput: { dateRange } }) => {
+    const t = await getTranslations("errors.actions")
     const currentOrg = await getCurrentOrganization()
 
     if (!currentOrg) {
       return {
         failure: {
-          reason: "No se pudo obtener la organización actual"
+          reason: t("noCurrentOrg")
         }
       }
     }
@@ -80,7 +82,7 @@ export const getOrganizationAnalytics = authActionClient
         })
         return {
           failure: {
-            reason: "Error al obtener datos de analítica"
+            reason: t("analyticsFetchError")
           }
         }
       }
@@ -102,9 +104,7 @@ export const getOrganizationAnalytics = authActionClient
       return {
         failure: {
           reason:
-            error instanceof Error
-              ? error.message
-              : "Error al obtener datos de analítica"
+            error instanceof Error ? error.message : t("analyticsFetchError")
         }
       }
     }
@@ -124,12 +124,13 @@ export const getOrganizationAnalyticsTrend = authActionClient
     })
   )
   .action(async ({ parsedInput: { dateRange } }) => {
+    const t = await getTranslations("errors.actions")
     const currentOrg = await getCurrentOrganization()
 
     if (!currentOrg) {
       return {
         failure: {
-          reason: "No se pudo obtener la organización actual"
+          reason: t("noCurrentOrg")
         }
       }
     }
@@ -208,7 +209,7 @@ export const getOrganizationAnalyticsTrend = authActionClient
         // console.error("PostHog API error:", response.statusText)
         return {
           failure: {
-            reason: "Error al obtener datos de tendencia"
+            reason: t("analyticsTrendError")
           }
         }
       }
@@ -242,9 +243,7 @@ export const getOrganizationAnalyticsTrend = authActionClient
       return {
         failure: {
           reason:
-            error instanceof Error
-              ? error.message
-              : "Error al obtener datos de tendencia"
+            error instanceof Error ? error.message : t("analyticsTrendError")
         }
       }
     }

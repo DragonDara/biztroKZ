@@ -45,7 +45,7 @@ export function LanguageFlag({ locale, className }: LanguageFlagProps) {
   switch (locale) {
     case "en":
       return (
-        <FlagFrame className={className} label="Bandera de Estados Unidos">
+        <FlagFrame className={className} label="Флаг США">
           <g clipPath="url(#US_svg__a)">
             <path
               d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12Z"
@@ -67,9 +67,38 @@ export function LanguageFlag({ locale, className }: LanguageFlagProps) {
           </defs>
         </FlagFrame>
       )
+    case "es":
+      return (
+        <FlagFrame className={className} label="Флаг Испании">
+          <g clipPath="url(#ES_svg__a)">
+            <circle cx="12" cy="12" r="12" fill="#AA151B" />
+            <rect x="0" y="6" width="24" height="12" fill="#F1BF00" />
+          </g>
+          <defs>
+            <clipPath id="ES_svg__a">
+              <circle cx="12" cy="12" r="12" />
+            </clipPath>
+          </defs>
+        </FlagFrame>
+      )
+    case "ru":
+      return (
+        <FlagFrame className={className} label="Флаг России">
+          <g clipPath="url(#RU_svg__a)">
+            <circle cx="12" cy="12" r="12" fill="#FFFFFF" />
+            <rect x="0" y="8" width="24" height="8" fill="#0039A6" />
+            <rect x="0" y="16" width="24" height="8" fill="#D52B1E" />
+          </g>
+          <defs>
+            <clipPath id="RU_svg__a">
+              <circle cx="12" cy="12" r="12" />
+            </clipPath>
+          </defs>
+        </FlagFrame>
+      )
     case "fr":
       return (
-        <FlagFrame className={className} label="Bandera de frances">
+        <FlagFrame className={className} label="Флаг Франции">
           <g clipPath="url(#FR_svg__a)">
             <path
               d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12Z"
@@ -93,7 +122,7 @@ export function LanguageFlag({ locale, className }: LanguageFlagProps) {
       )
     case "de":
       return (
-        <FlagFrame className={className} label="Bandera de aleman">
+        <FlagFrame className={className} label="Флаг Германии">
           <g clipPath="url(#DE_svg__a)">
             <path
               d="M.746 16.175C2.442 20.745 6.84 24 12 24c5.16 0 9.558-3.257 11.253-7.826L12 15.132.746 16.175Z"
@@ -117,7 +146,7 @@ export function LanguageFlag({ locale, className }: LanguageFlagProps) {
       )
     case "pt":
       return (
-        <FlagFrame className={className} label="Bandera de portugues">
+        <FlagFrame className={className} label="Флаг Португалии">
           <g clipPath="url(#PT_svg__a)">
             <path
               d="M0 12c0 5.16 3.256 9.559 7.826 11.254L8.87 12.001 7.826.747C3.256 2.443 0 6.841 0 12.001Z"
@@ -149,7 +178,7 @@ export function LanguageFlag({ locale, className }: LanguageFlagProps) {
       )
     case "it":
       return (
-        <FlagFrame className={className} label="Bandera de italiano">
+        <FlagFrame className={className} label="Флаг Италии">
           <g clipPath="url(#IT_svg__a)">
             <path
               d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12Z"
@@ -173,7 +202,7 @@ export function LanguageFlag({ locale, className }: LanguageFlagProps) {
       )
     case "ja":
       return (
-        <FlagFrame className={className} label="Bandera de japones">
+        <FlagFrame className={className} label="Флаг Японии">
           <g clipPath="url(#JP_svg__a)">
             <path
               d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12Z"
@@ -193,7 +222,7 @@ export function LanguageFlag({ locale, className }: LanguageFlagProps) {
       )
     case "zh":
       return (
-        <FlagFrame className={className} label="Bandera de chino">
+        <FlagFrame className={className} label="Флаг Китая">
           <g clipPath="url(#CN_svg__a)">
             <path
               d="M12 24c6.627 0 12-5.373 12-12S18.627 0 12 0 0 5.373 0 12s5.373 12 12 12Z"

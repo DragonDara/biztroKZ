@@ -164,7 +164,10 @@
         "p2": "Your customers only need to scan it with their phone camera to open your menu instantly.",
         "p2Highlight": "You can also share the same link on social media",
         "p2Suffix": "or on your website.",
-        "p3": "The menu adapts to phones and tablets, reads clearly, and requires no app install."
+        "p3": "The menu adapts to phones and tablets, reads clearly, and requires no app install.",
+        "scanPrefix": "Scan or",
+        "openExample": "open the example",
+        "qrAlt": "Sample QR code"
       }
     },
     "aiFeatures": {
@@ -212,6 +215,11 @@
       "terms": "Terms",
       "privacy": "Privacy",
       "logoAlt": "Logo"
+    },
+    "blog": {
+      "waitlistTitle": "Want to join our beta program?",
+      "waitlistDescription": "Join our waitlist to receive an invitation",
+      "authorAvatarAlt": "Profile photo of {author}"
     }
   },
   "auth": {
@@ -222,6 +230,101 @@
       "subtitle": "Sign in with your Biztro account",
       "continueWith": "Continue with {provider}",
       "error": "Something went wrong while signing in. Please try again later."
+    },
+    "onboarding": {
+      "metaTitle": "Create new business",
+      "metaDescription": "Set up a new organization for your business",
+      "createOrgTitle": "Create organization",
+      "createOrgDescription": "Create and set up your business on Biztro",
+      "createOrgSubtitle": "Basic business information",
+      "welcomeTitle": "Welcome to Biztro",
+      "welcomeDescription": "Complete this setup step by step. You can skip any part and come back later from the dashboard.",
+      "back": "Back",
+      "skipForNow": "Skip for now",
+      "continue": "Continue",
+      "steps": {
+        "organization": {
+          "title": "Business",
+          "description": "Create your organization"
+        },
+        "logo": {
+          "title": "Images",
+          "description": "Upload your logo and cover"
+        },
+        "location": {
+          "title": "Location",
+          "description": "Add your first location"
+        },
+        "hours": {
+          "title": "Hours",
+          "description": "Set up your opening hours"
+        },
+        "menu": {
+          "title": "Products",
+          "description": "Import your first products"
+        }
+      },
+      "organizationStep": {
+        "title": "Create your business",
+        "description": "Start with the name and basic details of your business to continue with the setup.",
+        "submitLabel": "Create business and continue"
+      },
+      "logoStep": {
+        "title": "Logo and cover",
+        "description": "Upload your logo and a cover for your site. If you don't have them yet, you can continue later.",
+        "uploadedHint": "You've already uploaded visual assets. You can replace them or continue.",
+        "recommendedHint": "Recommended: 500×500 logo and 1200×800 cover, in JPG or PNG.",
+        "changeLogo": "Change logo",
+        "uploadLogo": "Upload logo",
+        "uploadImageTitle": "Upload image",
+        "coverImageTitle": "Cover image",
+        "coverImageHint": "Shown prominently on your site. Recommended: 1200×800 in JPG or PNG.",
+        "createBusinessFirst": "Create your business first to upload a logo."
+      },
+      "locationStep": {
+        "title": "Your first location",
+        "description": "Add a main location. You can edit it later from settings.",
+        "saveContinue": "Save and continue",
+        "saveChangesContinue": "Save changes and continue"
+      },
+      "hoursStep": {
+        "title": "Opening hours",
+        "description": "Set up when you're open. If you're not ready yet, you can do it later.",
+        "saveContinue": "Save and continue",
+        "noLocationHint": "You can't save hours yet without a location. You can continue with importing products and finish this later from settings.",
+        "continueToProducts": "Continue to products"
+      },
+      "menuStep": {
+        "title": "Import your products",
+        "description": "You can upload a CSV here or use AI import to extract your products from a PDF or image."
+      },
+      "form": {
+        "generalTitle": "General information",
+        "nameLabel": "Business name",
+        "namePlaceholder": "Business name",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Description",
+        "descriptionHint": "Write a short description of your business",
+        "websiteLabel": "Website",
+        "websitePlaceholder": "your-site",
+        "websiteHint": "This will be your website name",
+        "submitLabel": "Continue",
+        "genericError": "Something went wrong",
+        "activateError": "Could not activate the business in your session",
+        "updateError": "Could not update business information"
+      }
+    },
+    "invite": {
+      "metaTitle": "Join team",
+      "invalidTitle": "Invalid invitation",
+      "expiredTitle": "The invitation has expired or is not valid",
+      "expiredDescription": "The invitation has expired or has already been used.",
+      "greeting": "Hi{name}, you've been invited to join the <orgName>{org}</orgName> team.",
+      "signedInAs": "Signed in with {email}",
+      "acceptHint": "Click the button below to accept the invitation.",
+      "acceptButton": "Accept invitation",
+      "termsNotice": "By accepting the invitation, you agree to the terms and conditions.",
+      "acceptError": "Failed to accept the invitation"
     }
   },
   "dashboard": {
@@ -260,7 +363,20 @@
       "themeLight": "Light",
       "themeDark": "Dark",
       "home": "Home",
-      "signOut": "Sign out"
+      "signOut": "Sign out",
+      "metaTitle": "My Profile",
+      "title": "My Profile",
+      "generalTitle": "General information",
+      "generalDescription": "General information about your account",
+      "membershipTitle": "Current membership",
+      "membershipDescription": "Information about your current membership",
+      "organization": "Organization",
+      "role": "Role",
+      "roleOwner": "Owner",
+      "roleAdmin": "Admin",
+      "roleMember": "Member",
+      "emptyTitle": "You don't belong to any organization",
+      "emptyDescription": "Ask for access to an organization to see your full profile."
     },
     "common": {
       "cancel": "Cancel",
@@ -275,7 +391,21 @@
       "retry": "Try again",
       "backHome": "Back to home",
       "ready": "Ready",
-      "view": "View"
+      "view": "View",
+      "searchType": "Search {type}...",
+      "selectType": "Select {type}...",
+      "noTypeFound": "No {type} found."
+    },
+    "dataTable": {
+      "searchPlaceholder": "Search results",
+      "noData": "No data found",
+      "recordsFound": "{count, plural, one {# record found} other {# records found}}",
+      "rowsPerPage": "Rows per page",
+      "pageOf": "Page {page} of {total}",
+      "goFirst": "Go to first page",
+      "goPrevious": "Go to previous page",
+      "goNext": "Go to next page",
+      "goLast": "Go to last page"
     },
     "menus": {
       "metaTitle": "Home",
@@ -316,7 +446,19 @@
       "location": "Location",
       "locationDescription": "Add your address, hours, and social links.",
       "products": "Products",
-      "productsDescription": "Create products and categories for your menu."
+      "productsDescription": "Create products and categories for your menu.",
+      "welcomeTitle": "Welcome to Biztro",
+      "welcomeDescription": "This is your starting dashboard to manage your business."
+    },
+    "allergens": {
+      "SEAFOOD": "Seafood",
+      "PEANUT": "Peanut",
+      "LACTOSE": "Lactose",
+      "NUT": "Nuts",
+      "GLUTEN": "Gluten",
+      "FISH": "Fish",
+      "VEGETARIAN": "Vegetarian",
+      "SPICY": "Spicy"
     },
     "upgrade": {
       "defaultTitle": "Upgrade to Pro",
@@ -381,8 +523,8 @@
         "confirmDescription": "Are you sure you want to delete this organization? This action is irreversible. All data associated with the organization will be deleted and cannot be recovered. Make sure you have downloaded any data you want to keep before continuing.",
         "cancelSubscription": "Cancel your subscription before deleting the organization.",
         "confirmHint": "For security, type {word} and press delete.",
-        "confirmAria": "Confirm by typing ELIMINAR",
-        "confirmWord": "ELIMINAR",
+        "confirmAria": "Confirm by typing DELETE",
+        "confirmWord": "DELETE",
         "deleting": "Deleting organization...",
         "deleteError": "Could not delete organization"
       },
@@ -511,13 +653,34 @@
           "timeRequired": "Enter opening and closing times",
           "validationTime": "Enter a time",
           "days": {
-            "MONDAY": { "short": "Mon", "full": "Monday" },
-            "TUESDAY": { "short": "Tue", "full": "Tuesday" },
-            "WEDNESDAY": { "short": "Wed", "full": "Wednesday" },
-            "THURSDAY": { "short": "Thu", "full": "Thursday" },
-            "FRIDAY": { "short": "Fri", "full": "Friday" },
-            "SATURDAY": { "short": "Sat", "full": "Saturday" },
-            "SUNDAY": { "short": "Sun", "full": "Sunday" }
+            "MONDAY": {
+              "short": "Mon",
+              "full": "Monday"
+            },
+            "TUESDAY": {
+              "short": "Tue",
+              "full": "Tuesday"
+            },
+            "WEDNESDAY": {
+              "short": "Wed",
+              "full": "Wednesday"
+            },
+            "THURSDAY": {
+              "short": "Thu",
+              "full": "Thursday"
+            },
+            "FRIDAY": {
+              "short": "Fri",
+              "full": "Friday"
+            },
+            "SATURDAY": {
+              "short": "Sat",
+              "full": "Saturday"
+            },
+            "SUNDAY": {
+              "short": "Sun",
+              "full": "Sunday"
+            }
           }
         }
       },
@@ -527,6 +690,7 @@
         "imageCountLimit": "{count} of {limit} images",
         "emptyTitle": "No images",
         "emptyDescription": "Upload images from products or your organization settings",
+        "viewDetails": "View details",
         "detailsTitle": "Image details",
         "previewAlt": "Preview",
         "type": "Type",
@@ -885,6 +1049,34 @@
         "deleteTitle": "Delete variant",
         "deleteDescription": "Are you sure you want to delete this variant? This action cannot be undone.",
         "deleting": "Deleting variant..."
+      },
+      "translations": {
+        "metaTitle": "Menu Translations",
+        "title": "Menu Translations",
+        "description": "Generate AI translations of your products to show the menu in other languages",
+        "addLanguage": "Add language",
+        "dialogTitle": "Translate menu with AI",
+        "dialogDescription": "Select the language you want to translate all active menu products into.",
+        "selectLanguage": "Select a language",
+        "translatingSuffix": "(translating)",
+        "translating": "Translating...",
+        "translateWithAi": "Translate with AI",
+        "upgradeTitle": "Upgrade to Pro",
+        "upgradeDescription": "Automatic product translation is available only on the Pro plan. Upgrade to add new languages to the menu.",
+        "bannerTitle": "Automatic product translation requires the Pro plan. Upgrade to add languages to the menu.",
+        "upgradeCta": "Upgrade to Pro",
+        "closeBanner": "Dismiss notice",
+        "availableLanguages": "Available languages",
+        "availableLanguagesInfo": "Translations are available on the public menu. Visitors can switch language from the language selector.",
+        "emptyTitle": "Start with a language",
+        "emptyDescription": "No translations yet. Add a language to get started.",
+        "productCount": "{count, plural, one {# product translated} other {# products translated}}",
+        "update": "Update",
+        "deleteAria": "Delete {locale} translation",
+        "translateSuccess": "{count, plural, one {# product translated to {locale}} other {# products translated to {locale}}}",
+        "translateError": "Could not translate products",
+        "deleteSuccess": "{locale} translation deleted",
+        "deleteError": "Could not delete translation"
       }
     }
   },
@@ -1170,6 +1362,7 @@
       "title": "Edit menu products",
       "saving": "Saving...",
       "unsavedChanges": "{count, plural, one {# unsaved change} other {# unsaved changes}}",
+      "variantCount": "{count, plural, one {# variant} other {# variants}}",
       "emptyTitle": "No products yet",
       "emptyDescription": "Create your first product to start editing the menu.",
       "createProduct": "Create product",
@@ -1180,6 +1373,21 @@
       "keyboardEditCancel": "to cancel editing.",
       "keyboardCommandsPrefix": "Press",
       "keyboardCommandsSuffix": "to show the full command list.",
+      "search": {
+        "placeholder": "Search table...",
+        "previousMatch": "Previous match",
+        "nextMatch": "Next match",
+        "close": "Close search",
+        "matchOf": "{current} of {total}",
+        "noResults": "No results",
+        "typeToSearch": "Type to search"
+      },
+      "viewMenu": {
+        "toggleColumns": "Toggle columns",
+        "view": "View",
+        "searchColumns": "Search columns...",
+        "noColumns": "No columns found."
+      },
       "variantsEdit": {
         "title": "Edit variants: {name}",
         "description": "Edit this product's variants. It must have at least one variant.",
@@ -1190,7 +1398,157 @@
         "nameTooLong": "Name is too long",
         "priceNegative": "Price cannot be negative",
         "minOneVariant": "Must have at least one variant"
-      }
+      },
+      "filter": {
+        "filter": "Filter",
+        "filterBy": "Filter by",
+        "noFilters": "No filters applied",
+        "modifyFilters": "Modify the filters to narrow down the data.",
+        "addFiltersHint": "Add filters to narrow down the data.",
+        "addFilter": "Add filter",
+        "resetFilters": "Reset filters",
+        "where": "Where",
+        "and": "And",
+        "searchFields": "Search fields...",
+        "noFields": "No fields found.",
+        "start": "Start",
+        "end": "End",
+        "selectDate": "Select date",
+        "selectRange": "Select range",
+        "searchOptions": "Search options...",
+        "noOptions": "No options found.",
+        "value": "Value",
+        "isEmptyStatus": "{label} is empty",
+        "selectedCount": "{count} selected",
+        "operators": {
+          "contains": "Contains",
+          "notContains": "Does not contain",
+          "equals": "Is",
+          "notEquals": "Is not",
+          "startsWith": "Starts with",
+          "endsWith": "Ends with",
+          "isEmpty": "Is empty",
+          "isNotEmpty": "Is not empty",
+          "lessThan": "Is less than",
+          "lessThanOrEqual": "Is less than or equal to",
+          "greaterThan": "Is greater than",
+          "greaterThanOrEqual": "Is greater than or equal to",
+          "isBetween": "Is between",
+          "before": "Is before",
+          "after": "Is after",
+          "onOrBefore": "Is on or before",
+          "onOrAfter": "Is on or after",
+          "is": "Is",
+          "isNot": "Is not",
+          "isAnyOf": "Is any of",
+          "isNoneOf": "Is none of",
+          "isTrue": "Is true",
+          "isFalse": "Is false"
+        }
+      },
+      "paste": {
+        "title": "Add more rows?",
+        "description": "We need {rowsNeeded, plural, one {<strong>#</strong> additional row} other {<strong>#</strong> additional rows}} to paste everything from the clipboard.",
+        "expandOptionTitle": "Create new rows",
+        "expandOptionDescription": "{rowsNeeded, plural, one {Add # row} other {Add # rows}} to the table and paste all the data",
+        "keepOptionTitle": "Keep current rows",
+        "keepOptionDescription": "Paste only what fits in the existing rows",
+        "continue": "Continue"
+      },
+      "shortcuts": {
+        "title": "Keyboard shortcuts",
+        "description": "Use these keyboard shortcuts to navigate and interact with the data grid more efficiently.",
+        "searchPlaceholder": "Search shortcuts...",
+        "noResultsTitle": "No shortcuts found",
+        "noResultsDescription": "Try searching for a different term.",
+        "groups": {
+          "navigation": "Navigation",
+          "selection": "Selection",
+          "editing": "Editing",
+          "search": "Search",
+          "filtering": "Filtering",
+          "sorting": "Sorting",
+          "general": "General"
+        },
+        "navigateCells": "Navigate between cells",
+        "nextCell": "Go to next cell",
+        "previousCell": "Go to previous cell",
+        "firstColumn": "Go to first column",
+        "lastColumn": "Go to last column",
+        "firstRowSameColumn": "Go to first row (same column)",
+        "lastRowSameColumn": "Go to last row (same column)",
+        "firstColumnSameRow": "Go to first column (same row)",
+        "lastColumnSameRow": "Go to last column (same row)",
+        "firstCell": "Go to first cell",
+        "lastCell": "Go to last cell",
+        "pageUp": "Scroll up one page",
+        "pageDown": "Scroll down one page",
+        "scrollUpPage": "Scroll up one page",
+        "scrollDownPage": "Scroll down one page",
+        "scrollColumnsLeftPage": "Scroll columns left one page",
+        "scrollColumnsRightPage": "Scroll columns right one page",
+        "extendSelection": "Extend selection",
+        "selectToTop": "Select to the top",
+        "selectToBottom": "Select to the bottom",
+        "selectToFirstColumn": "Select to first column",
+        "selectToLastColumn": "Select to last column",
+        "selectAllCells": "Select all cells",
+        "toggleCellSelection": "Toggle cell selection",
+        "selectRange": "Select range",
+        "clearSelection": "Clear selection",
+        "startEditingCell": "Start editing cell",
+        "insertRowBelow": "Insert row below",
+        "copySelectedCells": "Copy selected cells",
+        "cutSelectedCells": "Cut selected cells",
+        "pasteCells": "Paste cells",
+        "clearSelectedCells": "Clear selected cells",
+        "deleteSelectedRows": "Delete selected rows",
+        "undo": "Undo last action",
+        "redo": "Redo last action",
+        "openSearch": "Open search",
+        "nextMatch": "Next match",
+        "previousMatch": "Previous match",
+        "closeSearch": "Close search",
+        "toggleFilterMenu": "Toggle the filter menu",
+        "removeFilterWhenFocused": "Remove filter (when focused)",
+        "toggleSortMenu": "Toggle the sort menu",
+        "removeSortWhenFocused": "Remove sort (when focused)",
+        "showKeyboardShortcuts": "Show keyboard shortcuts"
+      },
+      "contextMenu": {
+        "copy": "Copy",
+        "cut": "Cut",
+        "clear": "Clear",
+        "deleteRows": "Delete row(s)",
+        "cellsCleared": "{count, plural, one {# cell cleared} other {# cells cleared}}",
+        "rowsDeleted": "{count, plural, one {# row deleted} other {# rows deleted}}"
+      },
+      "columnHeader": {
+        "sortAsc": "Sort asc",
+        "sortDesc": "Sort desc",
+        "removeSort": "Remove sort",
+        "unpinLeft": "Unpin from left",
+        "pinLeft": "Pin to left",
+        "unpinRight": "Unpin from right",
+        "pinRight": "Pin to right",
+        "hideColumn": "Hide column"
+      },
+      "fileCell": {
+        "searchPlaceholder": "Search...",
+        "noOptionsFound": "No options found.",
+        "fileSizeExceeds": "File size exceeds {size}",
+        "fileTypeNotAccepted": "File type not accepted",
+        "uploadLabel": "File upload",
+        "dropFilesHere": "Drop files here",
+        "dragFilesHere": "Drag files here",
+        "clickToBrowse": "or click to browse",
+        "selectFilesToUpload": "Select files to upload",
+        "fileCount": "{count, plural, one {# file} other {# files}}",
+        "clearAll": "Clear all",
+        "uploading": "Uploading...",
+        "deleting": "Deleting..."
+      },
+      "addRow": "Add row"
     },
     "tour": {
       "back": "Back",
@@ -1297,11 +1655,79 @@
       "description": "Try again or go back to the dashboard to select another menu.",
       "retry": "Try again",
       "backDashboard": "Back to dashboard"
+    },
+    "actions": {
+      "switchOrganizationFailed": "Could not switch organization",
+      "switchOrganizationError": "Error switching organization",
+      "inviteMemberError": "Error inviting member",
+      "acceptInviteFailed": "Could not accept the invitation",
+      "setActiveOrganizationFailed": "Could not set the active organization",
+      "acceptInviteError": "Error accepting the invitation",
+      "removeMemberFailed": "Could not remove the member",
+      "removeMemberError": "Error removing the member",
+      "subdomainInUse": "Subdomain is already in use",
+      "orgCreateFailed": "Could not create the organization",
+      "orgSetActiveFailed": "Could not set the active organization",
+      "orgIdRequired": "Organization ID is required",
+      "orgUpdateFailed": "Could not update the organization",
+      "orgDeleteConfirm": "Confirm by typing ELIMINAR before deleting the organization",
+      "orgDeleteActiveSubscription": "Cannot delete an organization with an active subscription",
+      "orgDeleteFailed": "Could not delete the organization",
+      "noCurrentOrg": "Could not get the current organization",
+      "translationProOnly": "Menu translation is a Pro-only feature",
+      "translationApiKeyRequired": "Translation requires configuring an AI Gateway API key",
+      "noActiveProducts": "There are no active products to translate",
+      "translationModelFailed": "Could not get the model translation",
+      "translationIncomplete": "Could not complete the translation. Please try again.",
+      "productTranslationProOnly": "Per-product automatic translation is a Pro-only feature",
+      "productNotFoundForTranslate": "Could not find the product to translate",
+      "productAlreadyTranslated": "This product already has all available translations for that language",
+      "productNoNewTranslations": "No new translations were generated for this product. Try again.",
+      "productTranslationIncomplete": "Could not complete the product translation. Please try again.",
+      "translationDeleteFailed": "Could not delete the translation.",
+      "noCurrentUser": "Could not get the current user",
+      "subdomainRequired": "Subdomain is required",
+      "alreadyOnWaitlist": "You're already on the waitlist",
+      "syncMenuFailed": "Could not sync the menu",
+      "mediaInUse": "Cannot delete a media asset that is in use. Remove it from all locations first.",
+      "analyticsFetchError": "Error fetching analytics data",
+      "analyticsTrendError": "Error fetching trend data",
+      "noPublishedVersion": "There is no published version to revert to.",
+      "unknownError": "Unknown error",
+      "updateProductsError": "Error updating products",
+      "categoryHasProducts": "Cannot delete a category that has associated products",
+      "productNotFound": "Could not get the associated product",
+      "updateCategoriesError": "Error updating categories",
+      "deleteProductsError": "Error deleting products",
+      "updateFeaturedError": "Error updating featured products",
+      "exportItemsError": "Error exporting products",
+      "menuNotFound": "Menu not found",
+      "onlyPublishedCanActivate": "You can only activate a published menu",
+      "mediaNotFound": "Media asset not found",
+      "menuLimitReached": "Limit of {limit} menus reached. Upgrade to Pro to create more.",
+      "productLimitReached": "Limit of {limit} products reached. Upgrade to Pro to create more.",
+      "copySuffix": "copy",
+      "copySuffixNumbered": "copy {n}",
+      "orgPlanUpdateFailed": "Could not update the organization plan",
+      "fileUploadFailed": "Could not upload the file",
+      "proRequiredFeature": "This feature requires the Pro plan",
+      "mediaLimitReached": "Media limit reached. The free plan is limited to {limit} images."
     }
   },
   "publicMenu": {
     "originalLanguage": "Spanish (original)",
     "changeLanguage": "Change language",
     "originalLanguageSr": "Original language"
+  },
+  "emails": {
+    "invite": {
+      "preview": "Join {inviter} on Biztro",
+      "heading": "Join {team} on Biztro",
+      "hello": "Hi {username},",
+      "invitedBy": "{inviter} ({email}) invited you to the {team} team on Biztro.",
+      "joinButton": "Join the team",
+      "orCopy": "or copy and paste this URL into your browser:",
+      "footer": "This invitation was intended for {username}. If you weren't expecting an invitation, you can ignore this email."
+    }
   }
 }

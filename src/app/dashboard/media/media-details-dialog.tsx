@@ -65,7 +65,7 @@ export function MediaDetailsDialog({
 
   const formatDate = (date: Date) => {
     const localeTag =
-      locale === "es" ? "es-MX" : locale === "ru" ? "ru-RU" : "en-US"
+      locale === "es" ? "es-MX" : locale === "en" ? "en-US" : "ru-RU"
 
     return new Intl.DateTimeFormat(localeTag, {
       year: "numeric",

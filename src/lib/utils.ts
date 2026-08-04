@@ -144,7 +144,7 @@ export function getOpenHoursLegend(
   const currentDayIndex = referenceDate.getDay()
   const currentMinutes =
     referenceDate.getHours() * 60 + referenceDate.getMinutes()
-  const timeLocale = locale ?? "es-MX"
+  const timeLocale = locale ?? "ru"
 
   for (const day of openingHours) {
     if (!day.allDay) {
@@ -225,7 +225,10 @@ export function getOpenHoursStatus(
   return status
 }
 
-export function getFormattedTime(time: string | null | undefined) {
+export function getFormattedTime(
+  time: string | null | undefined,
+  locale: string = "ru"
+) {
   if (!time) {
     return "NA"
   }
@@ -235,7 +238,7 @@ export function getFormattedTime(time: string | null | undefined) {
     Date.UTC(2000, 0, 1, parsedTime.hour, parsedTime.minute)
   )
 
-  return new Intl.DateTimeFormat("es-MX", {
+  return new Intl.DateTimeFormat(locale, {
     hour: "2-digit",
     minute: "2-digit",
     timeZone: "UTC"
@@ -288,17 +291,29 @@ export const sendOrganizationInvitation = async ({
 
   const baseUrl = getBaseUrl()
 
+  const { getTranslations } = await import("next-intl/server")
+  const t = await getTranslations("emails.invite")
+
   const { error } = await resend.emails.send({
     from: "noreply@qrmenu.bron.cafe",
     to: email,
-    subject: `Invitación a unirse a ${teamName}`,
+    subject: t("preview", { inviter: invitedByUsername }),
     react: InviteUserEmail({
       username: shortname,
       invitedByUsername,
       invitedByEmail,
       teamName,
       inviteLink,
-      baseUrl
+      baseUrl,
+      labels: {
+        preview: t("preview"),
+        heading: t("heading"),
+        hello: t("hello"),
+        invitedBy: t("invitedBy"),
+        joinButton: t("joinButton"),
+        orCopy: t("orCopy"),
+        footer: t("footer")
+      }
     })
   })
 
@@ -331,7 +346,7 @@ export async function upgradeOrganizationPlan(
       })
       return {
         failure: {
-          reason: "No se pudo actualizar el plan de la organización"
+          reason: "Could not update the organization plan"
         }
       }
     }

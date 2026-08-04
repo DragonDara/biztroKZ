@@ -4,6 +4,7 @@ import * as React from "react"
 import { useDirection } from "@radix-ui/react-direction"
 import type { Table } from "@tanstack/react-table"
 import { Check, Settings2 } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -34,6 +35,7 @@ export function DataGridViewMenu<TData>({
   className,
   ...props
 }: DataGridViewMenuProps<TData>) {
+  const t = useTranslations("menuEditor.dataGrid.viewMenu")
   const dir = useDirection()
 
   const columns = React.useMemo(
@@ -51,7 +53,7 @@ export function DataGridViewMenu<TData>({
     <Popover>
       <PopoverTrigger asChild>
         <Button
-          aria-label="Alternar columnas"
+          aria-label={t("toggleColumns")}
           role="combobox"
           dir={dir}
           variant="outline"
@@ -60,7 +62,7 @@ export function DataGridViewMenu<TData>({
           disabled={disabled}
         >
           <Settings2 className="text-muted-foreground" />
-          Vista
+          {t("view")}
         </Button>
       </PopoverTrigger>
       <PopoverContent
@@ -69,9 +71,9 @@ export function DataGridViewMenu<TData>({
         {...props}
       >
         <Command>
-          <CommandInput placeholder="Buscar columnas..." />
+          <CommandInput placeholder={t("searchColumns")} />
           <CommandList>
-            <CommandEmpty>No se encontraron columnas.</CommandEmpty>
+            <CommandEmpty>{t("noColumns")}</CommandEmpty>
             <CommandGroup>
               {columns.map(column => (
                 <CommandItem

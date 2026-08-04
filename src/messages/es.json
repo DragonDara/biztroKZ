@@ -164,7 +164,10 @@
         "p2": "Tus clientes solo tienen que escanearlo con la cámara de su teléfono para abrir tu menú al instante.",
         "p2Highlight": "También puedes compartir el mismo enlace en redes sociales",
         "p2Suffix": "o en tu sitio web.",
-        "p3": "El menú se adapta a celulares y tablets, se lee con claridad y no requiere instalar ninguna app."
+        "p3": "El menú se adapta a celulares y tablets, se lee con claridad y no requiere instalar ninguna app.",
+        "scanPrefix": "Escanea o",
+        "openExample": "abre el ejemplo",
+        "qrAlt": "Código QR de ejemplo"
       }
     },
     "aiFeatures": {
@@ -212,6 +215,11 @@
       "terms": "Términos",
       "privacy": "Privacidad",
       "logoAlt": "Logo"
+    },
+    "blog": {
+      "waitlistTitle": "¿Quieres participar en nuestro programa beta?",
+      "waitlistDescription": "Únete a nuestra lista de espera para recibir una invitación",
+      "authorAvatarAlt": "Imagen de perfil de {author}"
     }
   },
   "auth": {
@@ -222,6 +230,101 @@
       "subtitle": "Inicia sesión con tu cuenta de Biztro",
       "continueWith": "Continuar con {provider}",
       "error": "Ocurrió un error al iniciar sesión. Por favor, intenta de nuevo más tarde."
+    },
+    "onboarding": {
+      "metaTitle": "Crear nuevo negocio",
+      "metaDescription": "Configura una nueva organización para tu negocio",
+      "createOrgTitle": "Crear Organización",
+      "createOrgDescription": "Crea y configura tu negocio en Biztro",
+      "createOrgSubtitle": "Información básica del negocio",
+      "welcomeTitle": "Bienvenido a Biztro",
+      "welcomeDescription": "Completa esta configuración paso a paso. Puedes omitir cualquier parte y volver más tarde desde el dashboard.",
+      "back": "Regresar",
+      "skipForNow": "Omitir por ahora",
+      "continue": "Continuar",
+      "steps": {
+        "organization": {
+          "title": "Negocio",
+          "description": "Crea tu organización"
+        },
+        "logo": {
+          "title": "Imágenes",
+          "description": "Sube tu logo y tu portada"
+        },
+        "location": {
+          "title": "Sucursal",
+          "description": "Agrega tu primera ubicación"
+        },
+        "hours": {
+          "title": "Horarios",
+          "description": "Configura tus horarios de atención"
+        },
+        "menu": {
+          "title": "Productos",
+          "description": "Importa tus primeros productos"
+        }
+      },
+      "organizationStep": {
+        "title": "Crea tu negocio",
+        "description": "Empieza con el nombre y los datos básicos de tu negocio para seguir con la configuración.",
+        "submitLabel": "Crear negocio y continuar"
+      },
+      "logoStep": {
+        "title": "Logo y portada",
+        "description": "Sube tu logo y una portada para tu sitio. Si todavía no los tienes, puedes seguir más tarde.",
+        "uploadedHint": "Ya cargaste recursos visuales. Puedes reemplazarlos o seguir adelante.",
+        "recommendedHint": "Recomendado: logo de 500×500 y portada de 1200×800, en JPG o PNG.",
+        "changeLogo": "Cambiar logo",
+        "uploadLogo": "Subir logo",
+        "uploadImageTitle": "Subir imagen",
+        "coverImageTitle": "Imagen de portada",
+        "coverImageHint": "Se mostrará en la parte principal de tu sitio. Recomendado: 1200×800 en JPG o PNG.",
+        "createBusinessFirst": "Primero crea tu negocio para poder subir el logo."
+      },
+      "locationStep": {
+        "title": "Tu primera sucursal",
+        "description": "Agrega una ubicación principal. Podrás editarla más tarde desde configuración.",
+        "saveContinue": "Guardar y continuar",
+        "saveChangesContinue": "Guardar cambios y continuar"
+      },
+      "hoursStep": {
+        "title": "Horarios de atención",
+        "description": "Configura cuándo abres. Si todavía no estás listo, puedes hacerlo después.",
+        "saveContinue": "Guardar y continuar",
+        "noLocationHint": "Sin una sucursal no puedes guardar horarios todavía. Puedes seguir con la importación de productos y completar esto después desde configuración.",
+        "continueToProducts": "Continuar con productos"
+      },
+      "menuStep": {
+        "title": "Importa tus productos",
+        "description": "Puedes subir un CSV aquí mismo o usar la importación con IA para extraer tus productos desde un PDF o una imagen."
+      },
+      "form": {
+        "generalTitle": "Datos generales",
+        "nameLabel": "Nombre del negocio",
+        "namePlaceholder": "Nombre del negocio",
+        "descriptionLabel": "Descripción",
+        "descriptionPlaceholder": "Descripción",
+        "descriptionHint": "Escribe una breve descripción de tu negocio",
+        "websiteLabel": "Sitio web",
+        "websitePlaceholder": "tu-sitio",
+        "websiteHint": "Este será el nombre de tu sitio web",
+        "submitLabel": "Continuar",
+        "genericError": "Ocurrió un error",
+        "activateError": "No se pudo activar el negocio en tu sesión",
+        "updateError": "No se pudo actualizar la información del negocio"
+      }
+    },
+    "invite": {
+      "metaTitle": "Unirse a equipo",
+      "invalidTitle": "Invitación inválida",
+      "expiredTitle": "Invitación ha expirado o no es válida",
+      "expiredDescription": "La invitación ha expirado o ya ha sido utilizada.",
+      "greeting": "Hola{name}, has sido invitado a unirte al equipo de <orgName>{org}</orgName>.",
+      "signedInAs": "Firmado con {email}",
+      "acceptHint": "Da clic en el botón de abajo para aceptar la invitación.",
+      "acceptButton": "Aceptar invitación",
+      "termsNotice": "Al aceptar la invitación, aceptas los términos y condiciones.",
+      "acceptError": "Falló la aceptación de la invitación"
     }
   },
   "dashboard": {
@@ -260,7 +363,20 @@
       "themeLight": "Claro",
       "themeDark": "Oscuro",
       "home": "Inicio",
-      "signOut": "Salir"
+      "signOut": "Salir",
+      "metaTitle": "Mi Perfil",
+      "title": "Mi Perfil",
+      "generalTitle": "Datos generales",
+      "generalDescription": "Información general sobre mi cuenta",
+      "membershipTitle": "Membresía actual",
+      "membershipDescription": "Información sobre tu membresía actual",
+      "organization": "Organización",
+      "role": "Rol",
+      "roleOwner": "Propietario",
+      "roleAdmin": "Administrador",
+      "roleMember": "Miembro",
+      "emptyTitle": "No tienes membresía en ninguna organización",
+      "emptyDescription": "Pide acceso a una organización para ver tu perfil completo."
     },
     "common": {
       "cancel": "Cancelar",
@@ -275,7 +391,21 @@
       "retry": "Reintentar",
       "backHome": "Volver al inicio",
       "ready": "Listo",
-      "view": "Ver"
+      "view": "Ver",
+      "searchType": "Buscar {type}...",
+      "selectType": "Selecciona {type}...",
+      "noTypeFound": "No se encontró {type}."
+    },
+    "dataTable": {
+      "searchPlaceholder": "Buscar en resultados",
+      "noData": "No se encontraron datos",
+      "recordsFound": "{count, plural, one {# registro encontrado} other {# registros encontrados}}",
+      "rowsPerPage": "Registros por página",
+      "pageOf": "Página {page} de {total}",
+      "goFirst": "Ir a primer página",
+      "goPrevious": "Ir a página previa",
+      "goNext": "Ir a página siguiente",
+      "goLast": "Ir a última página"
     },
     "menus": {
       "metaTitle": "Inicio",
@@ -316,7 +446,19 @@
       "location": "Sucursal",
       "locationDescription": "Registra la dirección, horarios y redes sociales.",
       "products": "Productos",
-      "productsDescription": "Crea tus productos y categorías para tu menú."
+      "productsDescription": "Crea tus productos y categorías para tu menú.",
+      "welcomeTitle": "Bienvenido a Biztro",
+      "welcomeDescription": "Este es tu tablero inicial para administrar tu negocio."
+    },
+    "allergens": {
+      "SEAFOOD": "Mariscos",
+      "PEANUT": "Cacahuate",
+      "LACTOSE": "Lactosa",
+      "NUT": "Nueces",
+      "GLUTEN": "Gluten",
+      "FISH": "Pescado",
+      "VEGETARIAN": "Vegetariano",
+      "SPICY": "Picante"
     },
     "upgrade": {
       "defaultTitle": "Actualizar a Pro",
@@ -381,7 +523,7 @@
         "confirmDescription": "¿Estás seguro de que deseas eliminar esta organización? Esta acción es irreversible. Todos los datos asociados a la organización serán eliminados y no podrán recuperarse. Asegúrate de haber descargado cualquier dato que desees conservar antes de continuar.",
         "cancelSubscription": "Cancela tu suscripción antes de eliminar la organización.",
         "confirmHint": "Por seguridad, escribe {word} y presiona eliminar.",
-        "confirmAria": "Confirmar escribiendo ELIMINAR",
+        "confirmAria": "Confirma escribiendo ELIMINAR",
         "confirmWord": "ELIMINAR",
         "deleting": "Eliminando organización...",
         "deleteError": "No se pudo eliminar la organización"
@@ -511,13 +653,34 @@
           "timeRequired": "Ingresa el horario de apertura y cierre",
           "validationTime": "Ingresa la hora",
           "days": {
-            "MONDAY": { "short": "Lu", "full": "Lunes" },
-            "TUESDAY": { "short": "Ma", "full": "Martes" },
-            "WEDNESDAY": { "short": "Mi", "full": "Miércoles" },
-            "THURSDAY": { "short": "Ju", "full": "Jueves" },
-            "FRIDAY": { "short": "Vi", "full": "Viernes" },
-            "SATURDAY": { "short": "Sá", "full": "Sábado" },
-            "SUNDAY": { "short": "Do", "full": "Domingo" }
+            "MONDAY": {
+              "short": "Lu",
+              "full": "Lunes"
+            },
+            "TUESDAY": {
+              "short": "Ma",
+              "full": "Martes"
+            },
+            "WEDNESDAY": {
+              "short": "Mi",
+              "full": "Miércoles"
+            },
+            "THURSDAY": {
+              "short": "Ju",
+              "full": "Jueves"
+            },
+            "FRIDAY": {
+              "short": "Vi",
+              "full": "Viernes"
+            },
+            "SATURDAY": {
+              "short": "Sá",
+              "full": "Sábado"
+            },
+            "SUNDAY": {
+              "short": "Do",
+              "full": "Domingo"
+            }
           }
         }
       },
@@ -527,6 +690,7 @@
         "imageCountLimit": "{count} de {limit} imágenes",
         "emptyTitle": "Sin imágenes",
         "emptyDescription": "Sube imágenes desde productos o la configuración de tu organización",
+        "viewDetails": "Ver detalles",
         "detailsTitle": "Detalles de la imagen",
         "previewAlt": "Vista previa",
         "type": "Tipo",
@@ -885,6 +1049,34 @@
         "deleteTitle": "Eliminar variante",
         "deleteDescription": "¿Estás seguro de eliminar esta variante? Esta acción no se puede deshacer.",
         "deleting": "Eliminando variante..."
+      },
+      "translations": {
+        "metaTitle": "Traducciones del Menú",
+        "title": "Traducciones del Menú",
+        "description": "Genera traducciones de tus productos con IA para mostrar el menú en otros idiomas",
+        "addLanguage": "Agregar idioma",
+        "dialogTitle": "Traducir menú con IA",
+        "dialogDescription": "Selecciona el idioma al que quieres traducir todos los productos activos de tu menú.",
+        "selectLanguage": "Selecciona un idioma",
+        "translatingSuffix": "(traduciendo)",
+        "translating": "Traduciendo...",
+        "translateWithAi": "Traducir con IA",
+        "upgradeTitle": "Actualiza a Pro",
+        "upgradeDescription": "La traducción automática de productos está disponible solo en el plan Pro. Actualiza para agregar nuevos idiomas al menú.",
+        "bannerTitle": "La traducción automática de productos requiere el plan Pro. Actualiza para agregar idiomas al menú.",
+        "upgradeCta": "Actualizar a Pro",
+        "closeBanner": "Cerrar aviso",
+        "availableLanguages": "Idiomas disponibles",
+        "availableLanguagesInfo": "Las traducciones están disponibles en el menú público. Los visitantes podrán cambiar el idioma desde el selector de idiomas.",
+        "emptyTitle": "Empieza con un idioma",
+        "emptyDescription": "No hay traducciones disponibles. Agrega un idioma para empezar.",
+        "productCount": "{count, plural, one {# producto traducido} other {# productos traducidos}}",
+        "update": "Actualizar",
+        "deleteAria": "Eliminar traducción al {locale}",
+        "translateSuccess": "{count, plural, one {# producto traducido al {locale}} other {# productos traducidos al {locale}}}",
+        "translateError": "Error al traducir los productos",
+        "deleteSuccess": "Traducción al {locale} eliminada",
+        "deleteError": "Error al eliminar la traducción"
       }
     }
   },
@@ -1170,6 +1362,7 @@
       "title": "Editar productos del menú",
       "saving": "Guardando...",
       "unsavedChanges": "{count, plural, one {# cambio sin guardar} other {# cambios sin guardar}}",
+      "variantCount": "{count, plural, one {# variante} other {# variantes}}",
       "emptyTitle": "Aún no hay productos",
       "emptyDescription": "Crea tu primer producto para empezar a editar el menú.",
       "createProduct": "Crear producto",
@@ -1180,6 +1373,21 @@
       "keyboardEditCancel": "para cancelar la edición.",
       "keyboardCommandsPrefix": "Presiona",
       "keyboardCommandsSuffix": "para mostrar la lista completa de comandos.",
+      "search": {
+        "placeholder": "Buscar en la tabla...",
+        "previousMatch": "Coincidencia anterior",
+        "nextMatch": "Siguiente coincidencia",
+        "close": "Cerrar búsqueda",
+        "matchOf": "{current} de {total}",
+        "noResults": "No hay resultados",
+        "typeToSearch": "Escribe para buscar"
+      },
+      "viewMenu": {
+        "toggleColumns": "Alternar columnas",
+        "view": "Vista",
+        "searchColumns": "Buscar columnas...",
+        "noColumns": "No se encontraron columnas."
+      },
       "variantsEdit": {
         "title": "Editar variantes: {name}",
         "description": "Edita las variantes de este producto. Debe tener al menos una variante.",
@@ -1190,7 +1398,157 @@
         "nameTooLong": "Nombre muy largo",
         "priceNegative": "Precio no puede ser negativo",
         "minOneVariant": "Debe tener al menos una variante"
-      }
+      },
+      "filter": {
+        "filter": "Filtrar",
+        "filterBy": "Filtrar por",
+        "noFilters": "No hay filtros aplicados",
+        "modifyFilters": "Modifica los filtros para limitar los datos.",
+        "addFiltersHint": "Agrega filtros para limitar los datos.",
+        "addFilter": "Agregar filtro",
+        "resetFilters": "Restablecer filtros",
+        "where": "Donde",
+        "and": "Y",
+        "searchFields": "Buscar campos...",
+        "noFields": "No se encontraron campos.",
+        "start": "Inicio",
+        "end": "Fin",
+        "selectDate": "Seleccionar fecha",
+        "selectRange": "Seleccionar rango",
+        "searchOptions": "Buscar opciones...",
+        "noOptions": "No se encontraron opciones.",
+        "value": "Valor",
+        "isEmptyStatus": "{label} está vacío",
+        "selectedCount": "{count} seleccionados",
+        "operators": {
+          "contains": "Contiene",
+          "notContains": "No contiene",
+          "equals": "Es",
+          "notEquals": "No es",
+          "startsWith": "Empieza con",
+          "endsWith": "Termina con",
+          "isEmpty": "Está vacío",
+          "isNotEmpty": "No está vacío",
+          "lessThan": "Es menor que",
+          "lessThanOrEqual": "Es menor o igual que",
+          "greaterThan": "Es mayor que",
+          "greaterThanOrEqual": "Es mayor o igual que",
+          "isBetween": "Está entre",
+          "before": "Es anterior a",
+          "after": "Es posterior a",
+          "onOrBefore": "Es en o antes de",
+          "onOrAfter": "Es en o después de",
+          "is": "Es",
+          "isNot": "No es",
+          "isAnyOf": "Tiene cualquiera de",
+          "isNoneOf": "No tiene ninguno de",
+          "isTrue": "Es verdadero",
+          "isFalse": "Es falso"
+        }
+      },
+      "paste": {
+        "title": "¿Deseas agregar más filas?",
+        "description": "Necesitamos {rowsNeeded, plural, one {<strong>#</strong> fila adicional} other {<strong>#</strong> filas adicionales}} para pegar todo desde el portapapeles.",
+        "expandOptionTitle": "Crear nuevas filas",
+        "expandOptionDescription": "{rowsNeeded, plural, one {Agregar # fila} other {Agregar # filas}} a la tabla y pegar todos los datos",
+        "keepOptionTitle": "Mantener filas actuales",
+        "keepOptionDescription": "Pegar solo lo que quepa en las filas existentes",
+        "continue": "Continuar"
+      },
+      "shortcuts": {
+        "title": "Atajos de teclado",
+        "description": "Usa estos atajos de teclado para navegar e interactuar con la tabla de datos de forma más eficiente.",
+        "searchPlaceholder": "Buscar atajos...",
+        "noResultsTitle": "No se encontraron atajos",
+        "noResultsDescription": "Intenta buscar otro término.",
+        "groups": {
+          "navigation": "Navegación",
+          "selection": "Selección",
+          "editing": "Edición",
+          "search": "Búsqueda",
+          "filtering": "Filtrado",
+          "sorting": "Ordenamiento",
+          "general": "General"
+        },
+        "navigateCells": "Navegar entre celdas",
+        "nextCell": "Ir a la siguiente celda",
+        "previousCell": "Ir a la celda anterior",
+        "firstColumn": "Ir a la primera columna",
+        "lastColumn": "Ir a la última columna",
+        "firstRowSameColumn": "Ir a la primera fila (misma columna)",
+        "lastRowSameColumn": "Ir a la última fila (misma columna)",
+        "firstColumnSameRow": "Ir a la primera columna (misma fila)",
+        "lastColumnSameRow": "Ir a la última columna (misma fila)",
+        "firstCell": "Ir a la primera celda",
+        "lastCell": "Ir a la última celda",
+        "pageUp": "Subir una página",
+        "pageDown": "Bajar una página",
+        "scrollUpPage": "Desplazar hacia arriba una página",
+        "scrollDownPage": "Desplazar hacia abajo una página",
+        "scrollColumnsLeftPage": "Desplazar columnas hacia la izquierda una página",
+        "scrollColumnsRightPage": "Desplazar columnas hacia la derecha una página",
+        "extendSelection": "Extender selección",
+        "selectToTop": "Seleccionar hasta la parte superior",
+        "selectToBottom": "Seleccionar hasta la parte inferior",
+        "selectToFirstColumn": "Seleccionar hasta la primera columna",
+        "selectToLastColumn": "Seleccionar hasta la última columna",
+        "selectAllCells": "Seleccionar todas las celdas",
+        "toggleCellSelection": "Alternar selección de celda",
+        "selectRange": "Seleccionar rango",
+        "clearSelection": "Borrar selección",
+        "startEditingCell": "Comenzar edición de celda",
+        "insertRowBelow": "Insertar fila abajo",
+        "copySelectedCells": "Copiar celdas seleccionadas",
+        "cutSelectedCells": "Cortar celdas seleccionadas",
+        "pasteCells": "Pegar celdas",
+        "clearSelectedCells": "Borrar celdas seleccionadas",
+        "deleteSelectedRows": "Eliminar filas seleccionadas",
+        "undo": "Deshacer la última acción",
+        "redo": "Rehacer la última acción",
+        "openSearch": "Abrir búsqueda",
+        "nextMatch": "Siguiente coincidencia",
+        "previousMatch": "Coincidencia anterior",
+        "closeSearch": "Cerrar búsqueda",
+        "toggleFilterMenu": "Alternar el menú de filtros",
+        "removeFilterWhenFocused": "Eliminar filtro (cuando está enfocado)",
+        "toggleSortMenu": "Alternar el menú de ordenamiento",
+        "removeSortWhenFocused": "Eliminar orden (cuando está enfocado)",
+        "showKeyboardShortcuts": "Mostrar atajos de teclado"
+      },
+      "contextMenu": {
+        "copy": "Copiar",
+        "cut": "Cortar",
+        "clear": "Borrar",
+        "deleteRows": "Eliminar fila(s)",
+        "cellsCleared": "{count, plural, one {# celda limpiada} other {# celdas limpiadas}}",
+        "rowsDeleted": "{count, plural, one {# fila eliminada} other {# filas eliminadas}}"
+      },
+      "columnHeader": {
+        "sortAsc": "Orden asc",
+        "sortDesc": "Orden desc",
+        "removeSort": "Eliminar orden",
+        "unpinLeft": "Desanclar de la izquierda",
+        "pinLeft": "Anclar a la izquierda",
+        "unpinRight": "Desanclar de la derecha",
+        "pinRight": "Anclar a la derecha",
+        "hideColumn": "Ocultar columna"
+      },
+      "fileCell": {
+        "searchPlaceholder": "Buscar...",
+        "noOptionsFound": "No se encontraron opciones.",
+        "fileSizeExceeds": "El tamaño del archivo excede {size}",
+        "fileTypeNotAccepted": "Tipo de archivo no aceptado",
+        "uploadLabel": "Carga de archivos",
+        "dropFilesHere": "Suelta los archivos aquí",
+        "dragFilesHere": "Arrastra archivos aquí",
+        "clickToBrowse": "o haz clic para buscar",
+        "selectFilesToUpload": "Selecciona archivos para subir",
+        "fileCount": "{count, plural, one {# archivo} other {# archivos}}",
+        "clearAll": "Borrar todo",
+        "uploading": "Subiendo...",
+        "deleting": "Eliminando..."
+      },
+      "addRow": "Agregar fila"
     },
     "tour": {
       "back": "Anterior",
@@ -1297,11 +1655,79 @@
       "description": "Intenta nuevamente o vuelve al dashboard para seleccionar otro menú.",
       "retry": "Reintentar",
       "backDashboard": "Volver al dashboard"
+    },
+    "actions": {
+      "switchOrganizationFailed": "No se pudo cambiar de organización",
+      "switchOrganizationError": "Error cambiando de organización",
+      "inviteMemberError": "Error invitando al miembro",
+      "acceptInviteFailed": "No se pudo aceptar la invitación",
+      "setActiveOrganizationFailed": "No se pudo establecer la organización activa",
+      "acceptInviteError": "Error aceptando la invitación",
+      "removeMemberFailed": "No se pudo eliminar al miembro",
+      "removeMemberError": "Error eliminando al miembro",
+      "subdomainInUse": "El subdominio ya está en uso",
+      "orgCreateFailed": "No se pudo crear la organización",
+      "orgSetActiveFailed": "No se pudo establecer la organización activa",
+      "orgIdRequired": "ID de organización es requerido",
+      "orgUpdateFailed": "No se pudo actualizar la organización",
+      "orgDeleteConfirm": "Confirma escribiendo ELIMINAR antes de eliminar la organización",
+      "orgDeleteActiveSubscription": "No se puede eliminar una organización con una suscripción activa",
+      "orgDeleteFailed": "No se pudo eliminar la organización",
+      "noCurrentOrg": "No se pudo obtener la organización actual",
+      "translationProOnly": "La traducción de menú es una función exclusiva del plan Pro",
+      "translationApiKeyRequired": "La funcionalidad de traducción requiere configurar una clave de API del AI Gateway",
+      "noActiveProducts": "No hay productos activos para traducir",
+      "translationModelFailed": "No se pudo obtener la traducción del modelo",
+      "translationIncomplete": "No se pudo completar la traducción. Por favor intenta nuevamente.",
+      "productTranslationProOnly": "La traducción automática por producto es una función exclusiva del plan Pro",
+      "productNotFoundForTranslate": "No se pudo encontrar el producto a traducir",
+      "productAlreadyTranslated": "Este producto ya tiene todas las traducciones disponibles para ese idioma",
+      "productNoNewTranslations": "No se generaron nuevas traducciones para este producto. Intenta de nuevo.",
+      "productTranslationIncomplete": "No se pudo completar la traducción del producto. Por favor intenta nuevamente.",
+      "translationDeleteFailed": "No se pudo eliminar la traducción.",
+      "noCurrentUser": "No se pudo obtener el usuario actual",
+      "subdomainRequired": "Subdominio es requerido",
+      "alreadyOnWaitlist": "Ya estás en la lista de espera",
+      "syncMenuFailed": "No se pudo sincronizar el menú",
+      "mediaInUse": "No se puede eliminar un recurso multimedia que está en uso. Por favor, elimínelo de todas las ubicaciones primero.",
+      "analyticsFetchError": "Error al obtener datos de analítica",
+      "analyticsTrendError": "Error al obtener datos de tendencia",
+      "noPublishedVersion": "No hay una versión publicada para revertir.",
+      "unknownError": "Error desconocido",
+      "updateProductsError": "Error al actualizar los productos",
+      "categoryHasProducts": "No se puede eliminar una categoría que tiene productos asociados",
+      "productNotFound": "No se pudo obtener el producto asociado",
+      "updateCategoriesError": "Error al actualizar las categorías",
+      "deleteProductsError": "Error al eliminar los productos",
+      "updateFeaturedError": "Error al actualizar los productos destacados",
+      "exportItemsError": "Error al exportar los productos",
+      "menuNotFound": "Menú no encontrado",
+      "onlyPublishedCanActivate": "Solo puedes activar un menú publicado",
+      "mediaNotFound": "Recurso multimedia no encontrado",
+      "menuLimitReached": "Límite de {limit} menús alcanzado. Actualiza a Pro para crear más.",
+      "productLimitReached": "Límite de {limit} productos alcanzado. Actualiza a Pro para crear más.",
+      "copySuffix": "copia",
+      "copySuffixNumbered": "copia {n}",
+      "orgPlanUpdateFailed": "No se pudo actualizar el plan de la organización",
+      "fileUploadFailed": "No se pudo subir el archivo",
+      "proRequiredFeature": "Esta función requiere el plan Pro",
+      "mediaLimitReached": "Límite de medios alcanzado. El nivel gratuito está limitado a {limit} imágenes."
     }
   },
   "publicMenu": {
     "originalLanguage": "Español (original)",
     "changeLanguage": "Cambiar idioma",
     "originalLanguageSr": "Idioma original"
+  },
+  "emails": {
+    "invite": {
+      "preview": "Únete a {inviter} en Biztro",
+      "heading": "Únete a {team} en Biztro",
+      "hello": "Hola {username},",
+      "invitedBy": "{inviter} ({email}) te ha invitado al equipo de {team} en Biztro.",
+      "joinButton": "Unirse al equipo",
+      "orCopy": "o copia y pega esta URL en tu navegador:",
+      "footer": "Esta invitación está destinada para {username}. Si no estabas esperando una invitación, puedes ignorar este email."
+    }
   }
 }

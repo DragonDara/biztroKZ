@@ -1,5 +1,6 @@
 "use server"
 
+import { getTranslations } from "next-intl/server"
 import { updateTag } from "next/cache"
 
 import prisma from "@/lib/prisma"
@@ -43,12 +44,13 @@ export const createLocation = authMemberActionClient
       ctx: { member }
     }) => {
       try {
+        const t = await getTranslations("errors.actions")
         const organizationId = member.organizationId
 
         if (!organizationId) {
           return {
             failure: {
-              reason: "No se pudo obtener la organización actual"
+              reason: t("noCurrentOrg")
             }
           }
         }
@@ -232,11 +234,12 @@ export const updateHours = authMemberActionClient
     }
 
     // Get current orgization ID
+    const t = await getTranslations("errors.actions")
     const organizationId = member.organizationId
     if (!organizationId) {
       return {
         failure: {
-          reason: "No se pudo obtener la organización actual"
+          reason: t("noCurrentOrg")
         }
       }
     }

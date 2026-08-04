@@ -3,6 +3,7 @@
 import { type Organization } from "@/generated/prisma-client/client"
 import * as Sentry from "@sentry/nextjs"
 import lz from "lzutf8"
+import { getTranslations } from "next-intl/server"
 import { revalidatePath, updateTag } from "next/cache"
 import { z } from "zod/v4"
 
@@ -441,12 +442,13 @@ export const syncMenusAfterCatalogChange = authMemberActionClient
 
         return { success: counts }
       } catch (error) {
+        const t = await getTranslations("errors.actions")
         const message =
           error instanceof Error
             ? error.message
             : typeof error === "string"
               ? error
-              : "No se pudo sincronizar el menú"
+              : t("syncMenuFailed")
         return { failure: { reason: message } }
       }
     }

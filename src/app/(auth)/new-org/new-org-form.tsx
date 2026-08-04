@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import slugify from "@sindresorhus/slugify"
 import { useQueryClient } from "@tanstack/react-query"
 import { Loader } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 import { type z } from "zod/v4"
@@ -61,6 +62,7 @@ export default function NewOrgForm({
   redirectTo?: string
   withCard?: boolean
 }) {
+  const t = useTranslations("auth.onboarding.form")
   const form = useForm<z.infer<typeof orgSchema>>({
     resolver: zodResolver(orgSchema),
     defaultValues: {
@@ -87,7 +89,7 @@ export default function NewOrgForm({
   const { execute, status, reset } = useAction(bootstrapOrg, {
     onSuccess: async ({ data }) => {
       if (data?.failure) {
-        toast.error(data.failure.reason ?? "Ocurrió un error")
+        toast.error(data.failure.reason ?? t("genericError"))
         reset()
         return
       } else if (data?.success) {
@@ -98,7 +100,7 @@ export default function NewOrgForm({
         })
 
         if (error) {
-          toast.error("No se pudo activar el negocio en tu sesión")
+          toast.error(t("activateError"))
           reset()
           return
         }
@@ -117,7 +119,7 @@ export default function NewOrgForm({
       reset()
     },
     onError: () => {
-      toast.error("No se pudo actualizar la información del negocio")
+      toast.error(t("updateError"))
       reset()
     }
   })
@@ -133,11 +135,11 @@ export default function NewOrgForm({
         control={form.control}
         render={({ field, fieldState }) => (
           <Field>
-            <FieldLabel htmlFor={field.name}>Nombre del negocio</FieldLabel>
+            <FieldLabel htmlFor={field.name}>{t("nameLabel")}</FieldLabel>
             <Input
               {...field}
               id={field.name}
-              placeholder="Nombre del negocio"
+              placeholder={t("namePlaceholder")}
             />
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
@@ -148,11 +150,15 @@ export default function NewOrgForm({
         control={form.control}
         render={({ field, fieldState }) => (
           <Field>
-            <FieldLabel htmlFor={field.name}>Descripción</FieldLabel>
-            <Textarea {...field} id={field.name} placeholder="Descripción" />
-            <FieldDescription>
-              Escribe una breve descripción de tu negocio
-            </FieldDescription>
+            <FieldLabel htmlFor={field.name}>
+              {t("descriptionLabel")}
+            </FieldLabel>
+            <Textarea
+              {...field}
+              id={field.name}
+              placeholder={t("descriptionPlaceholder")}
+            />
+            <FieldDescription>{t("descriptionHint")}</FieldDescription>
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
         )}
@@ -162,7 +168,7 @@ export default function NewOrgForm({
         control={form.control}
         render={({ field, fieldState }) => (
           <Field>
-            <FieldLabel htmlFor={field.name}>Sitio web</FieldLabel>
+            <FieldLabel htmlFor={field.name}>{t("websiteLabel")}</FieldLabel>
             <InputGroup>
               <InputGroupAddon>
                 <InputGroupText>https://</InputGroupText>
@@ -171,7 +177,7 @@ export default function NewOrgForm({
                 {...field}
                 id={field.name}
                 aria-invalid={fieldState.invalid}
-                placeholder="tu-sitio"
+                placeholder={t("websitePlaceholder")}
                 className="pl-1!"
               />
               <InputGroupAddon align="inline-end">
@@ -180,9 +186,7 @@ export default function NewOrgForm({
                 </InputGroupText>
               </InputGroupAddon>
             </InputGroup>
-            <FieldDescription>
-              Este será el nombre de tu sitio web
-            </FieldDescription>
+            <FieldDescription>{t("websiteHint")}</FieldDescription>
             {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
           </Field>
         )}
@@ -199,7 +203,7 @@ export default function NewOrgForm({
       {status === "executing" ? (
         <Loader className="mr-2 h-4 w-4 animate-spin" />
       ) : (
-        (submitLabel ?? "Continuar")
+        (submitLabel ?? t("submitLabel"))
       )}
     </Button>
   )
@@ -210,7 +214,7 @@ export default function NewOrgForm({
         {withCard ? (
           <Card className="min-w-96 shadow-xl">
             <CardHeader>
-              <CardTitle>Datos generales</CardTitle>
+              <CardTitle>{t("generalTitle")}</CardTitle>
             </CardHeader>
             <CardContent>{fields}</CardContent>
             <CardFooter>{submitButton}</CardFooter>

@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import { useTranslations } from "next-intl"
 import Image from "next/image"
 
 import { Button } from "@/components/ui/button"
@@ -30,6 +31,7 @@ type MediaAsset = {
 }
 
 export function MediaCard({ asset }: { asset: MediaAsset }) {
+  const t = useTranslations("dashboard.settings.media")
   const [showDetails, setShowDetails] = useState(false)
   const [showReplaceDialog, setShowReplaceDialog] = useState(false)
   const isMobile = useIsMobile()
@@ -88,7 +90,7 @@ export function MediaCard({ asset }: { asset: MediaAsset }) {
                 handleOpenDetails()
               }}
             >
-              Ver detalles
+              {t("viewDetails")}
             </Button>
           </div>
         </div>

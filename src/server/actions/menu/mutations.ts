@@ -2,6 +2,7 @@
 
 import { Prisma } from "@/generated/prisma-client/client"
 import * as Sentry from "@sentry/nextjs"
+import { getTranslations } from "next-intl/server"
 import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
@@ -29,12 +30,13 @@ import { menuSchema, MenuStatus } from "@/lib/types/menu"
 export const createMenu = authActionClient
   .inputSchema(menuSchema)
   .action(async ({ parsedInput: { name, description, status } }) => {
+    const t = await getTranslations("errors.actions")
     const currentOrg = await getCurrentOrganization()
 
     if (!currentOrg) {
       return {
         failure: {
-          reason: "No se pudo obtener la organización actual"
+          reason: t("noCurrentOrg")
         }
       }
     }
@@ -46,7 +48,7 @@ export const createMenu = authActionClient
     if (!proMember && menuCount >= menuLimit) {
       return {
         failure: {
-          reason: `Límite de ${menuLimit} menús alcanzado. Actualiza a Pro para crear más.`,
+          reason: t("menuLimitReached", { limit: menuLimit }),
           code: BasicPlanLimits.MENU_LIMIT_REACHED
         }
       }
@@ -266,12 +268,13 @@ export const setActiveMenu = authActionClient
     })
   )
   .action(async ({ parsedInput: { id } }) => {
+    const t = await getTranslations("errors.actions")
     const currentOrg = await getCurrentOrganization()
 
     if (!currentOrg) {
       return {
         failure: {
-          reason: "No se pudo obtener la organización actual"
+          reason: t("noCurrentOrg")
         }
       }
     }
@@ -292,7 +295,7 @@ export const setActiveMenu = authActionClient
       if (!menu) {
         return {
           failure: {
-            reason: "Menú no encontrado"
+            reason: t("menuNotFound")
           }
         }
       }
@@ -300,7 +303,7 @@ export const setActiveMenu = authActionClient
       if (menu.status !== MenuStatus.PUBLISHED) {
         return {
           failure: {
-            reason: "Solo puedes activar un menú publicado"
+            reason: t("onlyPublishedCanActivate")
           }
         }
       }
@@ -404,6 +407,7 @@ export const revertMenuToPublished = authActionClient
     })
   )
   .action(async ({ parsedInput: { id } }) => {
+    const t = await getTranslations("errors.actions")
     try {
       const menu = await prisma.menu.findUnique({
         where: { id },
@@ -419,7 +423,7 @@ export const revertMenuToPublished = authActionClient
       if (!menu?.publishedData) {
         return {
           failure: {
-            reason: "No hay una versión publicada para revertir."
+            reason: t("noPublishedVersion")
           }
         }
       }
@@ -540,6 +544,7 @@ export const duplicateMenu = authActionClient
     })
   )
   .action(async ({ parsedInput: { id } }) => {
+    const t = await getTranslations("errors.actions")
     const proMember = await isProMember()
     const menuCount = await getMenuCount()
 
@@ -547,7 +552,7 @@ export const duplicateMenu = authActionClient
     if (!proMember && menuCount >= menuLimit) {
       return {
         failure: {
-          reason: `Límite de ${menuLimit} menús alcanzado. Actualiza a Pro para crear más.`,
+          reason: t("menuLimitReached", { limit: menuLimit }),
           code: BasicPlanLimits.MENU_LIMIT_REACHED
         }
       }
@@ -561,14 +566,14 @@ export const duplicateMenu = authActionClient
       if (!sourceMenu) {
         return {
           failure: {
-            reason: "Menú no encontrado"
+            reason: t("menuNotFound")
           }
         }
       }
 
       const duplicatedMenu = await prisma.menu.create({
         data: {
-          name: `${sourceMenu.name} (copia)`,
+          name: `${sourceMenu.name} (${t("copySuffix")})`,
           description: sourceMenu.description,
           status: "DRAFT",
           organizationId: sourceMenu.organizationId,

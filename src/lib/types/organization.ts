@@ -7,13 +7,13 @@ export const orgSchema = z.object({
   name: z
     .string({
       error: issue =>
-        issue.input === undefined ? "Nombre es requerido" : undefined
+        issue.input === undefined ? "Name is required" : undefined
     })
     .min(3, {
-      error: "Nombre muy corto"
+      error: "Name is too short"
     })
     .max(100, {
-      error: "Nombre muy largo"
+      error: "Name is too long"
     }),
   description: z.string().optional(),
   logo: z.url().optional(),
@@ -23,21 +23,21 @@ export const orgSchema = z.object({
   subdomain: z
     .string()
     .min(3, {
-      error: "Subdominio muy corto"
+      error: "Subdomain is too short"
     })
     .trim()
     .regex(/^[a-z0-9-]+$/i, {
-      error: "Solo letras, números y guiones son permitidos"
+      error: "Only letters, numbers, and hyphens are allowed"
     })
     .optional(),
   slug: z
     .string()
     .min(3, {
-      error: "Subdominio muy corto"
+      error: "Subdomain is too short"
     })
     .trim()
     .regex(/^[a-z0-9-]+$/i, {
-      error: "Solo letras, números y guiones son permitidos"
+      error: "Only letters, numbers, and hyphens are allowed"
     })
 })
 

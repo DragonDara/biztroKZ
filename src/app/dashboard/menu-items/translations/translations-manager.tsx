@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useMemo, useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
 import {
@@ -11,6 +11,7 @@ import {
   Sparkles,
   Trash2
 } from "lucide-react"
+import { useLocale, useTranslations } from "next-intl"
 import { useOptimisticAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -81,6 +82,9 @@ export default function TranslationsManager({
   availableTranslations: initialTranslations,
   isPro
 }: TranslationsManagerProps) {
+  const t = useTranslations("dashboard.menuItems.translations")
+  const tCommon = useTranslations("dashboard.common")
+  const locale = useLocale()
   const [selectedLocale, setSelectedLocale] = useState<string>("")
   const [dialogOpen, setDialogOpen] = useState(false)
   const [translatingLocale, setTranslatingLocale] = useState<string | null>(
@@ -93,23 +97,23 @@ export default function TranslationsManager({
     translations: AvailableTranslation[]
   }
 
-  const spanishLanguageNames = new Intl.DisplayNames(["es"], {
-    type: "language"
-  })
+  const languageNames = useMemo(
+    () => new Intl.DisplayNames([locale], { type: "language" }),
+    [locale]
+  )
 
   const { guard: guardTranslation, dialog: upgradeDialog } = useProGuard(
     isPro,
     {
-      title: "Actualiza a Pro",
-      description:
-        "La traducción automática de productos está disponible solo en el plan Pro. Actualiza para agregar nuevos idiomas al menú."
+      title: t("upgradeTitle"),
+      description: t("upgradeDescription")
     }
   )
 
-  function getLocaleLabel(locale?: string | null) {
-    if (!locale) return ""
+  function getLocaleLabel(code?: string | null) {
+    if (!code) return ""
 
-    return spanishLanguageNames.of(locale) ?? locale
+    return languageNames.of(code) ?? code
   }
 
   const {
@@ -120,18 +124,18 @@ export default function TranslationsManager({
     currentState: {
       translations: initialTranslations
     },
-    updateFn: (state, { locale }) => {
+    updateFn: (state, { locale: nextLocale }) => {
       const existingTranslation = state.translations.find(
-        translation => translation.locale === locale
+        translation => translation.locale === nextLocale
       )
 
       const nextTranslations = existingTranslation
         ? state.translations.map(translation =>
-            translation.locale === locale
+            translation.locale === nextLocale
               ? { ...translation, count: translation.count }
               : translation
           )
-        : [...state.translations, { locale, count: 0 }]
+        : [...state.translations, { locale: nextLocale, count: 0 }]
 
       return {
         translations: nextTranslations
@@ -150,11 +154,11 @@ export default function TranslationsManager({
         return
       }
 
-      const { locale, count } = response.data?.success ?? {}
-      const localeName = getLocaleLabel(locale)
+      const { locale: successLocale, count } = response.data?.success ?? {}
+      const localeName = getLocaleLabel(successLocale)
 
       toast.success(
-        `${count} producto${count !== 1 ? "s" : ""} traducido${count !== 1 ? "s" : ""} al ${localeName}`
+        t("translateSuccess", { count: count ?? 0, locale: localeName })
       )
       resetTranslate()
       router.refresh()
@@ -164,7 +168,7 @@ export default function TranslationsManager({
     },
     onError: (error: unknown) => {
       Sentry.captureException(error, { tags: { section: "translate-menu" } })
-      toast.error("Error al traducir los productos")
+      toast.error(t("translateError"))
       resetTranslate()
       setTranslatingLocale(null)
     }
@@ -176,10 +180,10 @@ export default function TranslationsManager({
     optimisticState: deleteOptimisticState
   } = useOptimisticAction(deleteMenuTranslation, {
     currentState: translateOptimisticState as TranslationsState,
-    updateFn: (state, { locale }) => {
+    updateFn: (state, { locale: nextLocale }) => {
       return {
         translations: state.translations.filter(
-          translation => translation.locale !== locale
+          translation => translation.locale !== nextLocale
         )
       }
     },
@@ -196,7 +200,7 @@ export default function TranslationsManager({
       }
 
       const localeName = getLocaleLabel(deletingLocale)
-      toast.success(`Traducción al ${localeName} eliminada`)
+      toast.success(t("deleteSuccess", { locale: localeName }))
       resetDelete()
       router.refresh()
       setDeletingLocale(null)
@@ -205,7 +209,7 @@ export default function TranslationsManager({
       Sentry.captureException(error, {
         tags: { section: "delete-translation" }
       })
-      toast.error("Error al eliminar la traducción")
+      toast.error(t("deleteError"))
       resetDelete()
       setDeletingLocale(null)
     }
@@ -213,10 +217,13 @@ export default function TranslationsManager({
 
   const translations = deleteOptimisticState.translations
 
-  const existingLocales = new Set(translations.map(t => t.locale))
+  const existingLocales = new Set(translations.map(item => item.locale))
   const availableToAdd = SUPPORTED_LOCALES.filter(
-    l => !existingLocales.has(l.code)
-  )
+    item => !existingLocales.has(item.code)
+  ).map(item => ({
+    code: item.code,
+    label: getLocaleLabel(item.code)
+  }))
 
   const isTranslating = translatingLocale !== null
   const isDeleting = deletingLocale !== null
@@ -226,9 +233,9 @@ export default function TranslationsManager({
       ? [
           {
             code: selectedLocale,
-            label: `${getLocaleLabel(selectedLocale)} (traduciendo)`
+            label: `${getLocaleLabel(selectedLocale)} ${t("translatingSuffix")}`
           },
-          ...availableToAdd.filter(locale => locale.code !== selectedLocale)
+          ...availableToAdd.filter(item => item.code !== selectedLocale)
         ]
       : availableToAdd
 
@@ -242,11 +249,8 @@ export default function TranslationsManager({
     <div className="flex flex-col gap-10">
       <PageSubtitle>
         <PageSubtitle.Icon icon={Languages} />
-        <PageSubtitle.Title>Traducciones del Menú</PageSubtitle.Title>
-        <PageSubtitle.Description>
-          Genera traducciones de tus productos con IA para mostrar el menú en
-          otros idiomas
-        </PageSubtitle.Description>
+        <PageSubtitle.Title>{t("title")}</PageSubtitle.Title>
+        <PageSubtitle.Description>{t("description")}</PageSubtitle.Description>
         {availableToAdd.length > 0 && (
           <PageSubtitle.Actions>
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -256,14 +260,13 @@ export default function TranslationsManager({
                 onClick={() => guardTranslation(() => setDialogOpen(true))}
               >
                 <PlusCircle className="size-4" />
-                Agregar idioma
+                {t("addLanguage")}
               </Button>
               <DialogContent className="sm:max-w-sm">
                 <DialogHeader>
-                  <DialogTitle>Traducir menú con IA</DialogTitle>
+                  <DialogTitle>{t("dialogTitle")}</DialogTitle>
                   <DialogDescription>
-                    Selecciona el idioma al que quieres traducir todos los
-                    productos activos de tu menú.
+                    {t("dialogDescription")}
                   </DialogDescription>
                 </DialogHeader>
                 <div className="py-2">
@@ -276,17 +279,17 @@ export default function TranslationsManager({
                       <SelectValue
                         placeholder={
                           isTranslating && selectedLocale
-                            ? `${getLocaleLabel(selectedLocale)} (traduciendo)`
-                            : "Selecciona un idioma"
+                            ? `${getLocaleLabel(selectedLocale)} ${t("translatingSuffix")}`
+                            : t("selectLanguage")
                         }
                       />
                     </SelectTrigger>
                     <SelectContent>
-                      {translateSelectLocales.map(locale => (
-                        <SelectItem key={locale.code} value={locale.code}>
+                      {translateSelectLocales.map(item => (
+                        <SelectItem key={item.code} value={item.code}>
                           <span className="flex items-center gap-2">
-                            <LanguageFlag locale={locale.code} />
-                            <span>{locale.label}</span>
+                            <LanguageFlag locale={item.code} />
+                            <span>{item.label}</span>
                           </span>
                         </SelectItem>
                       ))}
@@ -302,7 +305,7 @@ export default function TranslationsManager({
                     }}
                     disabled={isTranslating}
                   >
-                    Cancelar
+                    {tCommon("cancel")}
                   </Button>
                   <Button
                     onClick={handleTranslate}
@@ -314,7 +317,7 @@ export default function TranslationsManager({
                       <Sparkles className="size-4 fill-current" />
                     )}
                     <TextMorph>
-                      {isTranslating ? "Traduciendo..." : "Traducir con IA"}
+                      {isTranslating ? t("translating") : t("translateWithAi")}
                     </TextMorph>
                   </Button>
                 </DialogFooter>
@@ -334,21 +337,18 @@ export default function TranslationsManager({
             icon={CircleFadingArrowUp}
             className="border-white/20 bg-white/10 text-white"
           />
-          <BannerTitle>
-            La traducción automática de productos requiere el plan Pro.
-            Actualiza para agregar idiomas al menú.
-          </BannerTitle>
+          <BannerTitle>{t("bannerTitle")}</BannerTitle>
           <BannerAction
             asChild
             className="border-white/20 bg-white/10 text-white hover:bg-white/20
               hover:text-white"
           >
             <Link href="/dashboard/settings/billing" prefetch={false}>
-              Actualizar a Pro
+              {t("upgradeCta")}
             </Link>
           </BannerAction>
           <BannerClose
-            aria-label="Cerrar aviso"
+            aria-label={t("closeBanner")}
             className="text-white hover:bg-white/20 hover:text-white"
           />
         </Banner>
@@ -358,12 +358,9 @@ export default function TranslationsManager({
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-1">
             <h2 className="text-base leading-5 font-semibold">
-              Idiomas disponibles
+              {t("availableLanguages")}
             </h2>
-            <InfoHelper>
-              Las traducciones están disponibles en el menú público. Los
-              visitantes podrán cambiar el idioma desde el selector de idiomas.
-            </InfoHelper>
+            <InfoHelper>{t("availableLanguagesInfo")}</InfoHelper>
           </div>
         </div>
 
@@ -373,29 +370,23 @@ export default function TranslationsManager({
               <EmptyMedia variant="icon">
                 <Languages />
               </EmptyMedia>
-              <EmptyTitle>Empieza con un idioma</EmptyTitle>
-              <EmptyDescription>
-                No hay traducciones disponibles. Agrega un idioma para empezar.
-              </EmptyDescription>
+              <EmptyTitle>{t("emptyTitle")}</EmptyTitle>
+              <EmptyDescription>{t("emptyDescription")}</EmptyDescription>
             </EmptyHeader>
           </Empty>
         ) : (
           <ItemGroup className="gap-4">
             {translations.map(translation => {
-              const localeInfo = SUPPORTED_LOCALES.find(
-                l => l.code === translation.locale
-              )
+              const localeLabel = getLocaleLabel(translation.locale)
               return (
                 <Item key={translation.locale} variant="outline">
                   <ItemContent>
                     <ItemTitle>
                       <LanguageFlag locale={translation.locale} />
-                      {localeInfo?.label ?? translation.locale}
+                      {localeLabel}
                     </ItemTitle>
                     <ItemDescription>
-                      {translation.count} producto
-                      {translation.count !== 1 ? "s" : ""} traducido
-                      {translation.count !== 1 ? "s" : ""}
+                      {t("productCount", { count: translation.count })}
                     </ItemDescription>
                   </ItemContent>
                   <ItemActions>
@@ -416,7 +407,7 @@ export default function TranslationsManager({
                       ) : (
                         <Sparkles className="size-4 fill-current" />
                       )}
-                      Actualizar
+                      {t("update")}
                     </Button>
                     <Button
                       variant="ghost"
@@ -426,7 +417,7 @@ export default function TranslationsManager({
                         setDeletingLocale(translation.locale)
                         executeDelete({ locale: translation.locale })
                       }}
-                      aria-label={`Eliminar traducción al ${localeInfo?.label ?? translation.locale}`}
+                      aria-label={t("deleteAria", { locale: localeLabel })}
                     >
                       {deletingLocale === translation.locale ? (
                         <Loader className="size-4 animate-spin" />

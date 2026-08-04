@@ -1,6 +1,6 @@
 import { defineRouting } from "next-intl/routing"
 
-export const locales = ["en", "es", "ru"] as const
+export const locales = ["ru", "en", "es"] as const
 
 export type AppLocale = (typeof locales)[number]
 
@@ -16,7 +16,7 @@ export function isAppLocalePath(pathname: string) {
 
 export const routing = defineRouting({
   locales,
-  defaultLocale: "en",
+  defaultLocale: "ru",
   localePrefix: "never",
   localeCookie: {
     name: "NEXT_LOCALE",

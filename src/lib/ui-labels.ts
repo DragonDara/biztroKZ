@@ -1,7 +1,7 @@
 /**
  * Static UI label translations for the public menu.
  * Keys are English identifiers; values are translated strings per locale.
- * Spanish (es) is the default/fallback language.
+ * Russian (ru) is the default/fallback language.
  */
 
 export type UILabelKey =
@@ -39,6 +39,8 @@ export type UILabelKey =
   | "from"
   | "link_copied"
   | "link_copy_error"
+  | "view_hours"
+  | "open_in_maps"
 
 type UILabels = Record<UILabelKey, string>
 
@@ -73,7 +75,9 @@ const labels: Record<string, UILabels> = {
       "Intenta con otro nombre o una palabra de la descripción.",
     from: "Desde",
     link_copied: "Enlace copiado",
-    link_copy_error: "No se pudo copiar el enlace"
+    link_copy_error: "No se pudo copiar el enlace",
+    view_hours: "Ver horario",
+    open_in_maps: "Abrir dirección en Google Maps"
   },
   en: {
     information: "Information",
@@ -104,7 +108,9 @@ const labels: Record<string, UILabels> = {
     no_results_description: "Try another name or a word from the description.",
     from: "From",
     link_copied: "Link copied",
-    link_copy_error: "Could not copy link"
+    link_copy_error: "Could not copy link",
+    view_hours: "View hours",
+    open_in_maps: "Open address in Google Maps"
   },
   fr: {
     information: "Informations",
@@ -135,7 +141,9 @@ const labels: Record<string, UILabels> = {
     no_results_description: "Essayez un autre nom ou un mot de la description.",
     from: "À partir de",
     link_copied: "Lien copié",
-    link_copy_error: "Impossible de copier le lien"
+    link_copy_error: "Impossible de copier le lien",
+    view_hours: "Voir les horaires",
+    open_in_maps: "Ouvrir l'adresse dans Google Maps"
   },
   de: {
     information: "Informationen",
@@ -167,7 +175,9 @@ const labels: Record<string, UILabels> = {
       "Versuche einen anderen Namen oder ein Wort aus der Beschreibung.",
     from: "Ab",
     link_copied: "Link kopiert",
-    link_copy_error: "Link konnte nicht kopiert werden"
+    link_copy_error: "Link konnte nicht kopiert werden",
+    view_hours: "Öffnungszeiten anzeigen",
+    open_in_maps: "Adresse in Google Maps öffnen"
   },
   pt: {
     information: "Informações",
@@ -198,7 +208,9 @@ const labels: Record<string, UILabels> = {
     no_results_description: "Tente outro nome ou uma palavra da descrição.",
     from: "A partir de",
     link_copied: "Link copiado",
-    link_copy_error: "Não foi possível copiar o link"
+    link_copy_error: "Não foi possível copiar o link",
+    view_hours: "Ver horário",
+    open_in_maps: "Abrir endereço no Google Maps"
   },
   it: {
     information: "Informazioni",
@@ -230,7 +242,9 @@ const labels: Record<string, UILabels> = {
       "Prova un altro nome o una parola dalla descrizione.",
     from: "Da",
     link_copied: "Link copiato",
-    link_copy_error: "Impossibile copiare il link"
+    link_copy_error: "Impossibile copiare il link",
+    view_hours: "Vedi orari",
+    open_in_maps: "Apri indirizzo in Google Maps"
   },
   ja: {
     information: "情報",
@@ -261,7 +275,9 @@ const labels: Record<string, UILabels> = {
     no_results_description: "別の名前か説明の単語で試してください。",
     from: "から",
     link_copied: "リンクをコピーしました",
-    link_copy_error: "リンクをコピーできませんでした"
+    link_copy_error: "リンクをコピーできませんでした",
+    view_hours: "営業時間を見る",
+    open_in_maps: "Google Mapsで住所を開く"
   },
   zh: {
     information: "信息",
@@ -292,7 +308,9 @@ const labels: Record<string, UILabels> = {
     no_results_description: "请尝试其他名称或描述中的词语。",
     from: "起价",
     link_copied: "链接已复制",
-    link_copy_error: "无法复制链接"
+    link_copy_error: "无法复制链接",
+    view_hours: "查看营业时间",
+    open_in_maps: "在 Google 地图中打开地址"
   },
   ru: {
     information: "Информация",
@@ -323,18 +341,20 @@ const labels: Record<string, UILabels> = {
     no_results_description: "Попробуйте другое название или слово из описания.",
     from: "От",
     link_copied: "Ссылка скопирована",
-    link_copy_error: "Не удалось скопировать ссылку"
+    link_copy_error: "Не удалось скопировать ссылку",
+    view_hours: "Показать часы работы",
+    open_in_maps: "Открыть адрес в Google Maps"
   }
 }
 
 /**
  * Returns a translation function for the given locale.
- * Falls back to Spanish when the key is missing or locale is null.
+ * Falls back to Russian when the key is missing or locale is null.
  */
 export function getUILabels(locale: string | null) {
-  const dict = (locale && labels[locale]) || labels.es!
+  const dict = (locale && labels[locale]) || labels.ru!
   return function t(key: UILabelKey, vars?: Record<string, string>): string {
-    let str = dict[key] ?? labels.es![key] ?? key
+    let str = dict[key] ?? labels.ru![key] ?? key
     if (vars) {
       for (const [k, v] of Object.entries(vars)) {
         str = str.replace(`{${k}}`, v)

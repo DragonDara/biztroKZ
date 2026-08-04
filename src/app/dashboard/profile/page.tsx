@@ -1,4 +1,5 @@
 import { UserRound } from "lucide-react"
+import { getTranslations } from "next-intl/server"
 import { notFound } from "next/navigation"
 import { type Metadata } from "next/types"
 
@@ -20,11 +21,17 @@ import {
 import { MembershipRole } from "@/lib/types/organization"
 import { getInitials } from "@/lib/utils"
 
-export const metadata: Metadata = {
-  title: "Mi Perfil"
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("dashboard.profile")
+
+  return {
+    title: t("metaTitle")
+  }
 }
 
 export default async function ProfilePage() {
+  const t = await getTranslations("dashboard.profile")
+
   const [organization, membership] = await Promise.all([
     getCurrentOrganization(),
     getCurrentMembership()
@@ -35,11 +42,11 @@ export default async function ProfilePage() {
   const roleLabel = (() => {
     switch (membership?.role) {
       case MembershipRole.ADMIN:
-        return "Administrador"
+        return t("roleAdmin")
       case MembershipRole.MEMBER:
-        return "Miembro"
+        return t("roleMember")
       case MembershipRole.OWNER:
-        return "Propietario"
+        return t("roleOwner")
       default:
         return ""
     }
@@ -47,13 +54,13 @@ export default async function ProfilePage() {
 
   return (
     <>
-      <PageHeader title="Mi Perfil" />
+      <PageHeader title={t("title")} />
       <div className="flex grow py-4">
         <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
           <PageSubtitle>
-            <PageSubtitle.Title>Datos generales</PageSubtitle.Title>
+            <PageSubtitle.Title>{t("generalTitle")}</PageSubtitle.Title>
             <PageSubtitle.Description>
-              Información general sobre mi cuenta
+              {t("generalDescription")}
             </PageSubtitle.Description>
           </PageSubtitle>
           <div
@@ -90,9 +97,9 @@ export default async function ProfilePage() {
           </div>
           <div>
             <PageSubtitle>
-              <PageSubtitle.Title>Membresía actual</PageSubtitle.Title>
+              <PageSubtitle.Title>{t("membershipTitle")}</PageSubtitle.Title>
               <PageSubtitle.Description>
-                Información sobre tu membresía actual
+                {t("membershipDescription")}
               </PageSubtitle.Description>
             </PageSubtitle>
             <div className="mt-6">
@@ -103,13 +110,13 @@ export default async function ProfilePage() {
                     dark:border-gray-800"
                 >
                   <div>
-                    <Label>Organización</Label>
+                    <Label>{t("organization")}</Label>
                     <h4 className="text-gray-500">
                       {organization?.name || "N/A"}
                     </h4>
                   </div>
                   <div>
-                    <Label>Rol</Label>
+                    <Label>{t("role")}</Label>
                     <p className="text-gray-500">{roleLabel}</p>
                   </div>
                 </div>
@@ -119,13 +126,8 @@ export default async function ProfilePage() {
                     <EmptyMedia variant="icon">
                       <UserRound className="size-5" />
                     </EmptyMedia>
-                    <EmptyTitle>
-                      No tienes membresía en ninguna organización
-                    </EmptyTitle>
-                    <EmptyDescription>
-                      Pide acceso a una organización para ver tu perfil
-                      completo.
-                    </EmptyDescription>
+                    <EmptyTitle>{t("emptyTitle")}</EmptyTitle>
+                    <EmptyDescription>{t("emptyDescription")}</EmptyDescription>
                   </EmptyHeader>
                 </Empty>
               )}

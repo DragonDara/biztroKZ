@@ -10,7 +10,7 @@ export function createImportNameAllocator(existingNames: Iterable<string>) {
 
     while (usedNames.has(candidateName.toLowerCase())) {
       candidateName =
-        suffix === 1 ? `${baseName} (copia)` : `${baseName} (copia ${suffix})`
+        suffix === 1 ? `${baseName} (copy)` : `${baseName} (copy ${suffix})`
       suffix += 1
     }
 

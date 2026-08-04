@@ -1,6 +1,7 @@
 "use server"
 
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
+import { getTranslations } from "next-intl/server"
 import { revalidateTag } from "next/cache"
 import { z } from "zod/v4"
 
@@ -25,12 +26,13 @@ export const deleteMediaAsset = authMemberActionClient
     })
   )
   .action(async ({ parsedInput: { assetId }, ctx: { member } }) => {
+    const t = await getTranslations("errors.actions")
     const organizationId = member.organizationId
 
     if (!organizationId) {
       return {
         failure: {
-          reason: "No se pudo obtener la organización actual"
+          reason: t("noCurrentOrg")
         }
       }
     }
@@ -49,7 +51,7 @@ export const deleteMediaAsset = authMemberActionClient
     if (!asset) {
       return {
         failure: {
-          reason: "Recurso multimedia no encontrado"
+          reason: t("mediaNotFound")
         }
       }
     }
@@ -58,8 +60,7 @@ export const deleteMediaAsset = authMemberActionClient
     if (asset.usages.length > 0) {
       return {
         failure: {
-          reason:
-            "No se puede eliminar un recurso multimedia que está en uso. Por favor, elimínelo de todas las ubicaciones primero."
+          reason: t("mediaInUse")
         }
       }
     }

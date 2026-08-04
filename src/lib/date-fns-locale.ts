@@ -11,5 +11,5 @@ export function getDateFnsLocale(locale: string): Locale {
   if (locale in locales) {
     return locales[locale as AppLocale]
   }
-  return enUS
+  return ru
 }

@@ -4,6 +4,7 @@ import { useState } from "react"
 import { type Location } from "@/generated/prisma-client/client"
 import { type Body, type Meta, type UploadResult } from "@uppy/core"
 import { ArrowLeft, ArrowRight } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useRouter } from "next/navigation"
 
 import { EmptyImageField } from "@/components/dashboard/empty-image-field"
@@ -78,41 +79,6 @@ const CREATION_STEP_ORDER: StepKey[] = [
 
 const DEFAULT_STEP_ORDER: StepKey[] = ["logo", "location", "hours", "menu"]
 
-const STEP_DETAILS: Record<
-  StepKey,
-  {
-    value: StepKey
-    title: string
-    description: string
-  }
-> = {
-  organization: {
-    value: "organization",
-    title: "Negocio",
-    description: "Crea tu organización"
-  },
-  logo: {
-    value: "logo",
-    title: "Imágenes",
-    description: "Sube tu logo y tu portada"
-  },
-  location: {
-    value: "location",
-    title: "Sucursal",
-    description: "Agrega tu primera ubicación"
-  },
-  hours: {
-    value: "hours",
-    title: "Horarios",
-    description: "Configura tus horarios de atención"
-  },
-  menu: {
-    value: "menu",
-    title: "Productos",
-    description: "Importa tus primeros productos"
-  }
-}
-
 function getReachableSteps(
   activeStep: StepKey,
   stepOrder: StepKey[]
@@ -171,11 +137,42 @@ export default function OnboardingWizard({
   menuItemsReady: boolean
   showOrganizationStep?: boolean
 }) {
+  const t = useTranslations("auth.onboarding")
   const router = useRouter()
   const stepOrder = showOrganizationStep
     ? CREATION_STEP_ORDER
     : DEFAULT_STEP_ORDER
-  const steps = CREATION_STEP_ORDER.map(step => STEP_DETAILS[step])
+  const stepDetails: Record<
+    StepKey,
+    { value: StepKey; title: string; description: string }
+  > = {
+    organization: {
+      value: "organization",
+      title: t("steps.organization.title"),
+      description: t("steps.organization.description")
+    },
+    logo: {
+      value: "logo",
+      title: t("steps.logo.title"),
+      description: t("steps.logo.description")
+    },
+    location: {
+      value: "location",
+      title: t("steps.location.title"),
+      description: t("steps.location.description")
+    },
+    hours: {
+      value: "hours",
+      title: t("steps.hours.title"),
+      description: t("steps.hours.description")
+    },
+    menu: {
+      value: "menu",
+      title: t("steps.menu.title"),
+      description: t("steps.menu.description")
+    }
+  }
+  const steps = CREATION_STEP_ORDER.map(step => stepDetails[step])
   const [activeStep, setActiveStep] = useState<StepKey>(initialStep)
   const [createdOrganization, setCreatedOrganization] =
     useState<SetupOrganization | null>(null)
@@ -330,12 +327,12 @@ export default function OnboardingWizard({
         <StepperContent value="organization">
           {showOrganizationStep ? (
             <StepShell
-              title="Crea tu negocio"
-              description="Empieza con el nombre y los datos básicos de tu negocio para seguir con la configuración."
+              title={t("organizationStep.title")}
+              description={t("organizationStep.description")}
             >
               <NewOrgForm
                 withCard={false}
-                submitLabel="Crear negocio y continuar"
+                submitLabel={t("organizationStep.submitLabel")}
                 onSuccess={handleOrganizationCreated}
               />
             </StepShell>
@@ -344,8 +341,8 @@ export default function OnboardingWizard({
 
         <StepperContent value="logo">
           <StepShell
-            title="Logo y portada"
-            description="Sube tu logo y una portada para tu sitio. Si todavía no los tienes, puedes seguir más tarde."
+            title={t("logoStep.title")}
+            description={t("logoStep.description")}
           >
             {currentOrganization ? (
               <div className="space-y-6">
@@ -368,8 +365,8 @@ export default function OnboardingWizard({
                       </p>
                       <p className="text-muted-foreground text-sm text-pretty">
                         {hasUploadedMedia
-                          ? "Ya cargaste recursos visuales. Puedes reemplazarlos o seguir adelante."
-                          : "Recomendado: logo de 500×500 y portada de 1200×800, en JPG o PNG."}
+                          ? t("logoStep.uploadedHint")
+                          : t("logoStep.recommendedHint")}
                       </p>
                     </div>
                     <Dialog
@@ -378,12 +375,16 @@ export default function OnboardingWizard({
                     >
                       <DialogTrigger asChild>
                         <Button type="button" variant="outline">
-                          {hasLogo ? "Cambiar logo" : "Subir logo"}
+                          {hasLogo
+                            ? t("logoStep.changeLogo")
+                            : t("logoStep.uploadLogo")}
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="max-w-xl">
                         <DialogHeader>
-                          <DialogTitle>Subir imagen</DialogTitle>
+                          <DialogTitle>
+                            {t("logoStep.uploadImageTitle")}
+                          </DialogTitle>
                         </DialogHeader>
                         <FileUploader
                           organizationId={currentOrganization.id}
@@ -399,11 +400,10 @@ export default function OnboardingWizard({
                 <div className="space-y-3">
                   <div className="space-y-1">
                     <p className="font-medium text-balance">
-                      Imagen de portada
+                      {t("logoStep.coverImageTitle")}
                     </p>
                     <p className="text-muted-foreground text-sm text-pretty">
-                      Se mostrará en la parte principal de tu sitio.
-                      Recomendado: 1200×800 en JPG o PNG.
+                      {t("logoStep.coverImageHint")}
                     </p>
                   </div>
                   {currentOrganization.banner ? (
@@ -430,14 +430,14 @@ export default function OnboardingWizard({
                       variant="outline"
                       onClick={handleLogoContinue}
                     >
-                      Omitir por ahora
+                      {t("skipForNow")}
                     </Button>
                     <Button
                       type="button"
                       disabled={!hasUploadedMedia}
                       onClick={handleLogoContinue}
                     >
-                      Continuar
+                      {t("continue")}
                       <ArrowRight className="ml-2 size-4" />
                     </Button>
                   </div>
@@ -445,7 +445,7 @@ export default function OnboardingWizard({
               </div>
             ) : (
               <p className="text-muted-foreground text-sm text-pretty">
-                Primero crea tu negocio para poder subir el logo.
+                {t("logoStep.createBusinessFirst")}
               </p>
             )}
           </StepShell>
@@ -453,14 +453,16 @@ export default function OnboardingWizard({
 
         <StepperContent value="location">
           <StepShell
-            title="Tu primera sucursal"
-            description="Agrega una ubicación principal. Podrás editarla más tarde desde configuración."
+            title={t("locationStep.title")}
+            description={t("locationStep.description")}
           >
             <LocationForm
               data={location}
               enabled
               submitLabel={
-                location ? "Guardar cambios y continuar" : "Guardar y continuar"
+                location
+                  ? t("locationStep.saveChangesContinue")
+                  : t("locationStep.saveContinue")
               }
               onSuccess={handleLocationSaved}
               secondaryAction={
@@ -469,7 +471,7 @@ export default function OnboardingWizard({
                   variant="outline"
                   onClick={handleLocationSkip}
                 >
-                  Omitir por ahora
+                  {t("skipForNow")}
                 </Button>
               }
             />
@@ -478,14 +480,14 @@ export default function OnboardingWizard({
 
         <StepperContent value="hours">
           <StepShell
-            title="Horarios de atención"
-            description="Configura cuándo abres. Si todavía no estás listo, puedes hacerlo después."
+            title={t("hoursStep.title")}
+            description={t("hoursStep.description")}
           >
             {location ? (
               <HoursForm
                 data={hoursData}
                 locationId={location.id}
-                submitLabel="Guardar y continuar"
+                submitLabel={t("hoursStep.saveContinue")}
                 onSuccess={handleHoursSaved}
                 secondaryAction={
                   <Button
@@ -493,7 +495,7 @@ export default function OnboardingWizard({
                     variant="outline"
                     onClick={handleFinishHoursStep}
                   >
-                    Omitir por ahora
+                    {t("skipForNow")}
                   </Button>
                 }
               />
@@ -503,9 +505,7 @@ export default function OnboardingWizard({
                   border border-dashed p-6"
               >
                 <p className="text-muted-foreground text-sm text-pretty">
-                  Sin una sucursal no puedes guardar horarios todavía. Puedes
-                  seguir con la importación de productos y completar esto
-                  después desde configuración.
+                  {t("hoursStep.noLocationHint")}
                 </p>
                 <div
                   className="flex flex-col gap-2 sm:flex-row sm:justify-between"
@@ -516,10 +516,10 @@ export default function OnboardingWizard({
                     onClick={() => moveToStep("location")}
                   >
                     <ArrowLeft className="mr-2 size-4" />
-                    Regresar
+                    {t("back")}
                   </Button>
                   <Button type="button" onClick={handleFinishHoursStep}>
-                    Continuar con productos
+                    {t("hoursStep.continueToProducts")}
                     <ArrowRight className="ml-2 size-4" />
                   </Button>
                 </div>
@@ -530,8 +530,8 @@ export default function OnboardingWizard({
 
         <StepperContent value="menu">
           <StepShell
-            title="Importa tus productos"
-            description="Puedes subir un CSV aquí mismo o usar la importación con IA para extraer tus productos desde un PDF o una imagen."
+            title={t("menuStep.title")}
+            description={t("menuStep.description")}
           >
             <MenuImportOptions
               aiImportHref={menuImportHref}
@@ -547,10 +547,10 @@ export default function OnboardingWizard({
                 onClick={() => moveToStep(location ? "hours" : "location")}
               >
                 <ArrowLeft className="mr-2 size-4" />
-                Regresar
+                {t("back")}
               </Button>
               <Button type="button" variant="outline" onClick={goToDashboard}>
-                Omitir por ahora
+                {t("skipForNow")}
               </Button>
             </div>
           </StepShell>

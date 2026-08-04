@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, type ReactNode } from "react"
 import { useQuery } from "@tanstack/react-query"
+import { useLocale } from "next-intl"
 import { parseAsString, useQueryState } from "nuqs"
 
 import { getUILabels, type UILabelKey } from "@/lib/ui-labels"
@@ -48,6 +49,7 @@ export function TranslationProvider({
   subdomain,
   availableLocales
 }: TranslationProviderProps) {
+  const appLocale = useLocale()
   const [locale, setLocaleParam] = useQueryState(
     "lang",
     parseAsString.withDefault("")
@@ -111,9 +113,9 @@ export function TranslationProvider({
 
   const t = useCallback(
     (key: UILabelKey, vars?: Record<string, string>) => {
-      return getUILabels(activeLocale)(key, vars)
+      return getUILabels(activeLocale ?? appLocale)(key, vars)
     },
-    [activeLocale]
+    [activeLocale, appLocale]
   )
 
   return (

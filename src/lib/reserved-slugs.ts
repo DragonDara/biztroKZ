@@ -7,6 +7,7 @@ export const reservedAppSlugs = new Set<string>([
   "auth-error",
   "blog",
   "dashboard",
+  "go",
   "ingest",
   "invite",
   "login",

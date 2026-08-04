@@ -9,6 +9,7 @@ import {
   Phone,
   ShoppingBag
 } from "lucide-react"
+import { useLocale } from "next-intl"
 
 import { useTranslation } from "@/components/menu-editor/translation-provider"
 import {
@@ -62,7 +63,8 @@ export default function LocationData({
   const [isDialogOpen, setIsDialogOpen] = React.useState(false)
   const [currentDate, setCurrentDate] = React.useState<Date | null>(null)
   const translation = useTranslation()
-  const locale = translation?.locale ?? null
+  const appLocale = useLocale()
+  const locale = translation?.locale ?? appLocale
   const t = translation?.t ?? getUILabels(locale)
 
   const DAY_LABELS = React.useMemo<Record<string, string>>(
@@ -119,7 +121,7 @@ export default function LocationData({
       }
       className="flex flex-row items-center gap-1 rounded-full border-[0.5px]
         border-white/50 bg-white/20 px-1 py-0.5 backdrop-blur-md"
-      aria-label="Ver horario"
+      aria-label={t("view_hours")}
     >
       <div className="dark">
         {isOpenNow ? (
@@ -187,7 +189,7 @@ export default function LocationData({
                 )}
               >
                 {day.allDay
-                  ? `${getFormattedTime(day.startTime)} - ${getFormattedTime(day.endTime)}`
+                  ? `${getFormattedTime(day.startTime, locale)} - ${getFormattedTime(day.endTime, locale)}`
                   : t("closed")}
               </span>
             </div>
@@ -259,7 +261,7 @@ export default function LocationData({
           target="_blank"
           rel="noopener noreferrer"
           className="underline"
-          aria-label="Abrir dirección en Google Maps"
+          aria-label={t("open_in_maps")}
         >
           <ExternalLink className="size-5" />
         </a>

@@ -1,5 +1,6 @@
 import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner"
+import { getTranslations } from "next-intl/server"
 import { revalidateTag } from "next/cache"
 import { headers } from "next/headers"
 import { NextResponse, type NextRequest } from "next/server"
@@ -162,8 +163,9 @@ export async function POST(req: NextRequest) {
       })
 
       if (assetCount >= appConfig.mediaLimit) {
+        const t = await getTranslations("errors.actions")
         return new NextResponse(
-          `Límite de medios alcanzado. El nivel gratuito está limitado a ${appConfig.mediaLimit} imágenes.`,
+          t("mediaLimitReached", { limit: appConfig.mediaLimit }),
           {
             status: 403,
             headers: corsHeaders

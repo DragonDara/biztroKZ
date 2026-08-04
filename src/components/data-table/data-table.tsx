@@ -8,6 +8,7 @@ import {
   type Table as TanStackTable
 } from "@tanstack/react-table"
 import { SearchX } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import {
   Empty,
@@ -47,6 +48,7 @@ export function DataTable<TData, TValue>({
   setGlobalFilter,
   floatinToolbar
 }: DataTableProps<TData, TValue>) {
+  const t = useTranslations("dashboard.dataTable")
   const isMobile = useIsMobile()
 
   useEffect(() => {
@@ -74,7 +76,7 @@ export function DataTable<TData, TValue>({
           sm:justify-between"
       >
         <Input
-          placeholder="Buscar en resultados"
+          placeholder={t("searchPlaceholder")}
           value={globalFilter}
           onChange={e => setGlobalFilter(e.target.value)}
           className="h-8 w-50"
@@ -134,7 +136,7 @@ export function DataTable<TData, TValue>({
                       <EmptyMedia variant="icon">
                         <SearchX className="size-5" />
                       </EmptyMedia>
-                      <EmptyTitle>No se encontraron datos</EmptyTitle>
+                      <EmptyTitle>{t("noData")}</EmptyTitle>
                     </EmptyHeader>
                   </Empty>
                 </TableCell>

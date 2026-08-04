@@ -2,6 +2,7 @@
 
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 
@@ -26,6 +27,7 @@ type InviteData =
     : Awaited<ReturnType<typeof getInviteByToken>>
 
 export default function AcceptInviteCard({ invite }: { invite: InviteData }) {
+  const t = useTranslations("auth.invite")
   const { data: session, isPending } = authClient.useSession()
   const router = useRouter()
 
@@ -37,7 +39,7 @@ export default function AcceptInviteCard({ invite }: { invite: InviteData }) {
           level: "error",
           tags: { section: "invite-accept" }
         })
-        toast.error("Falló la aceptación de la invitación")
+        toast.error(t("acceptError"))
       } else if (data?.success) {
         router.push("/dashboard")
       }
@@ -59,14 +61,13 @@ export default function AcceptInviteCard({ invite }: { invite: InviteData }) {
           {isPending || !session ? (
             <Skeleton className="h-6 w-3/4" />
           ) : (
-            <>
-              Hola{session?.user.name ? ` ${session.user.name},` : ","} has sido
-              invitado a unirte al equipo de{" "}
-              <span className="text-orange-600">
-                {invite?.organizationName}
-              </span>
-              .
-            </>
+            t.rich("greeting", {
+              name: session?.user.name ? ` ${session.user.name}` : "",
+              org: invite?.organizationName ?? "",
+              orgName: chunks => (
+                <span className="text-orange-600">{chunks}</span>
+              )
+            })
           )}
         </CardTitle>
       </CardHeader>
@@ -93,12 +94,10 @@ export default function AcceptInviteCard({ invite }: { invite: InviteData }) {
                   </AvatarFallback>
                 </Avatar>
                 <span className="text-sm font-medium">
-                  Firmado con {session?.user.email}
+                  {t("signedInAs", { email: session?.user.email ?? "" })}
                 </span>
               </div>
-              <p className="text-sm">
-                Da clic en el botón de abajo para aceptar la invitación.
-              </p>
+              <p className="text-sm">{t("acceptHint")}</p>
             </div>
             <form>
               <div className="mt-4">
@@ -108,7 +107,7 @@ export default function AcceptInviteCard({ invite }: { invite: InviteData }) {
                   onClick={() => handleAccept(invite?.id)}
                   disabled={status === "executing" || isPending}
                 >
-                  Aceptar invitación
+                  {t("acceptButton")}
                 </Button>
               </div>
             </form>
@@ -117,7 +116,7 @@ export default function AcceptInviteCard({ invite }: { invite: InviteData }) {
       </CardContent>
       <CardFooter>
         <p className="text-sm text-gray-600 dark:text-gray-400">
-          Al aceptar la invitación, aceptas los términos y condiciones.
+          {t("termsNotice")}
         </p>
       </CardFooter>
     </Card>

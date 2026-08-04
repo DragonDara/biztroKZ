@@ -164,7 +164,10 @@
         "p2": "Клиентам достаточно отсканировать код камерой телефона, чтобы мгновенно открыть меню.",
         "p2Highlight": "Ту же ссылку можно разместить в соцсетях",
         "p2Suffix": "или на сайте.",
-        "p3": "Меню адаптируется под телефоны и планшеты, читается легко и не требует установки приложения."
+        "p3": "Меню адаптируется под телефоны и планшеты, читается легко и не требует установки приложения.",
+        "scanPrefix": "Отсканируйте или",
+        "openExample": "откройте пример",
+        "qrAlt": "Пример QR-кода"
       }
     },
     "aiFeatures": {
@@ -198,7 +201,7 @@
         "cta": "Смотреть редактор"
       },
       "qr": {
-        "name": "QR и ссылка для sharing",
+        "name": "QR и ссылка, чтобы поделиться меню",
         "description": "Клиенты открывают меню с телефона по QR-коду или ссылке — без установки приложения.",
         "cta": "Смотреть пример"
       },
@@ -212,6 +215,11 @@
       "terms": "Условия",
       "privacy": "Конфиденциальность",
       "logoAlt": "Логотип"
+    },
+    "blog": {
+      "waitlistTitle": "Хотите участвовать в нашей бета-программе?",
+      "waitlistDescription": "Присоединяйтесь к списку ожидания, чтобы получить приглашение",
+      "authorAvatarAlt": "Фото профиля {author}"
     }
   },
   "auth": {
@@ -222,6 +230,101 @@
       "subtitle": "Войдите в аккаунт Biztro",
       "continueWith": "Продолжить с {provider}",
       "error": "Произошла ошибка при входе. Пожалуйста, попробуйте позже."
+    },
+    "onboarding": {
+      "metaTitle": "Создать новый бизнес",
+      "metaDescription": "Настройте новую организацию для вашего бизнеса",
+      "createOrgTitle": "Создать организацию",
+      "createOrgDescription": "Создайте и настройте бизнес в Biztro",
+      "createOrgSubtitle": "Основные данные бизнеса",
+      "welcomeTitle": "Добро пожаловать в Biztro",
+      "welcomeDescription": "Пройдите настройку шаг за шагом. Вы можете пропустить любой этап и вернуться позже из панели управления.",
+      "back": "Назад",
+      "skipForNow": "Пропустить пока",
+      "continue": "Продолжить",
+      "steps": {
+        "organization": {
+          "title": "Бизнес",
+          "description": "Создайте вашу организацию"
+        },
+        "logo": {
+          "title": "Изображения",
+          "description": "Загрузите логотип и обложку"
+        },
+        "location": {
+          "title": "Локация",
+          "description": "Добавьте первую точку"
+        },
+        "hours": {
+          "title": "Часы работы",
+          "description": "Настройте часы работы"
+        },
+        "menu": {
+          "title": "Товары",
+          "description": "Импортируйте первые товары"
+        }
+      },
+      "organizationStep": {
+        "title": "Создайте свой бизнес",
+        "description": "Начните с названия и основных данных вашего бизнеса, чтобы продолжить настройку.",
+        "submitLabel": "Создать бизнес и продолжить"
+      },
+      "logoStep": {
+        "title": "Логотип и обложка",
+        "description": "Загрузите логотип и обложку для вашего сайта. Если у вас их пока нет, можно продолжить позже.",
+        "uploadedHint": "Вы уже загрузили изображения. Вы можете заменить их или продолжить.",
+        "recommendedHint": "Рекомендуется: логотип 500×500 и обложка 1200×800 в формате JPG или PNG.",
+        "changeLogo": "Изменить логотип",
+        "uploadLogo": "Загрузить логотип",
+        "uploadImageTitle": "Загрузить изображение",
+        "coverImageTitle": "Обложка",
+        "coverImageHint": "Отображается на главной странице вашего сайта. Рекомендуется: 1200×800 в формате JPG или PNG.",
+        "createBusinessFirst": "Сначала создайте свой бизнес, чтобы загрузить логотип."
+      },
+      "locationStep": {
+        "title": "Ваша первая точка",
+        "description": "Добавьте основную локацию. Вы сможете изменить её позже в настройках.",
+        "saveContinue": "Сохранить и продолжить",
+        "saveChangesContinue": "Сохранить изменения и продолжить"
+      },
+      "hoursStep": {
+        "title": "Часы работы",
+        "description": "Настройте, когда вы открыты. Если вы ещё не готовы, можно сделать это позже.",
+        "saveContinue": "Сохранить и продолжить",
+        "noLocationHint": "Без точки продаж вы пока не можете сохранить часы работы. Вы можете продолжить с импортом товаров и завершить это позже в настройках.",
+        "continueToProducts": "Продолжить к товарам"
+      },
+      "menuStep": {
+        "title": "Импортируйте товары",
+        "description": "Вы можете загрузить CSV прямо здесь или использовать импорт с ИИ, чтобы извлечь товары из PDF или изображения."
+      },
+      "form": {
+        "generalTitle": "Общая информация",
+        "nameLabel": "Название бизнеса",
+        "namePlaceholder": "Название бизнеса",
+        "descriptionLabel": "Описание",
+        "descriptionPlaceholder": "Описание",
+        "descriptionHint": "Напишите краткое описание вашего бизнеса",
+        "websiteLabel": "Веб-сайт",
+        "websitePlaceholder": "ваш-сайт",
+        "websiteHint": "Это будет название вашего сайта",
+        "submitLabel": "Продолжить",
+        "genericError": "Произошла ошибка",
+        "activateError": "Не удалось активировать бизнес в вашей сессии",
+        "updateError": "Не удалось обновить информацию о бизнесе"
+      }
+    },
+    "invite": {
+      "metaTitle": "Присоединиться к команде",
+      "invalidTitle": "Недействительное приглашение",
+      "expiredTitle": "Приглашение истекло или недействительно",
+      "expiredDescription": "Приглашение истекло или уже было использовано.",
+      "greeting": "Привет{name}, вас пригласили присоединиться к команде <orgName>{org}</orgName>.",
+      "signedInAs": "Вы вошли как {email}",
+      "acceptHint": "Нажмите кнопку ниже, чтобы принять приглашение.",
+      "acceptButton": "Принять приглашение",
+      "termsNotice": "Принимая приглашение, вы соглашаетесь с условиями использования.",
+      "acceptError": "Не удалось принять приглашение"
     }
   },
   "dashboard": {
@@ -260,7 +363,20 @@
       "themeLight": "Светлая",
       "themeDark": "Тёмная",
       "home": "Главная",
-      "signOut": "Выйти"
+      "signOut": "Выйти",
+      "metaTitle": "Мой профиль",
+      "title": "Мой профиль",
+      "generalTitle": "Основные данные",
+      "generalDescription": "Общая информация о вашем аккаунте",
+      "membershipTitle": "Текущее членство",
+      "membershipDescription": "Информация о вашем текущем членстве",
+      "organization": "Организация",
+      "role": "Роль",
+      "roleOwner": "Владелец",
+      "roleAdmin": "Администратор",
+      "roleMember": "Участник",
+      "emptyTitle": "Вы не состоите ни в одной организации",
+      "emptyDescription": "Попросите доступ к организации, чтобы увидеть полный профиль."
     },
     "common": {
       "cancel": "Отмена",
@@ -275,7 +391,21 @@
       "retry": "Повторить",
       "backHome": "На главную",
       "ready": "Готово",
-      "view": "Открыть"
+      "view": "Открыть",
+      "searchType": "Искать {type}...",
+      "selectType": "Выберите {type}...",
+      "noTypeFound": "{type} не найдено."
+    },
+    "dataTable": {
+      "searchPlaceholder": "Поиск по результатам",
+      "noData": "Данные не найдены",
+      "recordsFound": "{count, plural, one {# запись найдена} few {# записи найдено} many {# записей найдено} other {# записей найдено}}",
+      "rowsPerPage": "Записей на странице",
+      "pageOf": "Страница {page} из {total}",
+      "goFirst": "На первую страницу",
+      "goPrevious": "На предыдущую страницу",
+      "goNext": "На следующую страницу",
+      "goLast": "На последнюю страницу"
     },
     "menus": {
       "metaTitle": "Главная",
@@ -316,7 +446,19 @@
       "location": "Локация",
       "locationDescription": "Укажите адрес, часы работы и соцсети.",
       "products": "Продукты",
-      "productsDescription": "Создайте продукты и категории для меню."
+      "productsDescription": "Создайте продукты и категории для меню.",
+      "welcomeTitle": "Добро пожаловать в Biztro",
+      "welcomeDescription": "Это ваша стартовая панель для управления бизнесом."
+    },
+    "allergens": {
+      "SEAFOOD": "Морепродукты",
+      "PEANUT": "Арахис",
+      "LACTOSE": "Лактоза",
+      "NUT": "Орехи",
+      "GLUTEN": "Глютен",
+      "FISH": "Рыба",
+      "VEGETARIAN": "Вегетарианское",
+      "SPICY": "Острое"
     },
     "upgrade": {
       "defaultTitle": "Перейти на Pro",
@@ -381,8 +523,8 @@
         "confirmDescription": "Вы уверены, что хотите удалить эту организацию? Это действие необратимо. Все данные организации будут удалены без возможности восстановления. Сохраните нужные данные перед продолжением.",
         "cancelSubscription": "Отмените подписку перед удалением организации.",
         "confirmHint": "Для безопасности введите {word} и нажмите удалить.",
-        "confirmAria": "Подтвердите, введя ELIMINAR",
-        "confirmWord": "ELIMINAR",
+        "confirmAria": "Подтвердите, введя УДАЛИТЬ",
+        "confirmWord": "УДАЛИТЬ",
         "deleting": "Удаление организации...",
         "deleteError": "Не удалось удалить организацию"
       },
@@ -511,13 +653,34 @@
           "timeRequired": "Укажите время открытия и закрытия",
           "validationTime": "Укажите время",
           "days": {
-            "MONDAY": { "short": "Пн", "full": "Понедельник" },
-            "TUESDAY": { "short": "Вт", "full": "Вторник" },
-            "WEDNESDAY": { "short": "Ср", "full": "Среда" },
-            "THURSDAY": { "short": "Чт", "full": "Четверг" },
-            "FRIDAY": { "short": "Пт", "full": "Пятница" },
-            "SATURDAY": { "short": "Сб", "full": "Суббота" },
-            "SUNDAY": { "short": "Вс", "full": "Воскресенье" }
+            "MONDAY": {
+              "short": "Пн",
+              "full": "Понедельник"
+            },
+            "TUESDAY": {
+              "short": "Вт",
+              "full": "Вторник"
+            },
+            "WEDNESDAY": {
+              "short": "Ср",
+              "full": "Среда"
+            },
+            "THURSDAY": {
+              "short": "Чт",
+              "full": "Четверг"
+            },
+            "FRIDAY": {
+              "short": "Пт",
+              "full": "Пятница"
+            },
+            "SATURDAY": {
+              "short": "Сб",
+              "full": "Суббота"
+            },
+            "SUNDAY": {
+              "short": "Вс",
+              "full": "Воскресенье"
+            }
           }
         }
       },
@@ -527,6 +690,7 @@
         "imageCountLimit": "{count} из {limit} изображений",
         "emptyTitle": "Нет изображений",
         "emptyDescription": "Загружайте изображения из продуктов или настроек организации",
+        "viewDetails": "Подробнее",
         "detailsTitle": "Детали изображения",
         "previewAlt": "Превью",
         "type": "Тип",
@@ -885,6 +1049,34 @@
         "deleteTitle": "Удалить вариант",
         "deleteDescription": "Вы уверены, что хотите удалить этот вариант? Это действие нельзя отменить.",
         "deleting": "Удаление варианта..."
+      },
+      "translations": {
+        "metaTitle": "Переводы меню",
+        "title": "Переводы меню",
+        "description": "Создавайте ИИ-переводы продуктов, чтобы показывать меню на других языках",
+        "addLanguage": "Добавить язык",
+        "dialogTitle": "Перевести меню с ИИ",
+        "dialogDescription": "Выберите язык, на который нужно перевести все активные продукты меню.",
+        "selectLanguage": "Выберите язык",
+        "translatingSuffix": "(перевод…)",
+        "translating": "Перевод…",
+        "translateWithAi": "Перевести с ИИ",
+        "upgradeTitle": "Перейдите на Pro",
+        "upgradeDescription": "Автоматический перевод продуктов доступен только в плане Pro. Обновите план, чтобы добавлять новые языки в меню.",
+        "bannerTitle": "Автоматический перевод продуктов требует план Pro. Обновите план, чтобы добавлять языки в меню.",
+        "upgradeCta": "Перейти на Pro",
+        "closeBanner": "Закрыть уведомление",
+        "availableLanguages": "Доступные языки",
+        "availableLanguagesInfo": "Переводы доступны в публичном меню. Посетители могут сменить язык в селекторе языков.",
+        "emptyTitle": "Начните с языка",
+        "emptyDescription": "Переводов пока нет. Добавьте язык, чтобы начать.",
+        "productCount": "{count, plural, one {# продукт переведён} few {# продукта переведено} many {# продуктов переведено} other {# продуктов переведено}}",
+        "update": "Обновить",
+        "deleteAria": "Удалить перевод на {locale}",
+        "translateSuccess": "{count, plural, one {# продукт переведён на {locale}} few {# продукта переведено на {locale}} many {# продуктов переведено на {locale}} other {# продуктов переведено на {locale}}}",
+        "translateError": "Не удалось перевести продукты",
+        "deleteSuccess": "Перевод на {locale} удалён",
+        "deleteError": "Не удалось удалить перевод"
       }
     }
   },
@@ -1170,6 +1362,7 @@
       "title": "Редактировать продукты меню",
       "saving": "Сохранение...",
       "unsavedChanges": "{count, plural, one {# несохранённое изменение} few {# несохранённых изменения} many {# несохранённых изменений} other {# несохранённых изменений}}",
+      "variantCount": "{count, plural, one {# вариант} few {# варианта} many {# вариантов} other {# варианта}}",
       "emptyTitle": "Пока нет продуктов",
       "emptyDescription": "Создайте первый продукт, чтобы начать редактировать меню.",
       "createProduct": "Создать продукт",
@@ -1180,6 +1373,21 @@
       "keyboardEditCancel": "чтобы отменить редактирование.",
       "keyboardCommandsPrefix": "Нажмите",
       "keyboardCommandsSuffix": "чтобы показать полный список команд.",
+      "search": {
+        "placeholder": "Поиск в таблице...",
+        "previousMatch": "Предыдущее совпадение",
+        "nextMatch": "Следующее совпадение",
+        "close": "Закрыть поиск",
+        "matchOf": "{current} из {total}",
+        "noResults": "Нет результатов",
+        "typeToSearch": "Введите текст для поиска"
+      },
+      "viewMenu": {
+        "toggleColumns": "Показать или скрыть столбцы",
+        "view": "Вид",
+        "searchColumns": "Поиск столбцов...",
+        "noColumns": "Столбцы не найдены."
+      },
       "variantsEdit": {
         "title": "Редактировать варианты: {name}",
         "description": "Измените варианты этого продукта. Должен остаться хотя бы один вариант.",
@@ -1190,7 +1398,157 @@
         "nameTooLong": "Слишком длинное название",
         "priceNegative": "Цена не может быть отрицательной",
         "minOneVariant": "Должен быть хотя бы один вариант"
-      }
+      },
+      "filter": {
+        "filter": "Фильтр",
+        "filterBy": "Фильтровать по",
+        "noFilters": "Фильтры не применены",
+        "modifyFilters": "Измените фильтры, чтобы сузить данные.",
+        "addFiltersHint": "Добавьте фильтры, чтобы сузить данные.",
+        "addFilter": "Добавить фильтр",
+        "resetFilters": "Сбросить фильтры",
+        "where": "Где",
+        "and": "И",
+        "searchFields": "Поиск полей...",
+        "noFields": "Поля не найдены.",
+        "start": "Начало",
+        "end": "Конец",
+        "selectDate": "Выбрать дату",
+        "selectRange": "Выбрать диапазон",
+        "searchOptions": "Поиск вариантов...",
+        "noOptions": "Варианты не найдены.",
+        "value": "Значение",
+        "isEmptyStatus": "{label} пусто",
+        "selectedCount": "Выбрано: {count}",
+        "operators": {
+          "contains": "Содержит",
+          "notContains": "Не содержит",
+          "equals": "Равно",
+          "notEquals": "Не равно",
+          "startsWith": "Начинается с",
+          "endsWith": "Заканчивается на",
+          "isEmpty": "Пусто",
+          "isNotEmpty": "Не пусто",
+          "lessThan": "Меньше",
+          "lessThanOrEqual": "Меньше или равно",
+          "greaterThan": "Больше",
+          "greaterThanOrEqual": "Больше или равно",
+          "isBetween": "Между",
+          "before": "Раньше",
+          "after": "Позже",
+          "onOrBefore": "В или до",
+          "onOrAfter": "В или после",
+          "is": "Равно",
+          "isNot": "Не равно",
+          "isAnyOf": "Любое из",
+          "isNoneOf": "Ни одно из",
+          "isTrue": "Истина",
+          "isFalse": "Ложь"
+        }
+      },
+      "paste": {
+        "title": "Добавить больше строк?",
+        "description": "Нам нужно {rowsNeeded, plural, one {<strong>#</strong> дополнительная строка} few {<strong>#</strong> дополнительные строки} many {<strong>#</strong> дополнительных строк} other {<strong>#</strong> дополнительной строки}}, чтобы вставить все данные из буфера обмена.",
+        "expandOptionTitle": "Создать новые строки",
+        "expandOptionDescription": "{rowsNeeded, plural, one {Добавить # строку} few {Добавить # строки} many {Добавить # строк} other {Добавить # строки}} в таблицу и вставить все данные",
+        "keepOptionTitle": "Оставить текущие строки",
+        "keepOptionDescription": "Вставить только то, что поместится в существующие строки",
+        "continue": "Продолжить"
+      },
+      "shortcuts": {
+        "title": "Горячие клавиши",
+        "description": "Используйте эти горячие клавиши для навигации и работы с таблицей данных более эффективно.",
+        "searchPlaceholder": "Поиск горячих клавиш...",
+        "noResultsTitle": "Горячие клавиши не найдены",
+        "noResultsDescription": "Попробуйте другой запрос.",
+        "groups": {
+          "navigation": "Навигация",
+          "selection": "Выделение",
+          "editing": "Редактирование",
+          "search": "Поиск",
+          "filtering": "Фильтрация",
+          "sorting": "Сортировка",
+          "general": "Общее"
+        },
+        "navigateCells": "Навигация между ячейками",
+        "nextCell": "Перейти к следующей ячейке",
+        "previousCell": "Перейти к предыдущей ячейке",
+        "firstColumn": "Перейти к первому столбцу",
+        "lastColumn": "Перейти к последнему столбцу",
+        "firstRowSameColumn": "Перейти к первой строке (тот же столбец)",
+        "lastRowSameColumn": "Перейти к последней строке (тот же столбец)",
+        "firstColumnSameRow": "Перейти к первому столбцу (та же строка)",
+        "lastColumnSameRow": "Перейти к последнему столбцу (та же строка)",
+        "firstCell": "Перейти к первой ячейке",
+        "lastCell": "Перейти к последней ячейке",
+        "pageUp": "Прокрутить страницу вверх",
+        "pageDown": "Прокрутить страницу вниз",
+        "scrollUpPage": "Прокрутить страницу вверх",
+        "scrollDownPage": "Прокрутить страницу вниз",
+        "scrollColumnsLeftPage": "Прокрутить столбцы влево на страницу",
+        "scrollColumnsRightPage": "Прокрутить столбцы вправо на страницу",
+        "extendSelection": "Расширить выделение",
+        "selectToTop": "Выделить до верха",
+        "selectToBottom": "Выделить до низа",
+        "selectToFirstColumn": "Выделить до первого столбца",
+        "selectToLastColumn": "Выделить до последнего столбца",
+        "selectAllCells": "Выделить все ячейки",
+        "toggleCellSelection": "Переключить выделение ячейки",
+        "selectRange": "Выделить диапазон",
+        "clearSelection": "Очистить выделение",
+        "startEditingCell": "Начать редактирование ячейки",
+        "insertRowBelow": "Вставить строку ниже",
+        "copySelectedCells": "Копировать выбранные ячейки",
+        "cutSelectedCells": "Вырезать выбранные ячейки",
+        "pasteCells": "Вставить ячейки",
+        "clearSelectedCells": "Очистить выбранные ячейки",
+        "deleteSelectedRows": "Удалить выбранные строки",
+        "undo": "Отменить последнее действие",
+        "redo": "Повторить последнее действие",
+        "openSearch": "Открыть поиск",
+        "nextMatch": "Следующее совпадение",
+        "previousMatch": "Предыдущее совпадение",
+        "closeSearch": "Закрыть поиск",
+        "toggleFilterMenu": "Переключить меню фильтров",
+        "removeFilterWhenFocused": "Удалить фильтр (когда в фокусе)",
+        "toggleSortMenu": "Переключить меню сортировки",
+        "removeSortWhenFocused": "Удалить сортировку (когда в фокусе)",
+        "showKeyboardShortcuts": "Показать горячие клавиши"
+      },
+      "contextMenu": {
+        "copy": "Копировать",
+        "cut": "Вырезать",
+        "clear": "Очистить",
+        "deleteRows": "Удалить строку(и)",
+        "cellsCleared": "{count, plural, one {# ячейка очищена} few {# ячейки очищены} many {# ячеек очищено} other {# ячейки очищены}}",
+        "rowsDeleted": "{count, plural, one {# строка удалена} few {# строки удалены} many {# строк удалено} other {# строки удалены}}"
+      },
+      "columnHeader": {
+        "sortAsc": "Сортировка по возрастанию",
+        "sortDesc": "Сортировка по убыванию",
+        "removeSort": "Убрать сортировку",
+        "unpinLeft": "Открепить слева",
+        "pinLeft": "Закрепить слева",
+        "unpinRight": "Открепить справа",
+        "pinRight": "Закрепить справа",
+        "hideColumn": "Скрыть столбец"
+      },
+      "fileCell": {
+        "searchPlaceholder": "Поиск...",
+        "noOptionsFound": "Варианты не найдены.",
+        "fileSizeExceeds": "Размер файла превышает {size}",
+        "fileTypeNotAccepted": "Тип файла не поддерживается",
+        "uploadLabel": "Загрузка файлов",
+        "dropFilesHere": "Отпустите файлы здесь",
+        "dragFilesHere": "Перетащите файлы сюда",
+        "clickToBrowse": "или нажмите, чтобы выбрать",
+        "selectFilesToUpload": "Выберите файлы для загрузки",
+        "fileCount": "{count, plural, one {# файл} few {# файла} many {# файлов} other {# файла}}",
+        "clearAll": "Очистить все",
+        "uploading": "Загрузка...",
+        "deleting": "Удаление..."
+      },
+      "addRow": "Добавить строку"
     },
     "tour": {
       "back": "Назад",
@@ -1297,11 +1655,79 @@
       "description": "Попробуйте снова или вернитесь в панель управления и выберите другое меню.",
       "retry": "Повторить",
       "backDashboard": "В панель управления"
+    },
+    "actions": {
+      "switchOrganizationFailed": "Не удалось переключить организацию",
+      "switchOrganizationError": "Ошибка при переключении организации",
+      "inviteMemberError": "Ошибка при приглашении участника",
+      "acceptInviteFailed": "Не удалось принять приглашение",
+      "setActiveOrganizationFailed": "Не удалось установить активную организацию",
+      "acceptInviteError": "Ошибка при принятии приглашения",
+      "removeMemberFailed": "Не удалось удалить участника",
+      "removeMemberError": "Ошибка при удалении участника",
+      "subdomainInUse": "Поддомен уже используется",
+      "orgCreateFailed": "Не удалось создать организацию",
+      "orgSetActiveFailed": "Не удалось установить активную организацию",
+      "orgIdRequired": "Требуется ID организации",
+      "orgUpdateFailed": "Не удалось обновить организацию",
+      "orgDeleteConfirm": "Подтвердите удаление, введя ELIMINAR",
+      "orgDeleteActiveSubscription": "Нельзя удалить организацию с активной подпиской",
+      "orgDeleteFailed": "Не удалось удалить организацию",
+      "noCurrentOrg": "Не удалось получить текущую организацию",
+      "translationProOnly": "Перевод меню доступен только в плане Pro",
+      "translationApiKeyRequired": "Для перевода нужно настроить API-ключ AI Gateway",
+      "noActiveProducts": "Нет активных продуктов для перевода",
+      "translationModelFailed": "Не удалось получить перевод от модели",
+      "translationIncomplete": "Не удалось завершить перевод. Попробуйте ещё раз.",
+      "productTranslationProOnly": "Автоперевод отдельного продукта доступен только в плане Pro",
+      "productNotFoundForTranslate": "Не удалось найти продукт для перевода",
+      "productAlreadyTranslated": "У этого продукта уже есть все доступные переводы на этот язык",
+      "productNoNewTranslations": "Новые переводы для этого продукта не созданы. Попробуйте ещё раз.",
+      "productTranslationIncomplete": "Не удалось завершить перевод продукта. Попробуйте ещё раз.",
+      "translationDeleteFailed": "Не удалось удалить перевод.",
+      "noCurrentUser": "Не удалось получить текущего пользователя",
+      "subdomainRequired": "Поддомен обязателен",
+      "alreadyOnWaitlist": "Вы уже в списке ожидания",
+      "syncMenuFailed": "Не удалось синхронизировать меню",
+      "mediaInUse": "Нельзя удалить медиафайл, который используется. Сначала уберите его из всех мест.",
+      "analyticsFetchError": "Ошибка при получении данных аналитики",
+      "analyticsTrendError": "Ошибка при получении данных тренда",
+      "noPublishedVersion": "Нет опубликованной версии для отката.",
+      "unknownError": "Неизвестная ошибка",
+      "updateProductsError": "Ошибка при обновлении продуктов",
+      "categoryHasProducts": "Нельзя удалить категорию, у которой есть связанные продукты",
+      "productNotFound": "Не удалось получить связанный продукт",
+      "updateCategoriesError": "Ошибка при обновлении категорий",
+      "deleteProductsError": "Ошибка при удалении продуктов",
+      "updateFeaturedError": "Ошибка при обновлении избранных продуктов",
+      "exportItemsError": "Ошибка при экспорте продуктов",
+      "menuNotFound": "Меню не найдено",
+      "onlyPublishedCanActivate": "Можно активировать только опубликованное меню",
+      "mediaNotFound": "Медиафайл не найден",
+      "menuLimitReached": "Достигнут лимит {limit} меню. Перейдите на Pro, чтобы создавать больше.",
+      "productLimitReached": "Достигнут лимит {limit} продуктов. Перейдите на Pro, чтобы создавать больше.",
+      "copySuffix": "копия",
+      "copySuffixNumbered": "копия {n}",
+      "orgPlanUpdateFailed": "Не удалось обновить план организации",
+      "fileUploadFailed": "Не удалось загрузить файл",
+      "proRequiredFeature": "Эта функция требует план Pro",
+      "mediaLimitReached": "Достигнут лимит медиа. В бесплатном плане доступно до {limit} изображений."
     }
   },
   "publicMenu": {
     "originalLanguage": "Испанский (оригинал)",
     "changeLanguage": "Сменить язык",
     "originalLanguageSr": "Оригинальный язык"
+  },
+  "emails": {
+    "invite": {
+      "preview": "Присоединяйтесь к {inviter} в Biztro",
+      "heading": "Присоединяйтесь к {team} в Biztro",
+      "hello": "Здравствуйте, {username}!",
+      "invitedBy": "{inviter} ({email}) приглашает вас в команду {team} в Biztro.",
+      "joinButton": "Присоединиться к команде",
+      "orCopy": "или скопируйте и вставьте эту ссылку в браузер:",
+      "footer": "Это приглашение предназначено для {username}. Если вы его не ждали, просто проигнорируйте письмо."
+    }
   }
 }

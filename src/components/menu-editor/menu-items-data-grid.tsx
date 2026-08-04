@@ -243,6 +243,7 @@ export function MenuItemsDataGrid({
   const tProducts = useTranslations("dashboard.menuItems.products")
   const tUnsaved = useTranslations("menuEditor.unsavedChanges")
   const tCommon = useTranslations("dashboard.common")
+  const tAllergens = useTranslations("dashboard.allergens")
 
   // Flatten items into grid rows - this is the source of truth from props
   const initialData = React.useMemo(() => {
@@ -326,10 +327,10 @@ export function MenuItemsDataGrid({
   const allergenOptions: CellSelectOption[] = React.useMemo(
     () =>
       Allergens.map(allergen => ({
-        label: allergen.label,
+        label: tAllergens(allergen.value),
         value: allergen.value
       })),
-    []
+    [tAllergens]
   )
 
   // Handle data changes from grid

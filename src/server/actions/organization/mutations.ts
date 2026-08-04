@@ -1,6 +1,7 @@
 "use server"
 
 import * as Sentry from "@sentry/nextjs"
+import { getTranslations } from "next-intl/server"
 import { updateTag } from "next/cache"
 import { headers } from "next/headers"
 import { z } from "zod/v4"
@@ -25,11 +26,13 @@ export const bootstrapOrg = authActionClient
   .inputSchema(orgSchema)
   .action(
     async ({ parsedInput: { name, description, slug }, ctx: { user } }) => {
+      const t = await getTranslations("errors.actions")
+
       try {
         if (user?.id === undefined) {
           return {
             failure: {
-              reason: "No se pudo obtener el usuario actual"
+              reason: t("noCurrentUser")
             }
           }
         }
@@ -43,7 +46,7 @@ export const bootstrapOrg = authActionClient
         if (!existingOrg.status) {
           return {
             failure: {
-              reason: "El subdominio ya está en uso"
+              reason: t("subdomainInUse")
             }
           }
         }
@@ -67,7 +70,7 @@ export const bootstrapOrg = authActionClient
         if (!org) {
           return {
             failure: {
-              reason: "No se pudo crear la organización"
+              reason: t("orgCreateFailed")
             }
           }
         }
@@ -81,7 +84,7 @@ export const bootstrapOrg = authActionClient
         if (!data) {
           return {
             failure: {
-              reason: "No se pudo establecer la organización activa"
+              reason: t("orgSetActiveFailed")
             }
           }
         }
@@ -128,7 +131,7 @@ export const bootstrapOrg = authActionClient
         } else if (error instanceof Error) {
           message = error.message
           if (message.includes("slug")) {
-            message = "El subdominio ya está en uso"
+            message = t("subdomainInUse")
           }
         }
         console.error("Error bootstrapping organization:", error)
@@ -157,18 +160,20 @@ export const createOrg = authActionClient
   .inputSchema(orgSchema)
   .action(
     async ({ parsedInput: { name, description, slug }, ctx: { user } }) => {
+      const t = await getTranslations("errors.actions")
+
       try {
         if (user?.id === undefined) {
           return {
             failure: {
-              reason: "No se pudo obtener el usuario actual"
+              reason: t("noCurrentUser")
             }
           }
         }
         if (!slug) {
           return {
             failure: {
-              reason: "Subdominio es requerido"
+              reason: t("subdomainRequired")
             }
           }
         }
@@ -182,7 +187,7 @@ export const createOrg = authActionClient
         if (!existingOrg.status) {
           return {
             failure: {
-              reason: "El subdominio ya está en uso"
+              reason: t("subdomainInUse")
             }
           }
         }
@@ -206,7 +211,7 @@ export const createOrg = authActionClient
         if (!org) {
           return {
             failure: {
-              reason: "No se pudo crear la organización"
+              reason: t("orgCreateFailed")
             }
           }
         }
@@ -252,11 +257,13 @@ export const createOrg = authActionClient
 export const updateOrg = authActionClient
   .inputSchema(orgSchema)
   .action(async ({ parsedInput: { id, name, description, slug } }) => {
+    const t = await getTranslations("errors.actions")
+
     try {
       if (!id) {
         return {
           failure: {
-            reason: "ID de organización es requerido"
+            reason: t("orgIdRequired")
           }
         }
       }
@@ -285,7 +292,7 @@ export const updateOrg = authActionClient
           const maybeOrg = await getOrganizationBySlug(slug)
 
           if (maybeOrg && maybeOrg.id !== id) {
-            throw new Error("El subdominio ya está en uso")
+            throw new Error(t("subdomainInUse"))
           }
         }
       }
@@ -306,7 +313,7 @@ export const updateOrg = authActionClient
       if (!org) {
         return {
           failure: {
-            reason: "No se pudo actualizar la organización"
+            reason: t("orgUpdateFailed")
           }
         }
       }
@@ -352,6 +359,8 @@ export const joinWaitlist = actionClient
     })
   )
   .action(async ({ parsedInput: { email } }) => {
+    const t = await getTranslations("errors.actions")
+
     try {
       const waitlist = await prisma.waitlist.findUnique({
         where: {
@@ -360,7 +369,7 @@ export const joinWaitlist = actionClient
       })
 
       if (waitlist) {
-        throw new Error("Ya estás en la lista de espera")
+        throw new Error(t("alreadyOnWaitlist"))
       }
 
       await prisma.waitlist.create({
@@ -399,15 +408,17 @@ export const deleteOrganization = authActionClient
     })
   )
   .action(async ({ parsedInput: { id, confirmation } }) => {
+    const t = await getTranslations("errors.actions")
+
     // Delete organization
     try {
       const normalizedConfirmation = confirmation?.trim().toUpperCase()
+      const acceptedConfirmations = ["ELIMINAR", "DELETE", "УДАЛИТЬ"]
 
-      if (normalizedConfirmation !== "ELIMINAR") {
+      if (!acceptedConfirmations.includes(normalizedConfirmation)) {
         return {
           failure: {
-            reason:
-              "Confirma escribiendo ELIMINAR antes de eliminar la organización"
+            reason: t("orgDeleteConfirm")
           }
         }
       }
@@ -419,8 +430,7 @@ export const deleteOrganization = authActionClient
       ) {
         return {
           failure: {
-            reason:
-              "No se puede eliminar una organización con una suscripción activa"
+            reason: t("orgDeleteActiveSubscription")
           }
         }
       } else {
@@ -435,7 +445,7 @@ export const deleteOrganization = authActionClient
         if (!deleted) {
           return {
             failure: {
-              reason: "No se pudo eliminar la organización"
+              reason: t("orgDeleteFailed")
             }
           }
         }

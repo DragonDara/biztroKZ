@@ -5,13 +5,13 @@ export const menuSchema = z.object({
   name: z
     .string({
       error: issue =>
-        issue.input === undefined ? "Nombre es requerido" : undefined
+        issue.input === undefined ? "Name is required" : undefined
     })
     .min(3, {
-      error: "Nombre muy corto"
+      error: "Name is too short"
     })
     .max(100, {
-      error: "Nombre muy largo"
+      error: "Name is too long"
     }),
   description: z.string().optional(),
   status: z.enum(["PUBLISHED", "DRAFT"]),

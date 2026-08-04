@@ -14,9 +14,9 @@ const RESERVED_SUBDOMAINS = new Set([
   "pm-bounces",
   "send",
   // App UI locales — must not be treated as tenant subdomains
+  "ru",
   "en",
-  "es",
-  "ru"
+  "es"
 ])
 
 function getSubdomainFromHost(hostname: string) {

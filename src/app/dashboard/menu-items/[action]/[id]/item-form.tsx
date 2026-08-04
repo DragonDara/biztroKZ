@@ -22,6 +22,7 @@ import {
   TriangleAlert,
   X
 } from "lucide-react"
+import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
 import { useRouter } from "next/navigation"
@@ -261,6 +262,7 @@ export default function ItemForm({
 }) {
   const { t, tProducts, getLocaleLabel, getMenuItemStatusMeta, title } =
     useItemFormLabels(action)
+  const tAllergens = useTranslations("dashboard.allergens")
 
   const form = useForm<z.output<typeof menuItemFormSchema>>({
     resolver: zodResolver(menuItemFormSchema),
@@ -301,7 +303,8 @@ export default function ItemForm({
     SupportedLocaleCode | ""
   >(() => {
     const itemLocale = item?.translations?.[0]?.locale as
-      SupportedLocaleCode | undefined
+      | SupportedLocaleCode
+      | undefined
     const variantLocale = item?.variants?.flatMap(
       variant => variant.translations ?? []
     )[0]?.locale as SupportedLocaleCode | undefined
@@ -877,7 +880,8 @@ export default function ItemForm({
         ? data.translations?.[selectedTranslationIndex]
         : undefined
     let selectedTranslationPayload:
-      z.infer<typeof menuItemTranslationSchema> | undefined
+      | z.infer<typeof menuItemTranslationSchema>
+      | undefined
     const selectedVariantTranslationPayloads = [] as Array<{
       variantIndex: number
       translation: z.infer<typeof variantTranslationSchema>
@@ -1515,8 +1519,11 @@ export default function ItemForm({
                                       form.setValue("allergens", next.join(","))
                                     }}
                                   >
-                                    {Allergens.find(a => a.value === val)
-                                      ?.label ?? val}
+                                    {Allergens.some(a => a.value === val)
+                                      ? tAllergens(
+                                          val as (typeof Allergens)[number]["value"]
+                                        )
+                                      : val}
                                   </TagsValue>
                                 ))}
                               </TagsTrigger>
@@ -1538,7 +1545,7 @@ export default function ItemForm({
                                           )
                                         }}
                                       >
-                                        {allergen.label}
+                                        {tAllergens(allergen.value)}
                                       </TagsItem>
                                     ))}
                                   </TagsGroup>

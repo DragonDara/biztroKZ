@@ -5,25 +5,25 @@ export const locationSchema = z.object({
   name: z
     .string({
       error: issue =>
-        issue.input === undefined ? "Nombre es requerido" : undefined
+        issue.input === undefined ? "Name is required" : undefined
     })
     .min(3, {
-      error: "Nombre muy corto"
+      error: "Name is too short"
     })
     .max(100),
   description: z.string().optional(),
   address: z
     .string({
       error: issue =>
-        issue.input === undefined ? "Dirección es requerida" : undefined
+        issue.input === undefined ? "Address is required" : undefined
     })
     .min(3, {
-      error: "Dirección no es válida"
+      error: "Address is not valid"
     }),
   phone: z
     .string()
     .regex(/^\d{10}$/, {
-      error: "Número de teléfono inválido"
+      error: "Invalid phone number"
     })
     .optional(),
   facebook: z.string().optional(),
@@ -69,7 +69,7 @@ export const hoursSchema = z.object({
         },
         {
           path: ["allDay"],
-          error: "Ingresa la hora"
+          error: "Enter a time"
         }
       )
   )

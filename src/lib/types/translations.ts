@@ -1,5 +1,7 @@
 export const SUPPORTED_LOCALES = [
+  { code: "ru", label: "Русский" },
   { code: "en", label: "English" },
+  { code: "es", label: "Español" },
   { code: "fr", label: "Français" },
   { code: "de", label: "Deutsch" },
   { code: "pt", label: "Português" },

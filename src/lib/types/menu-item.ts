@@ -7,16 +7,16 @@ export const variantSchema = z.object({
   name: z
     .string({
       error: issue =>
-        issue.input === undefined ? "Nombre es requerido" : undefined
+        issue.input === undefined ? "Name is required" : undefined
     })
     .min(3, {
-      error: "Nombre muy corto"
+      error: "Name is too short"
     })
     .max(100, {
-      error: "Nombre muy largo"
+      error: "Name is too long"
     }),
   description: z.string().optional(),
-  price: z.number().min(0, { error: "Precio no puede ser negativo" }),
+  price: z.number().min(0, { error: "Price cannot be negative" }),
   menuItemId: z.string().optional(),
   translations: z
     .array(
@@ -25,19 +25,19 @@ export const variantSchema = z.object({
         name: z
           .string({
             error: issue =>
-              issue.input === undefined ? "Nombre es requerido" : undefined
+              issue.input === undefined ? "Name is required" : undefined
           })
           .min(3, {
-            error: "Nombre muy corto"
+            error: "Name is too short"
           })
           .max(100, {
-            error: "Nombre muy largo"
+            error: "Name is too long"
           }),
         description: z.string().optional()
       })
     )
     .refine(items => new Set(items.map(t => t.locale)).size === items.length, {
-      message: "Locale duplicado en traducciones de variante"
+      message: "Duplicate locale in variant translations"
     })
     .optional()
 })
@@ -47,13 +47,13 @@ export const variantTranslationSchema = z.object({
   name: z
     .string({
       error: issue =>
-        issue.input === undefined ? "Nombre es requerido" : undefined
+        issue.input === undefined ? "Name is required" : undefined
     })
     .min(3, {
-      error: "Nombre muy corto"
+      error: "Name is too short"
     })
     .max(100, {
-      error: "Nombre muy largo"
+      error: "Name is too long"
     }),
   description: z.string().optional()
 })
@@ -69,13 +69,13 @@ export const menuItemTranslationSchema = z.object({
   name: z
     .string({
       error: issue =>
-        issue.input === undefined ? "Nombre es requerido" : undefined
+        issue.input === undefined ? "Name is required" : undefined
     })
     .min(3, {
-      error: "Nombre muy corto"
+      error: "Name is too short"
     })
     .max(100, {
-      error: "Nombre muy largo"
+      error: "Name is too long"
     }),
   description: z.string().optional()
 })
@@ -91,13 +91,13 @@ export const menuItemSchema = z.object({
   name: z
     .string({
       error: issue =>
-        issue.input === undefined ? "Nombre es requerido" : undefined
+        issue.input === undefined ? "Name is required" : undefined
     })
     .min(3, {
-      error: "Nombre muy corto"
+      error: "Name is too short"
     })
     .max(100, {
-      error: "Nombre muy largo"
+      error: "Name is too long"
     }),
   status: z.enum(["ACTIVE", "DRAFT", "ARCHIVED"]),
   description: z.string().optional(),
@@ -111,7 +111,7 @@ export const menuItemSchema = z.object({
   translations: z
     .array(menuItemTranslationSchema)
     .refine(items => new Set(items.map(t => t.locale)).size === items.length, {
-      message: "Locale duplicado en traducciones"
+      message: "Duplicate locale in translations"
     })
     .optional(),
   updatePublishedMenus: z.boolean().optional(),
@@ -126,7 +126,7 @@ export const menuItemFormSchema = menuItemSchema.extend({
           .array(variantFormTranslationSchema)
           .refine(
             items => new Set(items.map(t => t.locale)).size === items.length,
-            { message: "Locale duplicado en traducciones de variante" }
+            { message: "Duplicate locale in variant translations" }
           )
           .optional()
       })
@@ -136,7 +136,7 @@ export const menuItemFormSchema = menuItemSchema.extend({
         .array(variantFormTranslationSchema)
         .refine(
           items => new Set(items.map(t => t.locale)).size === items.length,
-          { message: "Locale duplicado en traducciones de variante" }
+          { message: "Duplicate locale in variant translations" }
         )
         .optional()
     })
@@ -144,7 +144,7 @@ export const menuItemFormSchema = menuItemSchema.extend({
   translations: z
     .array(menuItemFormTranslationSchema)
     .refine(items => new Set(items.map(t => t.locale)).size === items.length, {
-      message: "Locale duplicado en traducciones"
+      message: "Duplicate locale in translations"
     })
     .optional()
 })
@@ -186,12 +186,12 @@ export const bulkMenuItemSchema = z.array(
 )
 
 export const Allergens = [
-  { value: "SEAFOOD", label: "Mariscos" },
-  { value: "PEANUT", label: "Cacahuate" },
-  { value: "LACTOSE", label: "Lactosa" },
-  { value: "NUT", label: "Nueces" },
+  { value: "SEAFOOD", label: "Seafood" },
+  { value: "PEANUT", label: "Peanut" },
+  { value: "LACTOSE", label: "Lactose" },
+  { value: "NUT", label: "Nuts" },
   { value: "GLUTEN", label: "Gluten" },
-  { value: "FISH", label: "Pescado" },
-  { value: "VEGETARIAN", label: "Vegetariano" },
-  { value: "SPICY", label: "Picante" }
+  { value: "FISH", label: "Fish" },
+  { value: "VEGETARIAN", label: "Vegetarian" },
+  { value: "SPICY", label: "Spicy" }
 ] as const

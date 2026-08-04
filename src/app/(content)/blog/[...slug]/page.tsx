@@ -1,4 +1,6 @@
+import type { AppLocale } from "@/i18n/routing"
 import { allPosts } from "content-collections"
+import { getLocale, getTranslations } from "next-intl/server"
 import Image from "next/image"
 import { notFound } from "next/navigation"
 
@@ -6,39 +8,49 @@ import Mdx from "@/components/marketing/mdx"
 import Waitlist from "@/components/marketing/waitlist"
 import { Separator } from "@/components/ui/separator"
 
+const dateLocaleTags: Record<AppLocale, string> = {
+  ru: "ru-RU",
+  en: "en-US",
+  es: "es-MX"
+}
+
 // skipcq: JS-0116
 export async function generateStaticParams(): Promise<{ slug: string[] }[]> {
   return allPosts.map(post => ({
     slug: post._meta.path.split("/")
   }))
 }
+
 export default async function Page(props: {
   params: Promise<{ slug: string[] }>
 }) {
   const params = await props.params
   const slug = params?.slug?.join("/")
-  const post = allPosts.find(post => post._meta.path.split("/")[0] === slug)
+  const post = allPosts.find(p => p._meta.path.split("/")[0] === slug)
 
   if (!post) {
     return notFound()
   }
 
-  const formattedDate = new Intl.DateTimeFormat("es-MX", {
+  const locale = (await getLocale()) as AppLocale
+  const t = await getTranslations("marketing.blog")
+  const formattedDate = new Intl.DateTimeFormat(dateLocaleTags[locale], {
     year: "numeric",
     month: "long",
     day: "numeric"
-  }).format(new Date(post?.date))
+  }).format(new Date(post.date))
 
   return (
     <>
       <Header
-        title={post?.title}
-        category={post?.category}
-        description={post?.description}
+        title={post.title}
+        category={post.category}
+        description={post.description}
         formattedDate={formattedDate}
-        author={post?.author}
-        position={post?.position}
-        avatar={post?.avatar}
+        author={post.author}
+        position={post.position}
+        avatar={post.avatar}
+        authorAvatarAlt={t("authorAvatarAlt", { author: post.author })}
       />
       <section>
         <Mdx code={post.body} />
@@ -47,11 +59,9 @@ export default async function Page(props: {
         <Separator className="my-10 w-20 bg-gray-300" />
         <div className="flex flex-col items-center gap-4 text-center">
           <h3 className="text-xl font-medium sm:text-2xl">
-            ¿Quieres participar en nuestro programa beta?
+            {t("waitlistTitle")}
           </h3>
-          <span className="text-gray-500">
-            Únete a nuestra lista de espera para recibir una invitación
-          </span>
+          <span className="text-gray-500">{t("waitlistDescription")}</span>
           <div className="my-5">
             <Waitlist />
           </div>
@@ -67,7 +77,8 @@ function Header({
   formattedDate,
   author,
   position,
-  avatar
+  avatar,
+  authorAvatarAlt
 }: {
   title: string
   category: string
@@ -76,6 +87,7 @@ function Header({
   author: string
   position: string
   avatar: string
+  authorAvatarAlt: string
 }) {
   return (
     <div className="mt-20 mb-10">
@@ -96,7 +108,7 @@ function Header({
         <div className="flex items-center gap-2">
           <Image
             src={`/${avatar}`}
-            alt={`Imagen de perfil de ${author}`}
+            alt={authorAvatarAlt}
             width={32}
             height={32}
             className="rounded-full shadow-md"

@@ -24,7 +24,7 @@ export const metadata: Metadata = {
   appleWebApp: {
     title: "Biztro"
   },
-  description: "Create your digital menu in minutes"
+  description: "Создайте цифровое меню за несколько минут"
 }
 
 export const viewport: Viewport = {
@@ -60,7 +60,7 @@ export default function RootLayout({
       className={`${beVietnamPro.variable} ${inter.variable} overscroll-none
         scroll-smooth antialiased`}
       suppressHydrationWarning
-      lang="es-MX"
+      lang="ru"
     >
       {/* <AxiomWebVitals /> */}
       <body

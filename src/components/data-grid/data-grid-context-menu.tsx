@@ -5,6 +5,7 @@ import { toast } from "react-hot-toast"
 import type { CellUpdate, ContextMenuState } from "@/types/data-grid"
 import type { ColumnDef, TableMeta } from "@tanstack/react-table"
 import { CopyIcon, EraserIcon, ScissorsIcon, Trash2Icon } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import {
   DropdownMenu,
@@ -96,6 +97,7 @@ function ContextMenuImpl<TData>({
   onCellsCopy,
   onCellsCut
 }: ContextMenuProps<TData>) {
+  const t = useTranslations("menuEditor.dataGrid.contextMenu")
   const propsRef = useAsRef({
     dataGridRef,
     selectionState,
@@ -103,7 +105,8 @@ function ContextMenuImpl<TData>({
     onRowsDelete,
     onCellsCopy,
     onCellsCut,
-    columns
+    columns,
+    t
   })
 
   const triggerStyle = React.useMemo<React.CSSProperties>(
@@ -142,7 +145,7 @@ function ContextMenuImpl<TData>({
   }, [propsRef])
 
   const onClear = React.useCallback(() => {
-    const { selectionState, columns, onDataUpdate } = propsRef.current
+    const { selectionState, columns, onDataUpdate, t } = propsRef.current
 
     if (
       !selectionState?.selectedCells ||
@@ -177,13 +180,11 @@ function ContextMenuImpl<TData>({
 
     onDataUpdate?.(updates)
 
-    toast.success(
-      `${updates.length} celda${updates.length !== 1 ? "s" : ""} limpiada${updates.length !== 1 ? "s" : ""}`
-    )
+    toast.success(t("cellsCleared", { count: updates.length }))
   }, [propsRef])
 
   const onDelete = React.useCallback(async () => {
-    const { selectionState, onRowsDelete } = propsRef.current
+    const { selectionState, onRowsDelete, t } = propsRef.current
 
     if (
       !selectionState?.selectedCells ||
@@ -202,9 +203,7 @@ function ContextMenuImpl<TData>({
 
     await onRowsDelete?.(rowIndicesArray)
 
-    toast.success(
-      `${rowCount} fila${rowCount !== 1 ? "s" : ""} eliminada${rowCount !== 1 ? "s" : ""}`
-    )
+    toast.success(t("rowsDeleted", { count: rowCount }))
   }, [propsRef])
 
   return (
@@ -221,22 +220,22 @@ function ContextMenuImpl<TData>({
       >
         <DropdownMenuItem onSelect={onCopy}>
           <CopyIcon />
-          Copiar
+          {t("copy")}
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={onCut} disabled={tableMeta?.readOnly}>
           <ScissorsIcon />
-          Cortar
+          {t("cut")}
         </DropdownMenuItem>
         <DropdownMenuItem onSelect={onClear} disabled={tableMeta?.readOnly}>
           <EraserIcon />
-          Borrar
+          {t("clear")}
         </DropdownMenuItem>
         {onRowsDelete && (
           <>
             <DropdownMenuSeparator />
             <DropdownMenuItem variant="destructive" onSelect={onDelete}>
               <Trash2Icon />
-              Eliminar fila(s)
+              {t("deleteRows")}
             </DropdownMenuItem>
           </>
         )}

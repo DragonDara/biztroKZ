@@ -15,6 +15,34 @@ import {
   Text
 } from "react-email"
 
+export type InviteEmailLabels = {
+  preview: string
+  heading: string
+  hello: string
+  invitedBy: string
+  joinButton: string
+  orCopy: string
+  footer: string
+}
+
+const defaultLabels: InviteEmailLabels = {
+  preview: "Join {inviter} on Biztro",
+  heading: "Join {team} on Biztro",
+  hello: "Hi {username},",
+  invitedBy: "{inviter} ({email}) invited you to the {team} team on Biztro.",
+  joinButton: "Join the team",
+  orCopy: "or copy and paste this URL into your browser:",
+  footer:
+    "This invitation was intended for {username}. If you weren't expecting an invitation, you can ignore this email."
+}
+
+function fillTemplate(
+  template: string,
+  vars: Record<string, string | undefined>
+) {
+  return template.replace(/\{(\w+)\}/g, (_, key: string) => vars[key] ?? "")
+}
+
 interface InviteUserEmailProps {
   username?: string
   invitedByUsername?: string
@@ -22,6 +50,7 @@ interface InviteUserEmailProps {
   teamName?: string
   inviteLink?: string
   baseUrl?: string
+  labels?: Partial<InviteEmailLabels>
 }
 
 export const InviteUserEmail = ({
@@ -30,9 +59,13 @@ export const InviteUserEmail = ({
   invitedByEmail,
   teamName,
   inviteLink,
-  baseUrl
+  baseUrl,
+  labels: labelsProp
 }: InviteUserEmailProps) => {
-  const previewText = `Unete a ${invitedByUsername} en Biztro`
+  const labels = { ...defaultLabels, ...labelsProp }
+  const previewText = fillTemplate(labels.preview, {
+    inviter: invitedByUsername
+  })
 
   return (
     <Html>
@@ -57,21 +90,17 @@ export const InviteUserEmail = ({
               className="mx-0 my-[30px] p-0 text-center text-[24px] font-normal
                 text-black"
             >
-              Unete a <strong>{teamName}</strong> en <strong>Biztro</strong>
+              {fillTemplate(labels.heading, { team: teamName })}
             </Heading>
             <Text className="text-[14px] leading-[24px] text-black">
-              Hola {username},
+              {fillTemplate(labels.hello, { username })}
             </Text>
             <Text className="text-[14px] leading-[24px] text-black">
-              <strong>{invitedByUsername}</strong> (
-              <Link
-                href={`mailto:${invitedByEmail}`}
-                className="text-orange-600 no-underline"
-              >
-                {invitedByEmail}
-              </Link>
-              ) te ha invitado al equipo de <strong>{teamName}</strong> en{" "}
-              <strong>Biztro</strong>.
+              {fillTemplate(labels.invitedBy, {
+                inviter: invitedByUsername,
+                email: invitedByEmail,
+                team: teamName
+              })}
             </Text>
             <Section className="mt-[32px] mb-[32px] text-center">
               <Button
@@ -79,11 +108,11 @@ export const InviteUserEmail = ({
                   text-[12px] font-semibold text-white no-underline"
                 href={inviteLink}
               >
-                Unirse al equipo
+                {labels.joinButton}
               </Button>
             </Section>
             <Text className="text-[14px] leading-[24px] text-black">
-              o copia y pega esta URL en tu navegador:{" "}
+              {labels.orCopy}{" "}
               <Link href={inviteLink} className="text-orange-600 no-underline">
                 {inviteLink}
               </Link>
@@ -93,9 +122,7 @@ export const InviteUserEmail = ({
                 border-[#eaeaea]"
             />
             <Text className="text-[12px] leading-[24px] text-[#666666]">
-              Esta invitacion esta destinada para{" "}
-              <span className="text-black">{username}</span>. Si no estabas
-              esperando una invitacion, puedes ignorar este email.
+              {fillTemplate(labels.footer, { username })}
             </Text>
           </Container>
         </Body>

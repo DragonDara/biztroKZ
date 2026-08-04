@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import { getTranslations } from "next-intl/server"
 import Image from "next/image"
 
 import { getInviteByToken } from "@/server/actions/user/queries"
@@ -6,17 +7,29 @@ import AcceptInviteCard from "@/app/(auth)/invite/[id]/accept-invite-card"
 import LoginForm from "@/app/(auth)/login/login-form"
 import { getCurrentUser } from "@/lib/session"
 
-export const metadata: Metadata = {
-  title: "Unirse a equipo"
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("auth.invite")
+
+  return {
+    title: t("metaTitle")
+  }
 }
 
 export default async function InvitePage(props: {
   params: Promise<{ id: string }>
 }) {
-  const params = await props.params
+  const [t, params] = await Promise.all([
+    getTranslations("auth.invite"),
+    props.params
+  ])
 
   if (!params.id) {
-    return <InviteExpiredOrInvalid />
+    return (
+      <InviteExpiredOrInvalid
+        title={t("expiredTitle")}
+        description={t("expiredDescription")}
+      />
+    )
   }
 
   const user = await getCurrentUser()
@@ -28,7 +41,7 @@ export default async function InvitePage(props: {
     // console.dir(invite, { depth: null })
     return (
       <InviteExpiredOrInvalid
-        title="Invitación inválida"
+        title={t("invalidTitle")}
         description={invite.error}
       />
     )
@@ -56,13 +69,13 @@ export default async function InvitePage(props: {
 }
 
 type InviteExpiredOrInvalidProps = {
-  title?: string
-  description?: string
+  title: string
+  description: string
 }
 
 const InviteExpiredOrInvalid = ({
-  title = "Invitación ha expirado o no es válida",
-  description = "La invitación ha expirado o ya ha sido utilizada."
+  title,
+  description
 }: InviteExpiredOrInvalidProps) => {
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center">

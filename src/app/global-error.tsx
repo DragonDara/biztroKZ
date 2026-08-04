@@ -33,17 +33,17 @@ const messageMap = {
 
 function getLocaleFromCookie(): AppLocale {
   if (typeof document === "undefined") {
-    return "en"
+    return "ru"
   }
 
   const match = document.cookie.match(/NEXT_LOCALE=([^;]+)/)
   const locale = match?.[1]
 
-  if (locale === "es" || locale === "ru") {
+  if (locale === "en" || locale === "es" || locale === "ru") {
     return locale
   }
 
-  return "en"
+  return "ru"
 }
 
 function GlobalErrorContent() {

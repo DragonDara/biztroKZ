@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react"
+import React, { useEffect, useMemo, useState } from "react"
 import * as Sentry from "@sentry/nextjs"
 import AwsS3, { type AwsS3UploadParameters } from "@uppy/aws-s3"
 import Compressor from "@uppy/compressor"
@@ -9,8 +9,11 @@ import Uppy, {
   type UppyFile
 } from "@uppy/core"
 import ImageEditor from "@uppy/image-editor"
+import English from "@uppy/locales/lib/en_US"
 import Spanish from "@uppy/locales/lib/es_MX"
+import Russian from "@uppy/locales/lib/ru_RU"
 import { Dashboard } from "@uppy/react"
+import { useLocale, useTranslations } from "next-intl"
 
 // Uppy styles
 import "@uppy/core/dist/style.min.css"
@@ -124,7 +127,15 @@ export function FileUploader({
   maxFileSize?: number
 }) {
   const { theme } = useTheme()
+  const locale = useLocale()
+  const t = useTranslations("errors.actions")
   const effectiveMaxFileSize = maxFileSize ?? 3 * 1024 * 1024
+
+  const uppyLocale = useMemo(() => {
+    if (locale === "ru") return Russian
+    if (locale === "es") return Spanish
+    return English
+  }, [locale])
 
   const [uppy] = useState(() =>
     new Uppy({
@@ -134,7 +145,7 @@ export function FileUploader({
         allowedFileTypes: [".jpg", ".jpeg", ".png"],
         maxFileSize: effectiveMaxFileSize
       },
-      locale: Spanish
+      locale: English
     })
       .use(AwsS3, {
         shouldUseMultipart: false,
@@ -147,9 +158,8 @@ export function FileUploader({
       .use(Compressor, {
         locale: {
           strings: {
-            // Shown in the Status Bar
-            compressingImages: "Optimizando imágenes...",
-            compressedX: "Ahorro de %{size} al optimizar imágenes"
+            compressingImages: "Optimizing images...",
+            compressedX: "Saved %{size} by optimizing images"
           },
           pluralize: function (n) {
             return n === 1 ? 0 : 1
@@ -157,6 +167,10 @@ export function FileUploader({
         }
       })
   )
+
+  useEffect(() => {
+    uppy.setOptions({ locale: uppyLocale })
+  }, [uppy, uppyLocale])
 
   useEffect(() => {
     uppy.on("file-added", async file => {
@@ -268,7 +282,7 @@ export function FileUploader({
           : undefined
 
       if (status === 403) {
-        uppy.info("Esta función requiere el plan Pro", "error", 4000)
+        uppy.info(t("proRequiredFeature"), "error", 4000)
         uppy.removeFile(file.id)
         onUpgradeRequired?.()
         return
@@ -282,9 +296,7 @@ export function FileUploader({
 
       if (onUploadError) {
         onUploadError(
-          error instanceof Error
-            ? error
-            : new Error("No se pudo subir el archivo")
+          error instanceof Error ? error : new Error(t("fileUploadFailed"))
         )
       }
     })
@@ -300,7 +312,8 @@ export function FileUploader({
     organizationId,
     limitDimension,
     onUploadError,
-    onUpgradeRequired
+    onUpgradeRequired,
+    t
   ])
 
   return (

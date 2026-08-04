@@ -3,6 +3,7 @@
 import * as React from "react"
 import { useDirection } from "@radix-ui/react-direction"
 import { SearchIcon, XIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -55,6 +56,7 @@ function DataGridKeyboardShortcutsImpl({
   enableRowAdd = false,
   enableRowsDelete = false
 }: DataGridKeyboardShortcutsProps) {
+  const t = useTranslations("menuEditor.dataGrid.shortcuts")
   const dir = useDirection()
   const [open, setOpen] = React.useState(false)
   const [input, setInput] = React.useState("")
@@ -89,175 +91,175 @@ function DataGridKeyboardShortcutsImpl({
   const shortcutGroups: ShortcutGroup[] = React.useMemo(
     () => [
       {
-        title: "Navegación",
+        title: t("groups.navigation"),
         shortcuts: [
           {
             keys: ["↑", "↓", "←", "→"],
-            description: "Navegar entre celdas"
+            description: t("navigateCells")
           },
           {
             keys: ["Tab"],
-            description: "Ir a la siguiente celda"
+            description: t("nextCell")
           },
           {
             keys: ["Shift", "Tab"],
-            description: "Ir a la celda anterior"
+            description: t("previousCell")
           },
           {
             keys: ["Home"],
-            description: "Ir a la primera columna"
+            description: t("firstColumn")
           },
           {
             keys: ["End"],
-            description: "Ir a la última columna"
+            description: t("lastColumn")
           },
           {
             keys: [modKey, "↑"],
-            description: "Ir a la primera fila (misma columna)"
+            description: t("firstRowSameColumn")
           },
           {
             keys: [modKey, "↓"],
-            description: "Ir a la última fila (misma columna)"
+            description: t("lastRowSameColumn")
           },
           {
             keys: [modKey, "←"],
-            description: "Ir a la primera columna (misma fila)"
+            description: t("firstColumnSameRow")
           },
           {
             keys: [modKey, "→"],
-            description: "Ir a la última columna (misma fila)"
+            description: t("lastColumnSameRow")
           },
           {
             keys: [modKey, "Home"],
-            description: "Ir a la primera celda"
+            description: t("firstCell")
           },
           {
             keys: [modKey, "End"],
-            description: "Ir a la última celda"
+            description: t("lastCell")
           },
           {
             keys: ["PgUp"],
-            description: "Subir una página"
+            description: t("pageUp")
           },
           {
             keys: ["PgDn"],
-            description: "Bajar una página"
+            description: t("pageDown")
           },
           {
             keys: ["⌥", "↑"],
-            description: "Desplazar hacia arriba una página"
+            description: t("scrollUpPage")
           },
           {
             keys: ["⌥", "↓"],
-            description: "Desplazar hacia abajo una página"
+            description: t("scrollDownPage")
           },
           {
             keys: ["⌥", "PgUp"],
-            description: "Desplazar columnas hacia la izquierda una página"
+            description: t("scrollColumnsLeftPage")
           },
           {
             keys: ["⌥", "PgDn"],
-            description: "Desplazar columnas hacia la derecha una página"
+            description: t("scrollColumnsRightPage")
           }
         ]
       },
       {
-        title: "Selección",
+        title: t("groups.selection"),
         shortcuts: [
           {
             keys: ["Shift", "↑↓←→"],
-            description: "Extender selección"
+            description: t("extendSelection")
           },
           {
             keys: [modKey, "Shift", "↑"],
-            description: "Seleccionar hasta la parte superior"
+            description: t("selectToTop")
           },
           {
             keys: [modKey, "Shift", "↓"],
-            description: "Seleccionar hasta la parte inferior"
+            description: t("selectToBottom")
           },
           {
             keys: [modKey, "Shift", "←"],
-            description: "Seleccionar hasta la primera columna"
+            description: t("selectToFirstColumn")
           },
           {
             keys: [modKey, "Shift", "→"],
-            description: "Seleccionar hasta la última columna"
+            description: t("selectToLastColumn")
           },
           {
             keys: [modKey, "A"],
-            description: "Seleccionar todas las celdas"
+            description: t("selectAllCells")
           },
           {
             keys: [modKey, "Click"],
-            description: "Alternar selección de celda"
+            description: t("toggleCellSelection")
           },
           {
             keys: ["Shift", "Click"],
-            description: "Seleccionar rango"
+            description: t("selectRange")
           },
           {
             keys: ["Esc"],
-            description: "Borrar selección"
+            description: t("clearSelection")
           }
         ]
       },
       {
-        title: "Edición",
+        title: t("groups.editing"),
         shortcuts: [
           {
             keys: ["Enter"],
-            description: "Comenzar edición de celda"
+            description: t("startEditingCell")
           },
           {
             keys: ["F2"],
-            description: "Comenzar edición de celda"
+            description: t("startEditingCell")
           },
           {
             keys: ["Double Click"],
-            description: "Comenzar edición de celda"
+            description: t("startEditingCell")
           },
           ...(enableRowAdd
             ? [
                 {
                   keys: ["Shift", "Enter"],
-                  description: "Insertar fila abajo"
+                  description: t("insertRowBelow")
                 }
               ]
             : []),
           {
             keys: [modKey, "C"],
-            description: "Copiar celdas seleccionadas"
+            description: t("copySelectedCells")
           },
           {
             keys: [modKey, "X"],
-            description: "Cortar celdas seleccionadas"
+            description: t("cutSelectedCells")
           },
           ...(enablePaste
             ? [
                 {
                   keys: [modKey, "V"],
-                  description: "Pegar celdas"
+                  description: t("pasteCells")
                 }
               ]
             : []),
           {
             keys: ["Delete"],
-            description: "Borrar celdas seleccionadas"
+            description: t("clearSelectedCells")
           },
           {
             keys: ["Backspace"],
-            description: "Borrar celdas seleccionadas"
+            description: t("clearSelectedCells")
           },
           ...(enableRowsDelete
             ? [
                 {
                   keys: [modKey, "Backspace"],
-                  description: "Eliminar filas seleccionadas"
+                  description: t("deleteSelectedRows")
                 },
                 {
                   keys: [modKey, "Delete"],
-                  description: "Eliminar filas seleccionadas"
+                  description: t("deleteSelectedRows")
                 }
               ]
             : []),
@@ -265,11 +267,11 @@ function DataGridKeyboardShortcutsImpl({
             ? [
                 {
                   keys: [modKey, "Z"],
-                  description: "Deshacer la última acción"
+                  description: t("undo")
                 },
                 {
                   keys: [modKey, "Shift", "Z"],
-                  description: "Rehacer la última acción"
+                  description: t("redo")
                 }
               ]
             : [])
@@ -278,73 +280,74 @@ function DataGridKeyboardShortcutsImpl({
       ...(enableSearch
         ? [
             {
-              title: "Búsqueda",
+              title: t("groups.search"),
               shortcuts: [
                 {
                   keys: [modKey, "F"],
-                  description: "Abrir búsqueda"
+                  description: t("openSearch")
                 },
                 {
                   keys: ["Enter"],
-                  description: "Siguiente coincidencia"
+                  description: t("nextMatch")
                 },
                 {
                   keys: ["Shift", "Enter"],
-                  description: "Coincidencia anterior"
+                  description: t("previousMatch")
                 },
                 {
                   keys: ["Esc"],
-                  description: "Cerrar búsqueda"
+                  description: t("closeSearch")
                 }
               ]
             }
           ]
         : []),
       {
-        title: "Filtrado",
+        title: t("groups.filtering"),
         shortcuts: [
           {
             keys: [modKey, "Shift", "F"],
-            description: "Alternar el menú de filtros"
+            description: t("toggleFilterMenu")
           },
           {
             keys: ["Backspace"],
-            description: "Eliminar filtro (cuando está enfocado)"
+            description: t("removeFilterWhenFocused")
           },
           {
             keys: ["Delete"],
-            description: "Eliminar filtro (cuando está enfocado)"
+            description: t("removeFilterWhenFocused")
           }
         ]
       },
       {
-        title: "Ordenamiento",
+        title: t("groups.sorting"),
         shortcuts: [
           {
             keys: [modKey, "Shift", "S"],
-            description: "Alternar el menú de ordenamiento"
+            description: t("toggleSortMenu")
           },
           {
             keys: ["Backspace"],
-            description: "Eliminar orden (cuando está enfocado)"
+            description: t("removeSortWhenFocused")
           },
           {
             keys: ["Delete"],
-            description: "Eliminar orden (cuando está enfocado)"
+            description: t("removeSortWhenFocused")
           }
         ]
       },
       {
-        title: "General",
+        title: t("groups.general"),
         shortcuts: [
           {
             keys: [modKey, "/"],
-            description: "Mostrar atajos de teclado"
+            description: t("showKeyboardShortcuts")
           }
         ]
       }
     ],
     [
+      t,
       modKey,
       enableSearch,
       enableUndoRedo,
@@ -398,10 +401,9 @@ function DataGridKeyboardShortcutsImpl({
           </Button>
         </DialogClose>
         <DialogHeader className="px-6">
-          <DialogTitle>Atajos de teclado</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription className="sr-only">
-            Usa estos atajos de teclado para navegar e interactuar con la tabla
-            de datos de forma más eficiente.
+            {t("description")}
           </DialogDescription>
         </DialogHeader>
         <div className="px-6">
@@ -412,7 +414,7 @@ function DataGridKeyboardShortcutsImpl({
             />
             <Input
               ref={inputRef}
-              placeholder="Buscar atajos..."
+              placeholder={t("searchPlaceholder")}
               className="h-8 ps-8"
               value={input}
               onChange={onInputChange}
@@ -437,10 +439,10 @@ function DataGridKeyboardShortcutsImpl({
               </div>
               <div className="flex flex-col gap-1">
                 <div className="text-lg font-medium tracking-tight">
-                  No se encontraron atajos
+                  {t("noResultsTitle")}
                 </div>
                 <p className="text-muted-foreground text-sm">
-                  Intenta buscar otro término.
+                  {t("noResultsDescription")}
                 </p>
               </div>
             </div>

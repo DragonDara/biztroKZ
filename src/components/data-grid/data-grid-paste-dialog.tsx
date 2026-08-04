@@ -3,6 +3,7 @@
 import * as React from "react"
 import type { PasteDialogState } from "@/types/data-grid"
 import type { TableMeta } from "@tanstack/react-table"
+import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -57,6 +58,8 @@ function PasteDialogImpl({
   onPasteDialogOpenChange,
   onCellsPaste
 }: PasteDialogProps) {
+  const t = useTranslations("menuEditor.dataGrid.paste")
+  const tCommon = useTranslations("dashboard.common")
   const propsRef = useAsRef({
     onPasteDialogOpenChange,
     onCellsPaste
@@ -83,12 +86,12 @@ function PasteDialogImpl({
     <Dialog open={pasteDialog.open} onOpenChange={onOpenChange}>
       <DialogContent data-grid-popover="">
         <DialogHeader>
-          <DialogTitle>¿Deseas agregar más filas?</DialogTitle>
+          <DialogTitle>{t("title")}</DialogTitle>
           <DialogDescription>
-            Necesitamos <strong>{pasteDialog.rowsNeeded}</strong> fila
-            {pasteDialog.rowsNeeded !== 1 ? "s" : ""} adicional
-            {pasteDialog.rowsNeeded !== 1 ? "s" : ""} para pegar todo desde el
-            portapapeles.
+            {t.rich("description", {
+              rowsNeeded: pasteDialog.rowsNeeded,
+              strong: chunks => <strong>{chunks}</strong>
+            })}
           </DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-3 py-1">
@@ -101,12 +104,12 @@ function PasteDialogImpl({
             />
             <div className="flex flex-col gap-1">
               <span className="text-sm leading-none font-medium">
-                Crear nuevas filas
+                {t("expandOptionTitle")}
               </span>
               <span className="text-muted-foreground text-sm">
-                Agregar {pasteDialog.rowsNeeded} fila
-                {pasteDialog.rowsNeeded !== 1 ? "s" : ""} a la tabla y pegar
-                todos los datos
+                {t("expandOptionDescription", {
+                  rowsNeeded: pasteDialog.rowsNeeded
+                })}
               </span>
             </div>
           </label>
@@ -114,19 +117,19 @@ function PasteDialogImpl({
             <RadioItem name="expand-option" value="no-expand" />
             <div className="flex flex-col gap-1">
               <span className="text-sm leading-none font-medium">
-                Mantener filas actuales
+                {t("keepOptionTitle")}
               </span>
               <span className="text-muted-foreground text-sm">
-                Pegar solo lo que quepa en las filas existentes
+                {t("keepOptionDescription")}
               </span>
             </div>
           </label>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onCancel}>
-            Cancelar
+            {tCommon("cancel")}
           </Button>
-          <Button onClick={onContinue}>Continuar</Button>
+          <Button onClick={onContinue}>{t("continue")}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

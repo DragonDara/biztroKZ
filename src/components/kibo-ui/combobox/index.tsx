@@ -11,6 +11,7 @@ import {
 } from "react"
 import { useControllableState } from "@radix-ui/react-use-controllable-state"
 import { ChevronsUpDownIcon, PlusIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -120,6 +121,7 @@ export const ComboboxTrigger = ({
   children,
   ...props
 }: ComboboxTriggerProps) => {
+  const t = useTranslations("dashboard.common")
   const { value, data, type, setWidth } = useContext(ComboboxContext)
   const ref = useRef<HTMLButtonElement>(null)
 
@@ -151,7 +153,7 @@ export const ComboboxTrigger = ({
           <span className="flex w-full items-center justify-between gap-2">
             {value
               ? data.find(item => item.value === value)?.label
-              : `Selecciona ${type}...`}
+              : t("selectType", { type })}
             <ChevronsUpDownIcon
               className="text-muted-foreground shrink-0"
               size={16}
@@ -198,6 +200,7 @@ export const ComboboxInput = ({
   ...props
 }: ComboboxInputProps) => {
   const { type, inputValue, setInputValue } = useContext(ComboboxContext)
+  const t = useTranslations("dashboard.common")
 
   const [value, onValueChange] = useControllableState({
     defaultProp: defaultValue ?? inputValue,
@@ -213,7 +216,7 @@ export const ComboboxInput = ({
   return (
     <CommandInput
       onValueChange={onValueChange}
-      placeholder={`Buscar ${type}...`}
+      placeholder={t("searchType", { type })}
       value={value}
       {...props}
     />
@@ -230,9 +233,12 @@ export type ComboboxEmptyProps = ComponentProps<typeof CommandEmpty>
 
 export const ComboboxEmpty = ({ children, ...props }: ComboboxEmptyProps) => {
   const { type } = useContext(ComboboxContext)
+  const t = useTranslations("dashboard.common")
 
   return (
-    <CommandEmpty {...props}>{children ?? `No ${type} found.`}</CommandEmpty>
+    <CommandEmpty {...props}>
+      {children ?? t("noTypeFound", { type })}
+    </CommandEmpty>
   )
 }
 

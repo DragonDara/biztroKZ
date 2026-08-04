@@ -1,3 +1,4 @@
+import { getTranslations } from "next-intl/server"
 import { redirect } from "next/navigation"
 
 import ConfettiOnMount from "@/components/confetti-on-mount"
@@ -59,9 +60,13 @@ function deriveStep({
   return "menu"
 }
 
-export const metadata = {
-  title: "Crear nuevo negocio",
-  description: "Configura una nueva organización para tu negocio"
+export async function generateMetadata() {
+  const t = await getTranslations("auth.onboarding")
+
+  return {
+    title: t("metaTitle"),
+    description: t("metaDescription")
+  }
 }
 
 export default async function NewOrgPage(props: {
@@ -73,7 +78,8 @@ export default async function NewOrgPage(props: {
     redirect("/login")
   }
 
-  const [searchParams, currentOrg] = await Promise.all([
+  const [t, searchParams, currentOrg] = await Promise.all([
+    getTranslations("auth.onboarding"),
     props.searchParams,
     getCurrentOrganization()
   ])
@@ -144,11 +150,10 @@ export default async function NewOrgPage(props: {
             className="font-display text-2xl font-semibold text-balance
               sm:text-4xl"
           >
-            Bienvenido a Biztro
+            {t("welcomeTitle")}
           </PageSubtitle.Title>
           <PageSubtitle.Description className="mt-2 text-pretty sm:text-base">
-            Completa esta configuración paso a paso. Puedes omitir cualquier
-            parte y volver más tarde desde el dashboard.
+            {t("welcomeDescription")}
           </PageSubtitle.Description>
         </PageSubtitle>
 

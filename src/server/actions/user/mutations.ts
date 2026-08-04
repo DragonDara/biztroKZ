@@ -1,6 +1,7 @@
 "use server"
 
 import * as Sentry from "@sentry/nextjs"
+import { getTranslations } from "next-intl/server"
 import { refresh, updateTag } from "next/cache"
 import { headers } from "next/headers"
 import { z } from "zod/v4"
@@ -18,6 +19,8 @@ export const switchOrganization = authActionClient
   )
   .action(
     async ({ parsedInput: { organizationId, currentOrganizationId } }) => {
+      const t = await getTranslations("errors.actions")
+
       try {
         const requestHeaders = await headers()
         const data = await auth.api.setActiveOrganization({
@@ -30,7 +33,7 @@ export const switchOrganization = authActionClient
         if (!data) {
           return {
             failure: {
-              reason: "No se pudo cambiar de organización"
+              reason: t("switchOrganizationFailed")
             }
           }
         }
@@ -71,7 +74,7 @@ export const switchOrganization = authActionClient
         })
         return {
           failure: {
-            reason: "Error cambiando de organización"
+            reason: t("switchOrganizationError")
           }
         }
       }
@@ -85,6 +88,8 @@ export const inviteMember = authActionClient
     })
   )
   .action(async ({ parsedInput: { email } }) => {
+    const t = await getTranslations("errors.actions")
+
     try {
       const requestHeaders = await headers()
       const data = await auth.api.createInvitation({
@@ -129,7 +134,7 @@ export const inviteMember = authActionClient
       })
       return {
         failure: {
-          reason: "Error invitando al miembro"
+          reason: t("inviteMemberError")
         }
       }
     }
@@ -142,6 +147,8 @@ export const acceptInvite = authActionClient
     })
   )
   .action(async ({ parsedInput: { id } }) => {
+    const t = await getTranslations("errors.actions")
+
     try {
       const requestHeaders = await headers()
       const data = await auth.api.acceptInvitation({
@@ -154,7 +161,7 @@ export const acceptInvite = authActionClient
       if (!data) {
         return {
           failure: {
-            reason: "No se pudo aceptar la invitación"
+            reason: t("acceptInviteFailed")
           }
         }
       }
@@ -170,7 +177,7 @@ export const acceptInvite = authActionClient
         if (!activated) {
           return {
             failure: {
-              reason: "No se pudo establecer la organización activa"
+              reason: t("setActiveOrganizationFailed")
             }
           }
         }
@@ -212,7 +219,7 @@ export const acceptInvite = authActionClient
       })
       return {
         failure: {
-          reason: "Error aceptando la invitación"
+          reason: t("acceptInviteError")
         }
       }
     }
@@ -225,6 +232,8 @@ export const removeMember = authActionClient
     })
   )
   .action(async ({ parsedInput: { id } }) => {
+    const t = await getTranslations("errors.actions")
+
     try {
       const requestHeaders = await headers()
       const data = await auth.api.removeMember({
@@ -237,7 +246,7 @@ export const removeMember = authActionClient
       if (!data) {
         return {
           failure: {
-            reason: "No se pudo eliminar al miembro"
+            reason: t("removeMemberFailed")
           }
         }
       }
@@ -264,7 +273,7 @@ export const removeMember = authActionClient
       })
       return {
         failure: {
-          reason: "Error eliminando al miembro"
+          reason: t("removeMemberError")
         }
       }
     }

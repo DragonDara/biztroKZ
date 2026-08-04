@@ -394,7 +394,10 @@
       "view": "Открыть",
       "searchType": "Искать {type}...",
       "selectType": "Выберите {type}...",
-      "noTypeFound": "{type} не найдено."
+      "noTypeFound": "{type} не найдено.",
+      "uploadImage": "Загрузить изображение",
+      "changeImage": "Изменить изображение",
+      "photoAlt": "Фото"
     },
     "dataTable": {
       "searchPlaceholder": "Поиск по результатам",
@@ -751,6 +754,16 @@
         "exportEmpty": "Нет продуктов для экспорта",
         "exportSuccess": "CSV создан (1 строка на вариант продукта)",
         "exportError": "Не удалось экспортировать продукты",
+        "exportFileName": "produkty-eksport-s-variantami.csv",
+        "csvColumns": {
+          "name": "название",
+          "variant": "вариант",
+          "description": "описание",
+          "price": "цена",
+          "category": "категория",
+          "currency": "валюта"
+        },
+        "defaultVariantName": "Обычный",
         "selectedCount": "Выбрано: {count}",
         "deselectAll": "Снять выделение",
         "updateCategory": "Изменить категорию",
@@ -790,6 +803,7 @@
             "maxRows": "Нельзя импортировать более 200 продуктов за раз",
             "csvParseError": "Не удалось обработать CSV: {message}"
           },
+          "templateFileName": "shablon-produkty.csv",
           "template": {
             "productName": "Пример продукта",
             "description": "Описание продукта",

@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { ImageUp } from "lucide-react"
+import { useTranslations } from "next-intl"
 import Image from "next/image"
 
 import { FileUploader } from "@/components/dashboard/file-uploader"
@@ -31,6 +32,7 @@ export function ImageField({
   onUploadSuccess?: () => void
   className?: string
 }) {
+  const t = useTranslations("dashboard.common")
   const [open, setOpen] = useState(false)
   return (
     <div
@@ -41,7 +43,7 @@ export function ImageField({
     >
       <Image
         src={src}
-        alt="Foto"
+        alt={t("photoAlt")}
         className="h-full w-full object-cover"
         loading="lazy"
         fill
@@ -63,12 +65,12 @@ export function ImageField({
                   hover:bg-white/10"
               >
                 <ImageUp className="mr-2 size-4" />
-                Cambiar imágen
+                {t("changeImage")}
               </Button>
             </DialogTrigger>
             <DialogContent className="max-w-xl">
               <DialogHeader>
-                <DialogTitle>Subir imágen</DialogTitle>
+                <DialogTitle>{t("uploadImage")}</DialogTitle>
               </DialogHeader>
               <FileUploader
                 organizationId={organizationId}

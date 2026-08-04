@@ -394,7 +394,10 @@
       "view": "View",
       "searchType": "Search {type}...",
       "selectType": "Select {type}...",
-      "noTypeFound": "No {type} found."
+      "noTypeFound": "No {type} found.",
+      "uploadImage": "Upload image",
+      "changeImage": "Change image",
+      "photoAlt": "Photo"
     },
     "dataTable": {
       "searchPlaceholder": "Search results",
@@ -751,6 +754,16 @@
         "exportEmpty": "No products to export",
         "exportSuccess": "CSV generated successfully (1 row per product variant)",
         "exportError": "Could not export products",
+        "exportFileName": "products-export-with-variants.csv",
+        "csvColumns": {
+          "name": "name",
+          "variant": "variant",
+          "description": "description",
+          "price": "price",
+          "category": "category",
+          "currency": "currency"
+        },
+        "defaultVariantName": "Regular",
         "selectedCount": "{count} selected",
         "deselectAll": "Deselect all",
         "updateCategory": "Update category",
@@ -790,6 +803,7 @@
             "maxRows": "You cannot import more than 200 products at once",
             "csvParseError": "Could not process the CSV file: {message}"
           },
+          "templateFileName": "products-template.csv",
           "template": {
             "productName": "Margherita Pizza",
             "description": "Tomato, mozzarella, basil",

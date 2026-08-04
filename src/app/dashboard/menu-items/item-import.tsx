@@ -6,7 +6,6 @@ import * as Sentry from "@sentry/nextjs"
 import { ChevronDown, Download, Loader, Upload } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
-import Papa from "papaparse"
 
 import { Button } from "@/components/ui/button"
 import { ButtonGroup } from "@/components/ui/button-group"
@@ -26,29 +25,25 @@ import {
 import { exportMenuItems } from "@/server/actions/item/mutations"
 import { useIsMobile } from "@/hooks/use-mobile"
 import MenuImportOptions from "@/app/dashboard/menu-items/import-options"
-
-function downloadCsvFile(
-  rows: Array<Record<string, string | undefined>>,
-  fileName: string
-) {
-  const csv = Papa.unparse(rows)
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
-  const link = document.createElement("a")
-  const url = URL.createObjectURL(blob)
-
-  link.setAttribute("href", url)
-  link.setAttribute("download", fileName)
-  link.style.visibility = "hidden"
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  URL.revokeObjectURL(url)
-}
+import {
+  downloadMenuItemsCsvFile,
+  toLocalizedMenuItemCsvRow,
+  type MenuItemCsvColumnLabels
+} from "@/lib/menu-items-csv"
 
 export default function ItemImport() {
   const t = useTranslations("dashboard.menuItems.products")
   const [open, setOpen] = useState(false)
   const isMobile = useIsMobile()
+
+  const columnLabels: MenuItemCsvColumnLabels = {
+    name: t("csvColumns.name"),
+    variant: t("csvColumns.variant"),
+    description: t("csvColumns.description"),
+    price: t("csvColumns.price"),
+    category: t("csvColumns.category"),
+    currency: t("csvColumns.currency")
+  }
 
   const {
     execute: exportItems,
@@ -66,7 +61,7 @@ export default function ItemImport() {
       const csvRows = items.flatMap(item => {
         const variants = item.variants?.length
           ? item.variants
-          : [{ name: "Regular", price: 0 }]
+          : [{ name: t("defaultVariantName"), price: 0 }]
 
         return variants.map(variant => {
           const validPrice =
@@ -74,18 +69,21 @@ export default function ItemImport() {
               ? variant.price
               : 0
 
-          return {
-            nombre: item.name,
-            variante: variant.name,
-            descripcion: item.description ?? "",
-            precio: validPrice.toFixed(2),
-            categoria: item.category?.name,
-            moneda: item.currency ?? "KZT"
-          }
+          return toLocalizedMenuItemCsvRow(
+            {
+              name: item.name,
+              variant: variant.name,
+              description: item.description ?? "",
+              price: validPrice.toFixed(2),
+              category: item.category?.name,
+              currency: item.currency ?? "KZT"
+            },
+            columnLabels
+          )
         })
       })
 
-      downloadCsvFile(csvRows, "productos-exportados-con-variantes.csv")
+      downloadMenuItemsCsvFile(csvRows, t("exportFileName"))
       toast.success(t("exportSuccess"))
       resetExport()
     },

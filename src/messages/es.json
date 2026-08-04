@@ -394,7 +394,10 @@
       "view": "Ver",
       "searchType": "Buscar {type}...",
       "selectType": "Selecciona {type}...",
-      "noTypeFound": "No se encontró {type}."
+      "noTypeFound": "No se encontró {type}.",
+      "uploadImage": "Subir imagen",
+      "changeImage": "Cambiar imagen",
+      "photoAlt": "Foto"
     },
     "dataTable": {
       "searchPlaceholder": "Buscar en resultados",
@@ -751,6 +754,16 @@
         "exportEmpty": "No hay productos para exportar",
         "exportSuccess": "CSV generado correctamente (1 fila por variante de producto)",
         "exportError": "No se pudo exportar los productos",
+        "exportFileName": "productos-exportados-con-variantes.csv",
+        "csvColumns": {
+          "name": "nombre",
+          "variant": "variante",
+          "description": "descripcion",
+          "price": "precio",
+          "category": "categoria",
+          "currency": "moneda"
+        },
+        "defaultVariantName": "Regular",
         "selectedCount": "{count} seleccionado(s)",
         "deselectAll": "Deseleccionar todo",
         "updateCategory": "Actualizar categoría",
@@ -790,6 +803,7 @@
             "maxRows": "No puedes importar más de 200 productos a la vez",
             "csvParseError": "No pudimos procesar el archivo CSV: {message}"
           },
+          "templateFileName": "plantilla-productos.csv",
           "template": {
             "productName": "Producto ejemplo",
             "description": "Descripcion del producto",

@@ -13,16 +13,14 @@ import Papa from "papaparse"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
 import { bulkCreateItems } from "@/server/actions/item/mutations"
+import {
+  downloadMenuItemsCsvFile,
+  normalizeMenuItemCsvRow,
+  toLocalizedMenuItemCsvRow,
+  type MenuItemCsvColumnLabels,
+  type MenuItemCsvFields
+} from "@/lib/menu-items-csv"
 import { MenuItemStatus, type BulkMenuItem } from "@/lib/types/menu-item"
-
-type CSVRow = {
-  nombre: string
-  variante?: string
-  descripcion?: string
-  precio: string
-  categoria?: string
-  moneda?: string
-}
 
 type ImportError = {
   row: number
@@ -30,44 +28,32 @@ type ImportError = {
 }
 
 type ImportValidationKey =
-  "nameRequired" | "priceRequired" | "priceInvalid" | "currencyInvalid"
-
-function downloadCsvFile(rows: CSVRow[], fileName: string) {
-  const csv = Papa.unparse(rows)
-  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
-  const link = document.createElement("a")
-  const url = URL.createObjectURL(blob)
-
-  link.setAttribute("href", url)
-  link.setAttribute("download", fileName)
-  link.style.visibility = "hidden"
-  document.body.appendChild(link)
-  link.click()
-  document.body.removeChild(link)
-  URL.revokeObjectURL(url)
-}
+  | "nameRequired"
+  | "priceRequired"
+  | "priceInvalid"
+  | "currencyInvalid"
 
 function validateRow(
-  row: CSVRow,
+  row: Partial<MenuItemCsvFields>,
   t: (key: ImportValidationKey) => string
 ): string[] {
   const errors: string[] = []
 
-  if (!row.nombre?.trim()) {
+  if (!row.name?.trim()) {
     errors.push(t("nameRequired"))
   }
 
-  if (!row.precio) {
+  if (!row.price) {
     errors.push(t("priceRequired"))
   } else {
-    const price = parseFloat(row.precio)
+    const price = parseFloat(row.price)
     if (isNaN(price) || price < 0) {
       errors.push(t("priceInvalid"))
     }
   }
 
-  if (row.moneda) {
-    const currency = row.moneda.trim().toUpperCase()
+  if (row.currency) {
+    const currency = row.currency.trim().toUpperCase()
     if (!["MXN", "USD", "KZT"].includes(currency)) {
       errors.push(t("currencyInvalid"))
     }
@@ -84,31 +70,50 @@ export default function MenuImportOptions({
   onCsvSuccess?: (createdCount: number) => void
 }) {
   const t = useTranslations("dashboard.menuItems.import.options")
+  const tProducts = useTranslations("dashboard.menuItems.products")
   const tValidation = useTranslations(
     "dashboard.menuItems.import.options.validation"
   )
   const [errors, setErrors] = useState<ImportError[]>([])
 
-  const templateRows = useMemo<CSVRow[]>(
+  const columnLabels: MenuItemCsvColumnLabels = useMemo(
+    () => ({
+      name: tProducts("csvColumns.name"),
+      variant: tProducts("csvColumns.variant"),
+      description: tProducts("csvColumns.description"),
+      price: tProducts("csvColumns.price"),
+      category: tProducts("csvColumns.category"),
+      currency: tProducts("csvColumns.currency")
+    }),
+    [tProducts]
+  )
+
+  const templateRows = useMemo(
     () => [
-      {
-        nombre: t("template.productName"),
-        variante: t("template.variantRegular"),
-        descripcion: t("template.description"),
-        precio: "100.00",
-        categoria: t("template.category"),
-        moneda: "KZT"
-      },
-      {
-        nombre: t("template.productName"),
-        variante: t("template.variantLarge"),
-        descripcion: t("template.description"),
-        precio: "120.00",
-        categoria: t("template.category"),
-        moneda: "KZT"
-      }
+      toLocalizedMenuItemCsvRow(
+        {
+          name: t("template.productName"),
+          variant: t("template.variantRegular"),
+          description: t("template.description"),
+          price: "100.00",
+          category: t("template.category"),
+          currency: "KZT"
+        },
+        columnLabels
+      ),
+      toLocalizedMenuItemCsvRow(
+        {
+          name: t("template.productName"),
+          variant: t("template.variantLarge"),
+          description: t("template.description"),
+          price: "120.00",
+          category: t("template.category"),
+          currency: "KZT"
+        },
+        columnLabels
+      )
     ],
-    [t]
+    [t, columnLabels]
   )
 
   const { execute, isPending, reset } = useAction(bulkCreateItems, {
@@ -144,7 +149,7 @@ export default function MenuImportOptions({
 
     setErrors([])
 
-    Papa.parse<CSVRow>(file, {
+    Papa.parse<Record<string, string | undefined>>(file, {
       header: true,
       skipEmptyLines: true,
       encoding: "utf-8",
@@ -162,7 +167,8 @@ export default function MenuImportOptions({
         const foundErrors: ImportError[] = []
         const validItems: BulkMenuItem[] = []
 
-        results.data.forEach((row, index) => {
+        results.data.forEach((rawRow, index) => {
+          const row = normalizeMenuItemCsvRow(rawRow, columnLabels)
           const rowErrors = validateRow(row, key => tValidation(key))
 
           if (rowErrors.length > 0) {
@@ -173,15 +179,15 @@ export default function MenuImportOptions({
             return
           }
 
-          const currency = (row.moneda ?? "KZT").trim().toUpperCase()
+          const currency = (row.currency ?? "KZT").trim().toUpperCase()
 
           validItems.push({
-            name: row.nombre,
-            variantName: row.variante?.trim() || undefined,
-            description: row.descripcion,
-            price: parseFloat(row.precio),
+            name: row.name!,
+            variantName: row.variant?.trim() || undefined,
+            description: row.description,
+            price: parseFloat(row.price!),
             status: MenuItemStatus.ACTIVE,
-            category: row.categoria,
+            category: row.category,
             currency:
               currency === "USD" ? "USD" : currency === "MXN" ? "MXN" : "KZT"
           })
@@ -258,7 +264,7 @@ export default function MenuImportOptions({
             variant="outline"
             className="w-full justify-start sm:w-fit"
             onClick={() =>
-              downloadCsvFile(templateRows, "plantilla-productos.csv")
+              downloadMenuItemsCsvFile(templateRows, t("templateFileName"))
             }
             disabled={isPending}
           >

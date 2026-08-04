@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { ImageIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { FileUploader } from "@/components/dashboard/file-uploader"
 import { Button } from "@/components/ui/button"
@@ -28,6 +29,7 @@ export function EmptyImageField({
   onUploadSuccess?: () => void
   className?: string
 }) {
+  const t = useTranslations("dashboard.common")
   const [open, setOpen] = useState(false)
   return (
     <div
@@ -41,12 +43,12 @@ export function EmptyImageField({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <Button type="button" variant="secondary" size="sm">
-            Subir imágen
+            {t("uploadImage")}
           </Button>
         </DialogTrigger>
         <DialogContent className="max-w-xl">
           <DialogHeader>
-            <DialogTitle>Subir imágen</DialogTitle>
+            <DialogTitle>{t("uploadImage")}</DialogTitle>
           </DialogHeader>
           <FileUploader
             organizationId={organizationId}

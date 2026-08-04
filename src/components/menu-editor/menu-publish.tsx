@@ -110,9 +110,11 @@ export default function MenuPublish({
   const locale = useLocale()
   const dateFnsLocale = getDateFnsLocale(locale)
 
-  const { store, query, actions, nodes } = useEditor((state, query) => ({
-    nodes: query.getSerializedNodes()
-  }))
+  // Do not collect nodes here: Frame deserialization updates the Craft store
+  // during render and would sync-update MenuPublish (React "setState while
+  // rendering" warning). Collector returns a stable null so we only use
+  // store/query/actions without node subscriptions.
+  const { store, query, actions } = useEditor(() => null)
 
   const fontTheme = useAtomValue(fontThemeAtom)
   const colorTheme = useAtomValue(colorThemeAtom)
@@ -153,8 +155,9 @@ export default function MenuPublish({
   })
 
   useEffect(() => {
-    // console.dir(store.history.timeline)
-  }, [store.history.timeline, query, nodes])
+    // Intentionally empty — previously depended on serialized nodes which
+    // forced MenuPublish to re-render whenever Frame updated the Craft tree.
+  }, [store.history.timeline, query])
 
   // Verify if the menu theme has changed
   const { clearUnsavedChanges } = useSetUnsavedChanges()
@@ -314,10 +317,16 @@ export default function MenuPublish({
   }, [menu, revertToPublished])
 
   useEffect(() => {
-    // Subscribe to store changes so autosave can react reliably
+    // Subscribe to store changes so autosave can react reliably.
+    // Defer setState: Craft.js may update history while Frame descendants
+    // render, and a sync callback would update MenuPublish mid-render.
     const unsubscribe = store.subscribe(
       () => store.history.timeline.length,
-      setTimelineLength
+      length => {
+        queueMicrotask(() => {
+          setTimelineLength(length)
+        })
+      }
     )
 
     return () => {

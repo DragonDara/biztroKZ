@@ -1,7 +1,7 @@
 "use client"
 
-import { useEffect, type RefObject } from "react"
-import { Element, Frame } from "@craftjs/core"
+import { useEffect, useRef, type RefObject } from "react"
+import { Element, Frame, ROOT_NODE, useEditor } from "@craftjs/core"
 
 import ContainerBlock from "@/components/menu-editor/blocks/container-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
@@ -54,6 +54,9 @@ export function FramePreviewContent({
   location,
   updateFrameHeight
 }: FramePreviewContentProps) {
+  // Stable collector: no node subscription, we only need actions/query.
+  const { actions, query } = useEditor(() => null)
+
   // Disable sticky header in the editor preview so it scrolls with content
   // instead of pinning to the top of the iframe's own viewport.
   useEffect(() => {
@@ -92,9 +95,20 @@ export function FramePreviewContent({
     }
   }, [frameDocument, frameDocRef, updateFrameHeight])
 
-  return (
-    <CssStyles frameDocument={frameDocument}>
-      <Frame data={json}>
+  // Craft's <Frame data={...}> deserializes into the store during its own
+  // render, which synchronously notifies mounted subscribers (Layers panel,
+  // toolbar, etc.) and triggers React's "Cannot update a component while
+  // rendering a different component" error. Load the content in an effect
+  // instead, where store updates are legal, and render an empty <Frame />.
+  const hasLoadedContentRef = useRef(false)
+  useEffect(() => {
+    if (hasLoadedContentRef.current) return
+    hasLoadedContentRef.current = true
+
+    if (json) {
+      actions.history.ignore().deserialize(json)
+    } else {
+      const defaultContent = (
         <Element is={ContainerBlock} canvas>
           <HeaderBlock
             organization={organization}
@@ -102,7 +116,25 @@ export function FramePreviewContent({
             showBanner={Boolean(organization.banner?.trim())}
           />
         </Element>
-      </Frame>
+      )
+      const tree = query
+        .parseReactElement(defaultContent)
+        .toNodeTree((node, jsx) => {
+          if (jsx === defaultContent) {
+            node.id = ROOT_NODE
+          }
+          return node
+        })
+      actions.history.ignore().addNodeTree(tree)
+    }
+
+    // Load once per mount, mirroring Frame's own one-shot behavior.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
+
+  return (
+    <CssStyles frameDocument={frameDocument}>
+      <Frame />
     </CssStyles>
   )
 }

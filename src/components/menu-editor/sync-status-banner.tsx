@@ -22,6 +22,7 @@ import {
   areLocationsInSync,
   areOrganizationsInSync,
   areSoloItemsInSync,
+  craftStoreHasNode,
   decodeMenuNodes,
   extractMenuDataFromNodes,
   syncEditorWithMenuState
@@ -49,7 +50,7 @@ export default function SyncStatusBanner({
   revertVersion?: number
 }) {
   const t = useTranslations("menuEditor.sync")
-  const { actions } = useEditor()
+  const { actions, store } = useEditor()
   const [syncReq, setSyncReq] = useState(false)
   const isMobile = useIsMobile()
 
@@ -77,7 +78,8 @@ export default function SyncStatusBanner({
       location,
       categories,
       featuredItems,
-      soloItems
+      soloItems,
+      hasNode: nodeId => craftStoreHasNode(() => store.getState(), nodeId)
     })
 
     if (!synced) {
@@ -89,6 +91,7 @@ export default function SyncStatusBanner({
     return true
   }, [
     actions,
+    store,
     menu,
     organization,
     location,

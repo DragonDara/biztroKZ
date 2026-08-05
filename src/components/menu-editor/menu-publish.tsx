@@ -81,7 +81,7 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { colorThemeAtom, fontThemeAtom, tourModeAtom } from "@/lib/atoms"
 import { getDateFnsLocale } from "@/lib/date-fns-locale"
 import exportAsImage from "@/lib/export-as-image"
-import { syncEditorWithMenuState } from "@/lib/sync-status"
+import { craftStoreHasNode, syncEditorWithMenuState } from "@/lib/sync-status"
 import { MenuStatus } from "@/lib/types/menu"
 import { getPublishedMenuUrl } from "@/lib/utils"
 
@@ -279,11 +279,13 @@ export default function MenuPublish({
       location,
       categories,
       featuredItems,
-      soloItems
+      soloItems,
+      hasNode: nodeId => craftStoreHasNode(() => store.getState(), nodeId)
     })
     return serializeCurrentEditorState()
   }, [
     actions,
+    store,
     menu,
     organization,
     location,

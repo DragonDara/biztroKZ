@@ -30,6 +30,26 @@ type EditorActions = {
   delete: (nodeId: string) => void
 }
 
+type HasEditorNode = (nodeId: string) => boolean
+
+/** Craft store getState() may be `{ current }` (types) or EditorState (runtime). */
+export function craftStoreHasNode(
+  getState: () => unknown,
+  nodeId: string
+): boolean {
+  const rawState = getState() as {
+    current?: { nodes?: Record<string, unknown> }
+    nodes?: Record<string, unknown>
+  } | null
+  const nodes = rawState?.current?.nodes ?? rawState?.nodes
+  return Boolean(nodes?.[nodeId])
+}
+
+/**
+ * Missing-node guard for Craft.js. Only match the specific message — in
+ * production tiny-invariant collapses all invariants to "Invariant failed",
+ * so that string must not be treated as a missing node (use `hasNode` instead).
+ */
 function isMissingEditorNodeError(error: unknown) {
   return (
     error instanceof Error &&
@@ -40,8 +60,13 @@ function isMissingEditorNodeError(error: unknown) {
 function trySetProp(
   actions: EditorActions,
   nodeId: string,
-  setter: (props: Record<string, unknown>) => void
+  setter: (props: Record<string, unknown>) => void,
+  hasNode?: HasEditorNode
 ) {
+  if (hasNode && !hasNode(nodeId)) {
+    return
+  }
+
   try {
     actions.setProp(nodeId, setter)
   } catch (error) {
@@ -52,7 +77,15 @@ function trySetProp(
   }
 }
 
-function tryDelete(actions: EditorActions, nodeId: string) {
+function tryDelete(
+  actions: EditorActions,
+  nodeId: string,
+  hasNode?: HasEditorNode
+) {
+  if (hasNode && !hasNode(nodeId)) {
+    return
+  }
+
   try {
     actions.delete(nodeId)
   } catch (error) {
@@ -552,6 +585,7 @@ export function areLocationsInSync(
  * @param {Awaited<ReturnType<typeof getCategoriesWithItems>>} params.categories - Current categories and their items.
  * @param {Awaited<ReturnType<typeof getFeaturedItems>>} params.featuredItems - Current featured items.
  * @param {Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>} params.soloItems - Items without a category.
+ * @param {HasEditorNode} [params.hasNode] - Optional live-store check; skips ids missing from the editor.
  *
  * @returns {boolean} True when nodes were decoded and the editor was synchronized; false when
  * there is no menu.serialData or decoding fails.
@@ -563,7 +597,8 @@ export function syncEditorWithMenuState({
   location,
   categories,
   featuredItems,
-  soloItems
+  soloItems,
+  hasNode
 }: {
   actions: EditorActions
   menu: Awaited<ReturnType<typeof getMenuById>>
@@ -572,6 +607,8 @@ export function syncEditorWithMenuState({
   categories: Awaited<ReturnType<typeof getCategoriesWithItems>>
   featuredItems: Awaited<ReturnType<typeof getFeaturedItems>>
   soloItems: Awaited<ReturnType<typeof getMenuItemsWithoutCategory>>
+  /** Prefer checking the live Craft store so stale serialData ids are skipped. */
+  hasNode?: HasEditorNode
 }) {
   if (!menu?.serialData) {
     return false
@@ -594,27 +631,42 @@ export function syncEditorWithMenuState({
         dbCategory => dbCategory.id === categoryId
       )
       if (dbCategory[0]) {
-        trySetProp(actions, property, props => {
-          props.data = dbCategory[0]
-        })
+        trySetProp(
+          actions,
+          property,
+          props => {
+            props.data = dbCategory[0]
+          },
+          hasNode
+        )
       }
 
       if (!dbCategory[0]) {
-        tryDelete(actions, property)
+        tryDelete(actions, property, hasNode)
       }
     }
 
     if (component?.type?.resolvedName === "HeaderBlock") {
-      trySetProp(actions, property, props => {
-        props.organization = organization
-        props.location = location
-      })
+      trySetProp(
+        actions,
+        property,
+        props => {
+          props.organization = organization
+          props.location = location
+        },
+        hasNode
+      )
     }
 
     if (component?.type?.resolvedName === "FeaturedBlock") {
-      trySetProp(actions, property, props => {
-        props.items = featuredItems
-      })
+      trySetProp(
+        actions,
+        property,
+        props => {
+          props.items = featuredItems
+        },
+        hasNode
+      )
     }
 
     if (component?.type?.resolvedName === "ItemBlock") {
@@ -624,13 +676,18 @@ export function syncEditorWithMenuState({
       }
       const dbItem = soloItems.find(dbItem => dbItem.id === itemId)
       if (dbItem) {
-        trySetProp(actions, property, props => {
-          props.item = dbItem
-        })
+        trySetProp(
+          actions,
+          property,
+          props => {
+            props.item = dbItem
+          },
+          hasNode
+        )
       }
 
       if (!dbItem) {
-        tryDelete(actions, property)
+        tryDelete(actions, property, hasNode)
       }
     }
   }

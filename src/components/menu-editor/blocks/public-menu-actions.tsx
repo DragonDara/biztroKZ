@@ -244,7 +244,7 @@ export function PublicMenuActions() {
                   name="search"
                   value={query}
                   onChange={e => setQuery(e.target.value)}
-                  placeholder="Tacos, picante, vegetariano..."
+                  placeholder={t("search_placeholder")}
                   inputMode="search"
                   enterKeyHint="search"
                 />

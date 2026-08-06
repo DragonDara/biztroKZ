@@ -34,6 +34,7 @@ export type UILabelKey =
   | "search"
   | "search_products"
   | "search_description"
+  | "search_placeholder"
   | "no_results"
   | "no_results_description"
   | "from"
@@ -70,6 +71,7 @@ const labels: Record<string, UILabels> = {
     search: "Buscar",
     search_products: "Buscar productos",
     search_description: "Busca coincidencias por nombre o descripción.",
+    search_placeholder: "Tacos, picante, vegetariano...",
     no_results: "Sin resultados",
     no_results_description:
       "Intenta con otro nombre o una palabra de la descripción.",
@@ -104,6 +106,7 @@ const labels: Record<string, UILabels> = {
     search: "Search",
     search_products: "Search products",
     search_description: "Find matches by name or description.",
+    search_placeholder: "Pizza, spicy, vegetarian...",
     no_results: "No results",
     no_results_description: "Try another name or a word from the description.",
     from: "From",
@@ -137,6 +140,7 @@ const labels: Record<string, UILabels> = {
     search: "Rechercher",
     search_products: "Rechercher des produits",
     search_description: "Trouvez des correspondances par nom ou description.",
+    search_placeholder: "Pizza, épicé, végétarien...",
     no_results: "Aucun résultat",
     no_results_description: "Essayez un autre nom ou un mot de la description.",
     from: "À partir de",
@@ -170,6 +174,7 @@ const labels: Record<string, UILabels> = {
     search: "Suchen",
     search_products: "Produkte suchen",
     search_description: "Treffer nach Name oder Beschreibung finden.",
+    search_placeholder: "Pizza, scharf, vegetarisch...",
     no_results: "Keine Ergebnisse",
     no_results_description:
       "Versuche einen anderen Namen oder ein Wort aus der Beschreibung.",
@@ -204,6 +209,7 @@ const labels: Record<string, UILabels> = {
     search: "Buscar",
     search_products: "Buscar produtos",
     search_description: "Encontre correspondências por nome ou descrição.",
+    search_placeholder: "Pizza, picante, vegetariano...",
     no_results: "Sem resultados",
     no_results_description: "Tente outro nome ou uma palavra da descrição.",
     from: "A partir de",
@@ -237,6 +243,7 @@ const labels: Record<string, UILabels> = {
     search: "Cerca",
     search_products: "Cerca prodotti",
     search_description: "Trova corrispondenze per nome o descrizione.",
+    search_placeholder: "Pizza, piccante, vegetariano...",
     no_results: "Nessun risultato",
     no_results_description:
       "Prova un altro nome o una parola dalla descrizione.",
@@ -271,6 +278,7 @@ const labels: Record<string, UILabels> = {
     search: "検索",
     search_products: "商品を検索",
     search_description: "名前または説明で一致するものを検索。",
+    search_placeholder: "ピザ、辛い、ベジタリアン...",
     no_results: "結果なし",
     no_results_description: "別の名前か説明の単語で試してください。",
     from: "から",
@@ -304,6 +312,7 @@ const labels: Record<string, UILabels> = {
     search: "搜索",
     search_products: "搜索产品",
     search_description: "按名称或描述查找匹配项。",
+    search_placeholder: "披萨、辣的、素食...",
     no_results: "无结果",
     no_results_description: "请尝试其他名称或描述中的词语。",
     from: "起价",
@@ -337,6 +346,7 @@ const labels: Record<string, UILabels> = {
     search: "Поиск",
     search_products: "Поиск блюд",
     search_description: "Ищите по названию или описанию.",
+    search_placeholder: "Пицца, острое, вегетарианское...",
     no_results: "Нет результатов",
     no_results_description: "Попробуйте другое название или слово из описания.",
     from: "От",

@@ -5,6 +5,7 @@ import { ImageUp } from "lucide-react"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
 
+import { EmptyImageField } from "@/components/dashboard/empty-image-field"
 import { FileUploader } from "@/components/dashboard/file-uploader"
 import { Button } from "@/components/ui/button"
 import {
@@ -34,10 +35,26 @@ export function ImageField({
 }) {
   const t = useTranslations("dashboard.common")
   const [open, setOpen] = useState(false)
+  // Track which src failed so a new src clears the error without useEffect.
+  const [failedSrc, setFailedSrc] = useState<string | null>(null)
+  const hasError = failedSrc === src
+
+  if (hasError) {
+    return (
+      <EmptyImageField
+        organizationId={organizationId}
+        imageType={imageType}
+        objectId={objectId}
+        onUploadSuccess={onUploadSuccess}
+        className={className}
+      />
+    )
+  }
+
   return (
     <div
       className={cn(
-        "group relative h-60 w-full overflow-hidden rounded-lg",
+        "group bg-muted relative min-h-64 w-full overflow-hidden rounded-lg",
         className
       )}
     >
@@ -49,41 +66,41 @@ export function ImageField({
         fill
         sizes="(max-width: 768px) 100vw, 50vw"
         unoptimized
+        onError={() => setFailedSrc(src)}
       />
       <div
-        className="absolute inset-0 hidden bg-black/50 backdrop-blur
-          group-hover:block"
+        className="absolute inset-0 flex items-center justify-center bg-black/50
+          opacity-100 backdrop-blur transition-opacity md:opacity-0
+          md:group-hover:opacity-100"
       >
-        <div className="absolute inset-0 flex items-center justify-center">
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button
-                type="button"
-                variant="default"
-                size="sm"
-                className="border border-white/50 bg-transparent
-                  hover:bg-white/10"
-              >
-                <ImageUp className="mr-2 size-4" />
-                {t("changeImage")}
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-w-xl">
-              <DialogHeader>
-                <DialogTitle>{t("uploadImage")}</DialogTitle>
-              </DialogHeader>
-              <FileUploader
-                organizationId={organizationId}
-                imageType={imageType}
-                objectId={objectId}
-                onUploadSuccess={() => {
-                  onUploadSuccess?.()
-                  setOpen(false)
-                }}
-              />
-            </DialogContent>
-          </Dialog>
-        </div>
+        <Dialog open={open} onOpenChange={setOpen}>
+          <DialogTrigger asChild>
+            <Button
+              type="button"
+              variant="default"
+              size="sm"
+              className="border border-white/50 bg-transparent
+                hover:bg-white/10"
+            >
+              <ImageUp className="mr-2 size-4" />
+              {t("changeImage")}
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-xl">
+            <DialogHeader>
+              <DialogTitle>{t("uploadImage")}</DialogTitle>
+            </DialogHeader>
+            <FileUploader
+              organizationId={organizationId}
+              imageType={imageType}
+              objectId={objectId}
+              onUploadSuccess={() => {
+                onUploadSuccess?.()
+                setOpen(false)
+              }}
+            />
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   )

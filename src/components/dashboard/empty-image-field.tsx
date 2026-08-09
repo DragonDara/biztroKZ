@@ -34,8 +34,8 @@ export function EmptyImageField({
   return (
     <div
       className={cn(
-        `flex flex-col items-center justify-center space-y-2 rounded-lg border
-        border-dashed border-gray-300 px-6 py-10 dark:border-gray-800`,
+        `flex min-h-64 flex-col items-center justify-center space-y-2 rounded-lg
+        border border-dashed border-gray-300 px-6 py-10 dark:border-gray-800`,
         className
       )}
     >

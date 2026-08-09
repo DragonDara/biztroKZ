@@ -1235,10 +1235,9 @@ export default function ItemForm({
                       <FieldDescription className="text-pretty">
                         {t("imageDescription")}
                       </FieldDescription>
-                      <div className="h-full min-h-64">
+                      <div className="min-h-64">
                         {item?.image ? (
                           <ImageField
-                            className="h-full"
                             src={item.image}
                             organizationId={item.organizationId}
                             imageType={ImageType.MENUITEM}
@@ -1249,7 +1248,6 @@ export default function ItemForm({
                           />
                         ) : (
                           <EmptyImageField
-                            className="h-full"
                             organizationId={item.organizationId}
                             imageType={ImageType.MENUITEM}
                             objectId={item.id}

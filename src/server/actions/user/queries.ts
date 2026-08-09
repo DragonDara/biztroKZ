@@ -208,47 +208,56 @@ export async function isProMember() {
 
     cacheTag(`organization-${org.id}-subscription`)
 
-    const subscriptions = await auth.api.listActiveSubscriptions({
-      query: { referenceId: org?.id },
-      headers: await headers()
-    })
-
-    const activeSubscription = subscriptions.find(
-      sub => sub.status === "active" || sub.status === "trialing"
-    )
-
-    // Update the plan in the organization record if it differs from the subscription plan, if the status is sponsored,
-    // it means the organization is on a sponsored PRO plan
-    if (
-      org &&
-      activeSubscription &&
-      org.plan?.toUpperCase() !== activeSubscription.plan?.toUpperCase() &&
-      org.status !== SubscriptionStatus.SPONSORED
-    ) {
-      try {
-        await auth.api.updateOrganization({
-          body: {
-            data: {
-              plan: activeSubscription.plan.toUpperCase(),
-              status: activeSubscription.status.toUpperCase()
-            },
-            organizationId: org.id
-          },
-          headers: await headers()
-        })
-      } catch (error) {
-        console.error("Failed to update organization plan", error)
-        Sentry.captureException(error, {
-          tags: { section: "user-queries" },
-          extra: { organizationId: org.id, plan: activeSubscription.plan }
-        })
-      }
+    // Sponsored Pro is DB-only and must not depend on Stripe availability.
+    if (org.status === SubscriptionStatus.SPONSORED) {
+      return true
     }
 
-    return (
-      activeSubscription?.plan.toUpperCase() === "PRO" ||
-      org?.status === SubscriptionStatus.SPONSORED
-    )
+    try {
+      const subscriptions = await auth.api.listActiveSubscriptions({
+        query: { referenceId: org.id },
+        headers: await headers()
+      })
+
+      const activeSubscription = subscriptions.find(
+        sub => sub.status === "active" || sub.status === "trialing"
+      )
+
+      // Keep organization.plan/status in sync with Stripe when they diverge.
+      if (
+        activeSubscription &&
+        org.plan?.toUpperCase() !== activeSubscription.plan?.toUpperCase()
+      ) {
+        try {
+          await auth.api.updateOrganization({
+            body: {
+              data: {
+                plan: activeSubscription.plan.toUpperCase(),
+                status: activeSubscription.status.toUpperCase()
+              },
+              organizationId: org.id
+            },
+            headers: await headers()
+          })
+        } catch (error) {
+          console.error("Failed to update organization plan", error)
+          Sentry.captureException(error, {
+            tags: { section: "user-queries" },
+            extra: { organizationId: org.id, plan: activeSubscription.plan }
+          })
+        }
+      }
+
+      return activeSubscription?.plan.toUpperCase() === "PRO"
+    } catch (err) {
+      console.error("Failed to list active subscriptions", err)
+      Sentry.captureException(err, {
+        tags: { section: "user-queries" },
+        extra: { organizationId: org.id }
+      })
+      // Stripe unavailable — fall back to sponsored status on the org record.
+      return org.status === SubscriptionStatus.SPONSORED
+    }
   } catch (err) {
     console.error("Failed to check if user is pro member", err)
     Sentry.captureException(err, {

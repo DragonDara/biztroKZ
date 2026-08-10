@@ -267,7 +267,7 @@ export async function POST(req: NextRequest) {
       break
     case ImageType.MENUITEM:
       // Menu item image changed
-      revalidateTag(`menu-item-${objectId}`, "max")
+      revalidateTag(`menu-item-${objectId}`, { expire: 0 })
       break
     case ImageType.MENU_BACKGROUND:
       revalidateTag(`organization-${organizationId}`, "max")

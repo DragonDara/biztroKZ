@@ -1,5 +1,4 @@
 import { useState } from "react"
-import { rankItem } from "@tanstack/match-sorter-utils"
 import {
   getCoreRowModel,
   getFilteredRowModel,
@@ -12,10 +11,20 @@ import {
 } from "@tanstack/react-table"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-const fuzzyFilter: FilterFn<any> = (row, columnId, value, addMeta) => {
-  const itemRank = rankItem(row.getValue(columnId), value)
-  addMeta({ itemRank })
-  return itemRank.passed
+const wordFilter: FilterFn<any> = (row, _columnId, value) => {
+  const query = String(value ?? "")
+    .trim()
+    .toLowerCase()
+  if (!query) return true
+
+  const words = query.split(/\s+/).filter(Boolean)
+  const haystack = row
+    .getAllCells()
+    .filter(cell => cell.column.getCanGlobalFilter())
+    .map(cell => String(cell.getValue() ?? "").toLowerCase())
+    .join(" ")
+
+  return words.every(word => haystack.includes(word))
 }
 
 export function useDataTable<TData, TValue>({
@@ -31,14 +40,11 @@ export function useDataTable<TData, TValue>({
   const table = useReactTable({
     data,
     columns,
-    filterFns: {
-      fuzzy: fuzzyFilter
-    },
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     onSortingChange: setSorting,
     onGlobalFilterChange: setGlobalFilter,
-    globalFilterFn: fuzzyFilter,
+    globalFilterFn: wordFilter,
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     state: {

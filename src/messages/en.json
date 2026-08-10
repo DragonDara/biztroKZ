@@ -408,7 +408,10 @@
       "goFirst": "Go to first page",
       "goPrevious": "Go to previous page",
       "goNext": "Go to next page",
-      "goLast": "Go to last page"
+      "goLast": "Go to last page",
+      "filterNotFound": "Not found",
+      "filterSelectedCount": "{count} selected",
+      "clearFilter": "Clear filter"
     },
     "menus": {
       "metaTitle": "Home",

@@ -408,7 +408,10 @@
       "goFirst": "На первую страницу",
       "goPrevious": "На предыдущую страницу",
       "goNext": "На следующую страницу",
-      "goLast": "На последнюю страницу"
+      "goLast": "На последнюю страницу",
+      "filterNotFound": "Не найдено",
+      "filterSelectedCount": "{count} выбр.",
+      "clearFilter": "Очистить фильтр"
     },
     "menus": {
       "metaTitle": "Главная",

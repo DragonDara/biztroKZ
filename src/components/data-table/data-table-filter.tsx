@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { CheckIcon, PlusCircleIcon } from "lucide-react"
+import { useTranslations } from "next-intl"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -39,7 +40,7 @@ export function DataTableFilter({
   value,
   onChange
 }: DataTableFilterProps) {
-  // const value = new Set(column?.getFilterValue() as string[])
+  const t = useTranslations("dashboard.dataTable")
 
   return (
     <Popover>
@@ -62,7 +63,7 @@ export function DataTableFilter({
                     variant="indigo"
                     className="rounded-sm px-1 font-normal whitespace-nowrap"
                   >
-                    {value.length} selecc.
+                    {t("filterSelectedCount", { count: value.length })}
                   </Badge>
                 ) : (
                   options
@@ -88,7 +89,7 @@ export function DataTableFilter({
           <CommandInput placeholder={title} />
           <CommandList>
             <CommandEmpty className="p-2 text-center text-sm text-gray-500">
-              No encontrado
+              {t("filterNotFound")}
             </CommandEmpty>
             <CommandGroup>
               {options.map(option => {
@@ -133,7 +134,7 @@ export function DataTableFilter({
                     onSelect={() => onChange([])}
                     className="justify-center text-center"
                   >
-                    Limpiar filtro
+                    {t("clearFilter")}
                   </CommandItem>
                 </CommandGroup>
               </>

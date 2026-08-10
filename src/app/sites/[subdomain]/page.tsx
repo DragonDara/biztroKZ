@@ -2,6 +2,7 @@ import { Suspense } from "react"
 import { localePathSegments, staticParamsPlaceholder } from "@/i18n/routing"
 import lz from "lzutf8"
 import { type Metadata, type ResolvingMetadata } from "next"
+import { getTranslations } from "next-intl/server"
 import { cacheLife, cacheTag } from "next/cache"
 import Link from "next/link"
 import { notFound } from "next/navigation"
@@ -74,8 +75,9 @@ export async function generateMetadata(
       description
     }
   } else {
+    const t = await getTranslations("common")
     return {
-      title: "No encontrado"
+      title: t("notFound")
     }
   }
 }

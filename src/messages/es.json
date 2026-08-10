@@ -408,7 +408,10 @@
       "goFirst": "Ir a primer página",
       "goPrevious": "Ir a página previa",
       "goNext": "Ir a página siguiente",
-      "goLast": "Ir a última página"
+      "goLast": "Ir a última página",
+      "filterNotFound": "No encontrado",
+      "filterSelectedCount": "{count} selecc.",
+      "clearFilter": "Limpiar filtro"
     },
     "menus": {
       "metaTitle": "Inicio",

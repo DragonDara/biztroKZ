@@ -54,7 +54,8 @@ export function ImageField({
   return (
     <div
       className={cn(
-        "group bg-muted relative min-h-64 w-full overflow-hidden rounded-lg",
+        `group/image-field bg-muted relative min-h-64 w-full overflow-hidden
+        rounded-lg`,
         className
       )}
     >
@@ -71,7 +72,7 @@ export function ImageField({
       <div
         className="absolute inset-0 flex items-center justify-center bg-black/50
           opacity-100 backdrop-blur transition-opacity md:opacity-0
-          md:group-hover:opacity-100"
+          md:group-hover/image-field:opacity-100"
       >
         <Dialog open={open} onOpenChange={setOpen}>
           <DialogTrigger asChild>

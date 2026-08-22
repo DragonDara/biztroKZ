@@ -4,7 +4,13 @@ import { useMemo, useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
 import { BorderBeam } from "border-beam"
-import { AlertCircle, FileSpreadsheet, FileText, Loader } from "lucide-react"
+import {
+  AlertCircle,
+  Download,
+  FileSpreadsheet,
+  FileText,
+  Loader
+} from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import Link from "next/link"
@@ -12,7 +18,10 @@ import Papa from "papaparse"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Button } from "@/components/ui/button"
-import { bulkCreateItems } from "@/server/actions/item/mutations"
+import {
+  bulkCreateItems,
+  type FailedImportRow
+} from "@/server/actions/item/mutations"
 import {
   downloadMenuItemsCsvFile,
   normalizeMenuItemCsvRow,
@@ -32,6 +41,7 @@ type ImportValidationKey =
   | "priceRequired"
   | "priceInvalid"
   | "currencyInvalid"
+  | "imageInvalid"
 
 function validateRow(
   row: Partial<MenuItemCsvFields>,
@@ -59,6 +69,17 @@ function validateRow(
     }
   }
 
+  if (row.image?.trim()) {
+    try {
+      const parsed = new URL(row.image.trim())
+      if (parsed.protocol !== "https:") {
+        errors.push(t("imageInvalid"))
+      }
+    } catch {
+      errors.push(t("imageInvalid"))
+    }
+  }
+
   return errors
 }
 
@@ -75,6 +96,7 @@ export default function MenuImportOptions({
     "dashboard.menuItems.import.options.validation"
   )
   const [errors, setErrors] = useState<ImportError[]>([])
+  const [failedRows, setFailedRows] = useState<FailedImportRow[]>([])
 
   const columnLabels: MenuItemCsvColumnLabels = useMemo(
     () => ({
@@ -83,7 +105,9 @@ export default function MenuImportOptions({
       description: tProducts("csvColumns.description"),
       price: tProducts("csvColumns.price"),
       category: tProducts("csvColumns.category"),
-      currency: tProducts("csvColumns.currency")
+      currency: tProducts("csvColumns.currency"),
+      image: tProducts("csvColumns.image"),
+      externalId: tProducts("csvColumns.externalId")
     }),
     [tProducts]
   )
@@ -97,7 +121,9 @@ export default function MenuImportOptions({
           description: t("template.description"),
           price: "100.00",
           category: t("template.category"),
-          currency: "KZT"
+          currency: "KZT",
+          image: t("template.image"),
+          externalId: t("template.externalId")
         },
         columnLabels
       ),
@@ -108,7 +134,9 @@ export default function MenuImportOptions({
           description: t("template.description"),
           price: "120.00",
           category: t("template.category"),
-          currency: "KZT"
+          currency: "KZT",
+          image: "",
+          externalId: t("template.externalId")
         },
         columnLabels
       )
@@ -125,9 +153,20 @@ export default function MenuImportOptions({
       }
 
       const createdCount = response.data?.success?.length ?? 0
-      toast.success(t("importSuccess", { count: createdCount }))
+      const failed = response.data?.failedItems ?? []
       setErrors([])
-      onCsvSuccess?.(createdCount)
+      setFailedRows(failed)
+
+      if (failed.length > 0) {
+        if (createdCount > 0) {
+          toast.success(t("importSuccess", { count: createdCount }))
+        }
+        toast.error(t("failedRows.toast", { count: failed.length }))
+      } else {
+        toast.success(t("importSuccess", { count: createdCount }))
+        onCsvSuccess?.(createdCount)
+      }
+
       reset()
     },
     onError: error => {
@@ -140,6 +179,28 @@ export default function MenuImportOptions({
     }
   })
 
+  const handleDownloadFailedRows = () => {
+    const reasonColumn = t("failedRows.reasonColumn")
+    const rows = failedRows.map(row => ({
+      ...toLocalizedMenuItemCsvRow(
+        {
+          name: row.name,
+          variant: row.variantName,
+          description: row.description,
+          price: row.price.toFixed(2),
+          category: row.category,
+          currency: row.currency,
+          image: row.image,
+          externalId: row.externalId
+        },
+        columnLabels
+      ),
+      [reasonColumn]: row.reason
+    }))
+
+    downloadMenuItemsCsvFile(rows, t("failedRows.fileName"))
+  }
+
   const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0]
 
@@ -148,6 +209,7 @@ export default function MenuImportOptions({
     }
 
     setErrors([])
+    setFailedRows([])
 
     Papa.parse<Record<string, string | undefined>>(file, {
       header: true,
@@ -189,7 +251,9 @@ export default function MenuImportOptions({
             status: MenuItemStatus.ACTIVE,
             category: row.category,
             currency:
-              currency === "USD" ? "USD" : currency === "MXN" ? "MXN" : "KZT"
+              currency === "USD" ? "USD" : currency === "MXN" ? "MXN" : "KZT",
+            image: row.image?.trim() || undefined,
+            externalId: row.externalId?.trim() || undefined
           })
         })
 
@@ -308,6 +372,33 @@ export default function MenuImportOptions({
                   </li>
                 ))}
               </ul>
+            </AlertDescription>
+          </Alert>
+        )}
+
+        {failedRows.length > 0 && (
+          <Alert variant="destructive" className="mb-4">
+            <AlertCircle className="size-4" />
+            <AlertTitle>{t("failedRows.title")}</AlertTitle>
+            <AlertDescription className="space-y-3">
+              <ul className="list-inside list-disc">
+                {failedRows.map((row, index) => (
+                  <li key={`${row.externalId ?? row.name}-${index}`}>
+                    {row.externalId
+                      ? `${row.name} (${row.externalId}): ${row.reason}`
+                      : `${row.name}: ${row.reason}`}
+                  </li>
+                ))}
+              </ul>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleDownloadFailedRows}
+                className="w-full justify-start sm:w-fit"
+              >
+                <Download className="mr-1 size-4" />
+                {t("failedRows.download")}
+              </Button>
             </AlertDescription>
           </Alert>
         )}

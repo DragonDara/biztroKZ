@@ -764,7 +764,9 @@
           "description": "description",
           "price": "price",
           "category": "category",
-          "currency": "currency"
+          "currency": "currency",
+          "image": "image",
+          "externalId": "external_id"
         },
         "defaultVariantName": "Regular",
         "selectedCount": "{count} selected",
@@ -802,6 +804,7 @@
             "priceRequired": "Price is required",
             "priceInvalid": "Price must be a positive number",
             "currencyInvalid": "Invalid currency. Use MXN or USD.",
+            "imageInvalid": "Invalid image URL. Use an https:// link.",
             "emptyFile": "The file is empty",
             "maxRows": "You cannot import more than 200 products at once",
             "csvParseError": "Could not process the CSV file: {message}"
@@ -812,7 +815,16 @@
             "description": "Tomato, mozzarella, basil",
             "category": "Pizzas",
             "variantRegular": "Regular",
-            "variantLarge": "Large"
+            "variantLarge": "Large",
+            "image": "https://example.com/pizza.jpg",
+            "externalId": "SKU-001"
+          },
+          "failedRows": {
+            "title": "Some rows could not be imported",
+            "toast": "{count, plural, one {# row could not be imported} other {# rows could not be imported}}",
+            "download": "Download failed rows",
+            "reasonColumn": "reason",
+            "fileName": "failed-products.csv"
           }
         },
         "ai": {
@@ -892,6 +904,14 @@
           "addAtLeastOneProduct": "Add at least one product with a name",
           "duplicateEntry": "Duplicate entry",
           "invalidReference": "Invalid reference",
+          "imageInvalidUrl": "Invalid image URL",
+          "imageBlockedHost": "Image URL is not allowed",
+          "imageFetchFailed": "Could not download the image",
+          "imageNotImage": "The file is not a supported image (PNG, JPEG or WebP)",
+          "imageTooLarge": "The image is too large (max 8 MB)",
+          "imageCorruptImage": "The image file is corrupt or unreadable",
+          "imageUploadFailed": "Could not store the image",
+          "imageMediaLimit": "You reached the media limit on the basic plan",
           "visualDesignFailed": "Could not generate menu design. Try again or import products only.",
           "limitExceeded": "You would exceed the product limit on the basic plan",
           "bulkSaveFailed": "Could not save imported products",

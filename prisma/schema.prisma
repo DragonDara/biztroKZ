@@ -113,6 +113,7 @@ model Theme {
 model MenuItem {
   id             String                  @id @default(cuid())
   name           String
+  externalId     String?
   description    String?
   image          String?
   imageAssetId   String?
@@ -131,6 +132,7 @@ model MenuItem {
   translations   MenuItemTranslation[]
 
   @@unique([organizationId, name])
+  @@unique([organizationId, externalId])
 }
 
 model Category {

@@ -1,12 +1,15 @@
 import { lookup } from "node:dns/promises"
 import { isIP } from "node:net"
-
 import * as Sentry from "@sentry/nextjs"
 import sharp from "sharp"
 
 import prisma from "@/lib/prisma"
 import { putObjectToR2 } from "@/lib/r2"
-import { MediaAssetScope, MediaAssetType, MediaUsageEntityType } from "@/lib/types/media"
+import {
+  MediaAssetScope,
+  MediaAssetType,
+  MediaUsageEntityType
+} from "@/lib/types/media"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024 // 8 MB
@@ -152,11 +155,14 @@ async function fetchImageBytes(sourceUrl: string): Promise<{
     if (response.status >= 300 && response.status < 400) {
       const location = response.headers.get("location")
       if (!location) throw new ExternalImageError("fetchFailed")
-      currentUrl = await assertPublicUrl(new URL(location, currentUrl).toString())
+      currentUrl = await assertPublicUrl(
+        new URL(location, currentUrl).toString()
+      )
       continue
     }
 
-    if (!response.ok || !response.body) throw new ExternalImageError("fetchFailed")
+    if (!response.ok || !response.body)
+      throw new ExternalImageError("fetchFailed")
 
     const declaredLength = Number(response.headers.get("content-length"))
     if (Number.isFinite(declaredLength) && declaredLength > MAX_IMAGE_BYTES) {

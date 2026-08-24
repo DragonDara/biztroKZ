@@ -8,19 +8,20 @@ import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
 import { getItemCount } from "@/server/actions/item/queries"
-import { extractMenuItemsFromFile } from "@/server/actions/menu-import/ai"
-import { createImportNameAllocator } from "@/server/actions/menu-import/item-names"
 import {
   fetchAndStoreExternalImage,
+  fetchAndStoreExternalImage,
+  type ExternalImageErrorCode,
   type ExternalImageErrorCode
 } from "@/server/actions/media/external-fetch"
+import { extractMenuItemsFromFile } from "@/server/actions/menu-import/ai"
+import { createImportNameAllocator } from "@/server/actions/menu-import/item-names"
 import { executeMenuSyncWithPreference } from "@/server/actions/menu/sync"
 import { isProMember } from "@/server/actions/user/queries"
 import { appConfig } from "@/app/config"
 import type { Currency } from "@/lib/currency"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
-import { BasicPlanLimits } from "@/lib/types/billing"
 import { categorySchema } from "@/lib/types/category"
 import { menuImportFileInputSchema } from "@/lib/types/menu-import"
 import {
@@ -29,6 +30,7 @@ import {
   MenuItemStatus,
   variantSchema
 } from "@/lib/types/menu-item"
+import { BasicPlanLimits } from "@/lib/types/plan"
 import { env } from "@/env.mjs"
 
 export type { MenuImportItem } from "@/lib/types/menu-import"
@@ -250,7 +252,7 @@ export type FailedImportRow = {
   reason: string
 }
 
-const IMAGE_REASON_KEY: Record<ExternalImageErrorCode, string> = {
+const IMAGE_REASON_KEY = {
   invalidUrl: "imageInvalidUrl",
   blockedHost: "imageBlockedHost",
   fetchFailed: "imageFetchFailed",
@@ -258,7 +260,7 @@ const IMAGE_REASON_KEY: Record<ExternalImageErrorCode, string> = {
   tooLarge: "imageTooLarge",
   corruptImage: "imageCorruptImage",
   uploadFailed: "imageUploadFailed"
-}
+} as const satisfies Record<ExternalImageErrorCode, string>
 
 /** Emit one failed CSV row per variant so the download round-trips back into an import. */
 function pushFailedRows(
@@ -370,11 +372,15 @@ export const bulkCreateItems = authMemberActionClient
     const existingByExternalId = new Map<string, string>()
     if (externalIds.length > 0) {
       const matched = await prisma.menuItem.findMany({
-        where: { organizationId: currentOrgId, externalId: { in: externalIds } },
+        where: {
+          organizationId: currentOrgId,
+          externalId: { in: externalIds }
+        },
         select: { id: true, externalId: true }
       })
       for (const match of matched) {
-        if (match.externalId) existingByExternalId.set(match.externalId, match.id)
+        if (match.externalId)
+          existingByExternalId.set(match.externalId, match.id)
       }
     }
 

@@ -27,8 +27,8 @@ import { duplicateMenu, setActiveMenu } from "@/server/actions/menu/mutations"
 import MenuCreate from "@/app/dashboard/menu-create"
 import MenuDelete from "@/app/dashboard/menu-delete"
 import { MenuRename } from "@/app/dashboard/menu-rename"
-import { BasicPlanLimits } from "@/lib/types/billing"
 import { MenuStatus } from "@/lib/types/menu"
+import { BasicPlanLimits } from "@/lib/types/plan"
 
 export default function MenuList({
   promiseMenus

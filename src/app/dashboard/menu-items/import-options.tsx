@@ -22,6 +22,7 @@ import {
   bulkCreateItems,
   type FailedImportRow
 } from "@/server/actions/item/mutations"
+import { isKamiMenuCsv, normalizeKamiMenuCsvRow } from "@/lib/kami-menu-csv"
 import {
   downloadMenuItemsCsvFile,
   normalizeMenuItemCsvRow,
@@ -215,6 +216,11 @@ export default function MenuImportOptions({
       header: true,
       skipEmptyLines: true,
       encoding: "utf-8",
+      transformHeader: header =>
+        header
+          .replace(/^\uFEFF/, "")
+          .trim()
+          .toLocaleLowerCase(),
       complete: results => {
         if (results.data.length === 0) {
           setErrors([{ row: 0, errors: [tValidation("emptyFile")] }])
@@ -228,9 +234,12 @@ export default function MenuImportOptions({
 
         const foundErrors: ImportError[] = []
         const validItems: BulkMenuItem[] = []
+        const isKami = isKamiMenuCsv(results.meta.fields ?? [])
 
         results.data.forEach((rawRow, index) => {
-          const row = normalizeMenuItemCsvRow(rawRow, columnLabels)
+          const row = isKami
+            ? normalizeKamiMenuCsvRow(rawRow)
+            : normalizeMenuItemCsvRow(rawRow, columnLabels)
           const rowErrors = validateRow(row, key => tValidation(key))
 
           if (rowErrors.length > 0) {

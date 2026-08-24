@@ -9,7 +9,6 @@ import {
 import OrganizationDelete from "@/app/dashboard/settings/organization-delete"
 import OrganizationForm from "@/app/dashboard/settings/organization-form"
 import { SettingsOrganizationHeader } from "@/app/dashboard/settings/settings-organization-header"
-import { type SubscriptionStatus } from "@/lib/types/billing"
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("dashboard.settings.organization")
@@ -32,9 +31,7 @@ export default async function SettingsPage() {
 
   return (
     <div className="mx-auto max-w-2xl grow px-4 sm:px-0">
-      <SettingsOrganizationHeader
-        status={currentOrg.status as SubscriptionStatus}
-      />
+      <SettingsOrganizationHeader />
       <OrganizationForm data={currentOrg} enabled />
       {canDeleteOrg?.success && (
         <OrganizationDelete organizationId={currentOrg.id} />

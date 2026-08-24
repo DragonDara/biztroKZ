@@ -1,4 +1,3 @@
-import { Suspense } from "react"
 import { localePathSegments, staticParamsPlaceholder } from "@/i18n/routing"
 import lz from "lzutf8"
 import { type Metadata, type ResolvingMetadata } from "next"
@@ -20,12 +19,11 @@ import {
   getAllActiveOrganizations,
   getOrganizationBySlug
 } from "@/server/actions/organization/queries"
-import PublicMenuTracker from "@/app/sites/[subdomain]/public-menu-tracker"
 import ResolveEditor from "@/app/sites/[subdomain]/resolve-editor"
 import { isBlockDisplayName } from "@/lib/menu-editor/block-display-names"
 import { normalizePublicMenuItems } from "@/lib/menu-search"
 import { extractMenuDataFromNodes } from "@/lib/sync-status"
-import { SubscriptionStatus } from "@/lib/types/billing"
+import { OrganizationStatus } from "@/lib/types/plan"
 import { SUPPORTED_LOCALES } from "@/lib/types/translations"
 
 // Add generateStaticParams to pre-render specific paths. Used placeholder for empty organizations.
@@ -62,9 +60,9 @@ export async function generateMetadata(
 
   if (
     org &&
-    (org.status === SubscriptionStatus.ACTIVE ||
-      org.status === SubscriptionStatus.TRIALING ||
-      org.status === SubscriptionStatus.SPONSORED)
+    (org.status === OrganizationStatus.ACTIVE ||
+      org.status === OrganizationStatus.TRIALING ||
+      org.status === OrganizationStatus.SPONSORED)
   ) {
     const description =
       org.description && org.description.length > 0
@@ -174,13 +172,6 @@ export default async function SitePage(props: {
   return (
     <>
       <style>{`body { background-color: ${rgbaToHex(backgroundColor)} }`}</style>
-      <Suspense fallback={null}>
-        <PublicMenuTracker
-          organizationId={siteMenu.organizationId}
-          menuId={siteMenu.id}
-          slug={params.subdomain}
-        />
-      </Suspense>
       <TranslationProvider
         subdomain={params.subdomain}
         availableLocales={availableLocales}

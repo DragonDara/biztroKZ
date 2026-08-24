@@ -13,7 +13,6 @@ import {
 } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
 import { useOptimisticAction } from "next-safe-action/hooks"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
 
@@ -343,9 +342,7 @@ export default function TranslationsManager({
             className="border-white/20 bg-white/10 text-white hover:bg-white/20
               hover:text-white"
           >
-            <Link href="/dashboard/settings/billing" prefetch={false}>
-              {t("upgradeCta")}
-            </Link>
+            <a href="mailto:contacto@biztro.co">{t("upgradeCta")}</a>
           </BannerAction>
           <BannerClose
             aria-label={t("closeBanner")}

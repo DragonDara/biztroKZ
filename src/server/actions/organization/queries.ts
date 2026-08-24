@@ -1,7 +1,7 @@
 "use server"
 
 import prisma from "@/lib/prisma"
-import { SubscriptionStatus } from "@/lib/types/billing"
+import { OrganizationStatus } from "@/lib/types/plan"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 
 /**
@@ -91,9 +91,9 @@ export async function getAllActiveOrganizations() {
   return await prisma.organization.findMany({
     where: {
       OR: [
-        { status: SubscriptionStatus.ACTIVE },
-        { status: SubscriptionStatus.TRIALING },
-        { status: SubscriptionStatus.SPONSORED }
+        { status: OrganizationStatus.ACTIVE },
+        { status: OrganizationStatus.TRIALING },
+        { status: OrganizationStatus.SPONSORED }
       ]
     },
     select: {

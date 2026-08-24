@@ -338,8 +338,7 @@
       "settings": "Configuración",
       "general": "General",
       "location": "Sucursal",
-      "members": "Miembros",
-      "billing": "Suscripción"
+      "members": "Miembros"
     },
     "sidebar": {
       "upgradeTitle": "Actualiza a Pro",
@@ -487,18 +486,6 @@
       "update": "Actualizar"
     },
     "settings": {
-      "subscriptionStatus": {
-        "active": "Activo",
-        "trialing": "Prueba",
-        "canceled": "Cancelado",
-        "incomplete": "Incompleto",
-        "incompleteExpired": "Expirado",
-        "pastDue": "Vencido",
-        "unpaid": "Sin pagar",
-        "paused": "Pausado",
-        "sponsored": "Patrocinado",
-        "unknown": "Desconocido"
-      },
       "organization": {
         "metaTitle": "Mi Organización",
         "metaDescription": "Información general del negocio",
@@ -527,7 +514,6 @@
         "irreversible": "Esta operación es irreversible.",
         "confirmTitle": "Eliminar organización",
         "confirmDescription": "¿Estás seguro de que deseas eliminar esta organización? Esta acción es irreversible. Todos los datos asociados a la organización serán eliminados y no podrán recuperarse. Asegúrate de haber descargado cualquier dato que desees conservar antes de continuar.",
-        "cancelSubscription": "Cancela tu suscripción antes de eliminar la organización.",
         "confirmHint": "Por seguridad, escribe {word} y presiona eliminar.",
         "confirmAria": "Confirma escribiendo ELIMINAR",
         "confirmWord": "ELIMINAR",
@@ -561,39 +547,6 @@
         "deleteDescription": "¿Estás seguro de que deseas eliminar a este miembro? Esta acción no se puede deshacer.",
         "deleting": "Eliminando miembro...",
         "deleted": "Miembro eliminado correctamente"
-      },
-      "billing": {
-        "metaTitle": "Suscripción",
-        "title": "Planes de suscripción",
-        "description": "Administra tu plan de suscripción e historial de pagos",
-        "ownerOnlyTitle": "Aviso",
-        "ownerOnlyDescription": "Solo los propietarios de la organización pueden acceder a esta página",
-        "plan": "Plan",
-        "basic": "Básico",
-        "free": "Gratis",
-        "monthly": "Mensual",
-        "yearly": "Anual",
-        "yearlyDiscount": "-20%",
-        "usage": "Has usado {count} de {limit} productos disponibles en tu plan",
-        "usageHint": "Actualiza tu plan para agregar más productos a tu menú y desbloquear más beneficios.",
-        "checkoutError": "No se pudo iniciar el checkout. Intenta de nuevo.",
-        "upgradeMonthly": "Obtener Pro Mensual",
-        "upgradeYearly": "Obtener Pro Anual",
-        "perMonth": "MXN/mes",
-        "perYear": "MXN/año",
-        "sponsoredTitle": "Organización patrocinada",
-        "sponsoredDescription": "Tu organización cuenta con un plan Pro patrocinado. Disfruta de todas las funciones de Biztro Pro sin costo.",
-        "price": "Precio",
-        "activePeriod": "Periodo activo",
-        "cancelsOn": "Cancela el",
-        "nextRenewal": "Próxima renovación",
-        "trialEnds": "Termina el {date}",
-        "cancelScheduledTitle": "Suscripción programada para finalizar",
-        "cancelScheduledDescription": "Tu suscripción está configurada para terminar el {date}. Tendrás acceso hasta esa fecha. Si deseas reactivar tu suscripción, ve al portal de pagos.",
-        "manageInStripe": "Maneja tu suscripción en Stripe",
-        "supportPrefix": "¿Tienes algún problema con tu suscripción? Envía un correo a",
-        "portal": "Ir a Portal Clientes",
-        "portalError": "No se pudo redirigir al portal de clientes"
       },
       "location": {
         "metaTitle": "Ubicación",
@@ -1708,7 +1661,6 @@
       "orgIdRequired": "ID de organización es requerido",
       "orgUpdateFailed": "No se pudo actualizar la organización",
       "orgDeleteConfirm": "Confirma escribiendo ELIMINAR antes de eliminar la organización",
-      "orgDeleteActiveSubscription": "No se puede eliminar una organización con una suscripción activa",
       "orgDeleteFailed": "No se pudo eliminar la organización",
       "noCurrentOrg": "No se pudo obtener la organización actual",
       "translationProOnly": "La traducción de menú es una función exclusiva del plan Pro",

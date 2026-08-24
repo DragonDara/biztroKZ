@@ -8,16 +8,14 @@ import { motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
-import { usePostHog } from "posthog-js/react"
 
 import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { createMenu } from "@/server/actions/menu/mutations"
-import { BasicPlanLimits } from "@/lib/types/billing"
+import { BasicPlanLimits } from "@/lib/types/plan"
 
 export default function MenuCreate() {
   const t = useTranslations("dashboard.menus")
   const router = useRouter()
-  const posthog = usePostHog()
   const [showUpgrade, setShowUpgrade] = useState(false)
 
   const { execute, status, reset } = useAction(createMenu, {
@@ -32,14 +30,6 @@ export default function MenuCreate() {
           reset()
           return
         }
-      }
-
-      if (data?.success) {
-        posthog.capture("menu_created", {
-          menu_id: data.success.id,
-          organization_id: data.success.organizationId,
-          source: "dashboard"
-        })
       }
 
       router.push(`/menu-editor/${data?.success?.id}`)

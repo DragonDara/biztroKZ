@@ -1,0 +1,21 @@
+export enum BasicPlanLimits {
+  ITEM_LIMIT_REACHED = "ITEM_LIMIT_REACHED",
+  MENU_LIMIT_REACHED = "MENU_LIMIT_REACHED"
+}
+
+export enum OrganizationStatus {
+  TRIALING = "TRIALING",
+  ACTIVE = "ACTIVE",
+  CANCELED = "CANCELED",
+  INCOMPLETE = "INCOMPLETE",
+  INCOMPLETE_EXPIRED = "INCOMPLETE_EXPIRED",
+  PAST_DUE = "PAST_DUE",
+  UNPAID = "UNPAID",
+  PAUSED = "PAUSED",
+  SPONSORED = "SPONSORED"
+}
+
+export const enum Plan {
+  BASIC = "BASIC",
+  PRO = "PRO"
+}

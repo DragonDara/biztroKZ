@@ -23,8 +23,6 @@ export const env = createEnv({
     AUTH_GOOGLE_SECRET: z.string().min(1),
     AUTH_GOOGLE_ID: z.string().min(1),
     RESEND_API_KEY: z.string().min(1),
-    STRIPE_SECRET_KEY: z.string().min(1),
-    STRIPE_WEBHOOK_SECRET: z.string().min(1),
     BETTER_AUTH_SECRET:
       process.env.NODE_ENV === "production"
         ? z.string().min(1)
@@ -36,8 +34,6 @@ export const env = createEnv({
       // VERCEL_URL doesn't include `https` so it cant be validated as a URL
       process.env.VERCEL ? z.string().min(1) : z.url()
     ),
-    POSTHOG_HOST: z.string().url().optional(),
-    POSTHOG_API_KEY: z.string().min(1).optional(),
     AI_GATEWAY_API_KEY: z.string().min(1).optional()
   },
 
@@ -48,9 +44,6 @@ export const env = createEnv({
    */
   client: {
     // NEXT_PUBLIC_CLIENTVAR: z.string().min(1),
-    NEXT_PUBLIC_POSTHOG_KEY: z.string().min(1),
-    NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY: z.string().min(1),
-    NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY: z.string().min(1),
     NEXT_PUBLIC_ROOT_DOMAIN: z.string().min(1)
   },
 
@@ -73,20 +66,8 @@ export const env = createEnv({
     AUTH_GOOGLE_SECRET: process.env.AUTH_GOOGLE_SECRET,
     AUTH_GOOGLE_ID: process.env.AUTH_GOOGLE_ID,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
-    NEXT_PUBLIC_POSTHOG_KEY: process.env.NEXT_PUBLIC_POSTHOG_KEY,
-    NEXT_PUBLIC_POSTHOG_HOST: process.env.NEXT_PUBLIC_POSTHOG_HOST,
-    STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
-    STRIPE_WEBHOOK_SECRET: process.env.STRIPE_WEBHOOK_SECRET,
-    STRIPE_PRICE_PRO_MONTHLY: process.env.STRIPE_PRICE_PRO_MONTHLY,
-    STRIPE_PRICE_PRO_YEARLY: process.env.STRIPE_PRICE_PRO_YEARLY,
-    NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY:
-      process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY,
-    NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY:
-      process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY,
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
     BETTER_AUTH_URL: process.env.BETTER_AUTH_URL,
-    POSTHOG_HOST: process.env.POSTHOG_HOST,
-    POSTHOG_API_KEY: process.env.POSTHOG_API_KEY,
     AI_GATEWAY_API_KEY: process.env.AI_GATEWAY_API_KEY,
     NEXT_PUBLIC_ROOT_DOMAIN: process.env.NEXT_PUBLIC_ROOT_DOMAIN
   },

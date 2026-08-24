@@ -1,6 +1,6 @@
 "use client"
 
-import { CreditCard, MapPin, Settings, Users } from "lucide-react"
+import { MapPin, Settings, Users } from "lucide-react"
 import { useTranslations } from "next-intl"
 
 import { DashboardSecondaryNav } from "@/components/dashboard/dashboard-secondary-nav"
@@ -24,11 +24,6 @@ export function SettingsSecondaryNav() {
       title: t("members"),
       href: "dashboard/settings/members",
       icon: <Users className="size-4 shrink-0" />
-    },
-    {
-      title: t("billing"),
-      href: "dashboard/settings/billing",
-      icon: <CreditCard className="size-4 shrink-0" />
     }
   ] satisfies SecondaryNavItem[]
 

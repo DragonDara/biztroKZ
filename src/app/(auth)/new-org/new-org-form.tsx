@@ -37,15 +37,15 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { bootstrapOrg } from "@/server/actions/organization/mutations"
 import { authClient } from "@/lib/auth-client"
-import { Plan, SubscriptionStatus } from "@/lib/types/billing"
 import { orgSchema } from "@/lib/types/organization"
+import { OrganizationStatus, Plan } from "@/lib/types/plan"
 
 export type BootstrappedOrganization = {
   id: string
   name: string
   slug: string
   description: string | null
-  status: SubscriptionStatus
+  status: OrganizationStatus
   plan: Plan
   logo: string | null
   banner: string | null
@@ -69,7 +69,7 @@ export default function NewOrgForm({
       name: "",
       description: "",
       slug: "",
-      status: SubscriptionStatus.ACTIVE,
+      status: OrganizationStatus.ACTIVE,
       plan: Plan.BASIC
     }
   })

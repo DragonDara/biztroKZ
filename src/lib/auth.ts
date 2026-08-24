@@ -1,4 +1,3 @@
-import { stripe } from "@better-auth/stripe"
 import { prismaAdapter } from "better-auth/adapters/prisma"
 import { createAuthMiddleware } from "better-auth/api"
 import { betterAuth } from "better-auth/minimal"
@@ -6,13 +5,11 @@ import { betterAuth } from "better-auth/minimal"
 // database hooks on user creation. We import createAuthMiddleware for specific use cases as needed.
 import { nextCookies } from "better-auth/next-js"
 import { organization } from "better-auth/plugins"
-import Stripe from "stripe"
 
 import {
   getActiveOrganization,
   isWaitlistEnabled
 } from "@/server/actions/user/queries"
-import { appConfig } from "@/app/config"
 import prisma from "@/lib/prisma"
 import { getBaseUrl, sendOrganizationInvitation } from "@/lib/utils"
 
@@ -53,11 +50,6 @@ function extractEmailFromContext(ctx: Record<string, unknown> | undefined) {
 
   return found ? String(found).trim().toLowerCase() : null
 }
-
-// skipcq: JS-0339
-const stripeClient = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: Stripe.API_VERSION
-})
 
 export const auth = betterAuth({
   // Adjust trusted origins for your deployment
@@ -238,56 +230,6 @@ export const auth = betterAuth({
           teamName: data.organization.name,
           inviteLink
         })
-      }
-    }),
-    // Stripe billing integration via Better Auth plugin (server-side)
-    stripe({
-      // Pass an initialized Stripe client (recommended by the plugin docs)
-      stripeClient,
-      // Webhook signing secret for verifying Stripe webhook payloads
-      // skipcq: JS-0339
-      stripeWebhookSecret: process.env.STRIPE_WEBHOOK_SECRET!,
-      // Create a Stripe customer automatically when users sign up
-      createCustomerOnSignUp: true,
-      subscription: {
-        enabled: true,
-        plans: [
-          {
-            name: "BASIC",
-            // skipcq: JS-0339
-            priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_BASIC!,
-            limits: {
-              menus: appConfig.menuLimit,
-              products: appConfig.itemLimit
-            }
-          },
-          {
-            name: "PRO",
-            // skipcq: JS-0339
-            priceId: process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_MONTHLY!,
-            // skipcq: JS-0339
-            annualDiscountPriceId:
-              process.env.NEXT_PUBLIC_STRIPE_PRICE_PRO_YEARLY!,
-            limits: {
-              menus: 100,
-              products: 1000
-            },
-            freeTrial: {
-              days: 30
-            }
-          }
-        ],
-        authorizeReference: async ({ user, referenceId }) => {
-          // Ensure the user is authorized to manage the organization
-          const member = await prisma.member.findFirst({
-            where: {
-              userId: user.id,
-              organizationId: referenceId
-            }
-          })
-
-          return member?.role === "owner" || member?.role === "admin"
-        }
       }
     })
   ]

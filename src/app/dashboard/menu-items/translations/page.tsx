@@ -5,7 +5,7 @@ import { notFound } from "next/navigation"
 import { getAvailableTranslations } from "@/server/actions/item/translations"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 import TranslationsManager from "@/app/dashboard/menu-items/translations/translations-manager"
-import { SubscriptionStatus } from "@/lib/types/billing"
+import { OrganizationStatus } from "@/lib/types/plan"
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("dashboard.menuItems.translations")
@@ -25,7 +25,7 @@ export default async function TranslationsPage() {
   const availableTranslations = await getAvailableTranslations(currentOrg.id)
   const isPro =
     currentOrg.plan?.toUpperCase() === "PRO" ||
-    currentOrg.status === SubscriptionStatus.SPONSORED
+    currentOrg.status === OrganizationStatus.SPONSORED
 
   return (
     <div className="mx-auto grow px-4 sm:px-6">

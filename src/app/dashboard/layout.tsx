@@ -42,7 +42,7 @@ export default async function Layout({
       <SidebarProvider>
         <Sidebar>
           <Suspense fallback={<SkeletonWorkgroup />}>
-            <AppSidebar promiseOrganization={Promise.resolve(organization)} />
+            <AppSidebar />
           </Suspense>
         </Sidebar>
         <main

@@ -31,7 +31,7 @@ export const COLORS = [
   "#ffffff"
 ]
 
-/** @deprecated Use SubscriptionStatus instead */
+/** @deprecated Use OrganizationStatus instead */
 export const enum Status {
   ACTIVE = "ACTIVE",
   INACTIVE = "INACTIVE",

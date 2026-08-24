@@ -7,21 +7,19 @@ import { Loader, PlusCircle } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
-import { usePostHog } from "posthog-js/react"
 
 import { UpgradeDialog } from "@/components/dashboard/upgrade-dialog"
 import { Button } from "@/components/ui/button"
 import { createItem } from "@/server/actions/item/mutations"
 import { appConfig } from "@/app/config"
-import { BasicPlanLimits } from "@/lib/types/billing"
 import { MenuItemStatus } from "@/lib/types/menu-item"
+import { BasicPlanLimits } from "@/lib/types/plan"
 
 export default function ItemCreate() {
   const t = useTranslations("dashboard.menuItems.products")
   const [isPending, startTransition] = useTransition()
   const [showUpgrade, setShowUpgrade] = useState(false)
   const router = useRouter()
-  const posthog = usePostHog()
 
   const { execute, status, reset } = useAction(createItem, {
     onSuccess: ({ data }) => {
@@ -33,15 +31,6 @@ export default function ItemCreate() {
         }
         reset()
         return
-      }
-
-      if (data?.success) {
-        posthog.capture("item_created", {
-          item_id: data.success.id,
-          organization_id: data.success.organizationId,
-          category_id: data.success.categoryId,
-          source: "dashboard"
-        })
       }
 
       startTransition(() => {

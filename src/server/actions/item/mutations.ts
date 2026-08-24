@@ -10,8 +10,6 @@ import { z } from "zod/v4"
 import { getItemCount } from "@/server/actions/item/queries"
 import {
   fetchAndStoreExternalImage,
-  fetchAndStoreExternalImage,
-  type ExternalImageErrorCode,
   type ExternalImageErrorCode
 } from "@/server/actions/media/external-fetch"
 import { extractMenuItemsFromFile } from "@/server/actions/menu-import/ai"
@@ -470,7 +468,7 @@ export const bulkCreateItems = authMemberActionClient
         const itemId = existingId ?? crypto.randomUUID()
 
         let imageAssetId: string | undefined
-        let imageUrl: string | undefined
+        let imageStorageKey: string | undefined
 
         if (item.image) {
           if (mediaBudget <= 0) {
@@ -490,7 +488,7 @@ export const bulkCreateItems = authMemberActionClient
           }
 
           imageAssetId = result.assetId
-          imageUrl = result.publicUrl
+          imageStorageKey = result.storageKey
           mediaBudget -= 1
         }
 
@@ -504,7 +502,9 @@ export const bulkCreateItems = authMemberActionClient
                 status: item.status || MenuItemStatus.ACTIVE,
                 categoryId: categoryId ?? null,
                 currency,
-                ...(imageAssetId ? { imageAssetId, image: imageUrl } : {}),
+                ...(imageAssetId && imageStorageKey
+                  ? { imageAssetId, image: imageStorageKey }
+                  : {}),
                 variants: {
                   deleteMany: {},
                   create: item.variants.map(variant => ({
@@ -526,7 +526,9 @@ export const bulkCreateItems = authMemberActionClient
                 categoryId,
                 currency,
                 organizationId: currentOrgId,
-                ...(imageAssetId ? { imageAssetId, image: imageUrl } : {}),
+                ...(imageAssetId && imageStorageKey
+                  ? { imageAssetId, image: imageStorageKey }
+                  : {}),
                 variants: {
                   create: item.variants.map(variant => ({
                     name: variant.name,

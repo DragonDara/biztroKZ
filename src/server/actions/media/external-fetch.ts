@@ -10,7 +10,6 @@ import {
   MediaAssetType,
   MediaUsageEntityType
 } from "@/lib/types/media"
-import { getCacheBustedImageUrl } from "@/lib/utils"
 
 const MAX_IMAGE_BYTES = 8 * 1024 * 1024 // 8 MB
 const FETCH_TIMEOUT_MS = 10_000
@@ -27,7 +26,7 @@ export type ExternalImageErrorCode =
   | "uploadFailed"
 
 export type FetchAndStoreImageResult =
-  | { ok: true; assetId: string; publicUrl: string }
+  | { ok: true; assetId: string; storageKey: string }
   | { ok: false; code: ExternalImageErrorCode }
 
 class ExternalImageError extends Error {
@@ -279,7 +278,7 @@ export async function fetchAndStoreExternalImage({
     return {
       ok: true,
       assetId: asset.id,
-      publicUrl: getCacheBustedImageUrl(storageKey, asset.updatedAt)
+      storageKey
     }
   } catch (error) {
     if (error instanceof ExternalImageError) {

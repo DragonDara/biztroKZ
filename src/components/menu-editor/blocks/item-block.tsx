@@ -165,7 +165,8 @@ export function ItemView({
                 width={128}
                 height={96}
                 alt={displayName}
-                className="h-16 w-20 rounded-sm object-cover"
+                className="h-max w-20 rounded-sm object-cover"
+                loading="eager"
                 unoptimized
               ></Image>
             )}

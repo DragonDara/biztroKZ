@@ -200,7 +200,8 @@ export function ItemView({
               </FontWrapper>
               <FontWrapper fontFamily={descriptionFontFamily}>
                 <span
-                  className="line-clamp-3 text-sm text-pretty"
+                  className="line-clamp-3 w-auto text-sm text-pretty
+                    wrap-anywhere"
                   style={{
                     color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
                   }}

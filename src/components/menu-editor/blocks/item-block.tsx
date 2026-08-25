@@ -156,7 +156,7 @@ export function ItemView({
           <div
             className={cn(
               "flex gap-3",
-              hasVariants ? "flex-col-reverse" : "flex-row items-center"
+              hasVariants ? "flex-col-reverse" : "flex-row items-start"
             )}
           >
             {item.image && showImage && (
@@ -165,7 +165,8 @@ export function ItemView({
                 width={128}
                 height={96}
                 alt={displayName}
-                className="h-16 w-20 rounded-sm object-cover"
+                className="h-max rounded-sm object-cover"
+                loading="eager"
                 unoptimized
               ></Image>
             )}
@@ -199,83 +200,84 @@ export function ItemView({
               </FontWrapper>
               <FontWrapper fontFamily={descriptionFontFamily}>
                 <span
-                  className="line-clamp-3 text-sm text-pretty"
+                  className="line-clamp-3 w-auto text-sm text-pretty
+                    wrap-anywhere"
                   style={{
                     color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
                   }}
                 >
                   {displayDescription}
                 </span>
+                {item.variants.length > 1 ? (
+                  <div className="flex flex-col justify-end gap-1 self-end">
+                    {item.variants.map(variant => {
+                      const variantTranslation =
+                        translation?.getVariantTranslation(variant.id)
+                      const displayVariantName = normalizeMenuLabelCasing(
+                        variantTranslation?.name ?? variant.name
+                      )
+                      return (
+                        <div
+                          key={variant.id}
+                          className="grid grid-cols-[1fr_90px] gap-1 text-right"
+                        >
+                          <FontWrapper fontFamily={descriptionFontFamily}>
+                            <span
+                              className="text-sm"
+                              style={{
+                                color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
+                              }}
+                            >
+                              {displayVariantName}
+                            </span>
+                          </FontWrapper>
+                          <FontWrapper fontFamily={priceFontFamily}>
+                            <span
+                              style={{
+                                fontFamily: priceFontFamily,
+                                fontSize: `${priceFontSize}px`,
+                                color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
+                                fontWeight: priceFontWeight
+                              }}
+                              className="text-nowrap"
+                            >
+                              {formatPrice(
+                                variant.price,
+                                resolveCurrency(
+                                  (item as unknown as { currency?: string })
+                                    .currency
+                                )
+                              )}
+                            </span>
+                          </FontWrapper>
+                        </div>
+                      )
+                    })}
+                  </div>
+                ) : (
+                  <FontWrapper fontFamily={priceFontFamily}>
+                    <span
+                      style={{
+                        fontFamily: priceFontFamily,
+                        fontSize: `${priceFontSize}px`,
+                        color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
+                        fontWeight: priceFontWeight
+                      }}
+                      className="text-nowrap"
+                    >
+                      {/* If it has decimal values, show them in the price as well with 2 decimal places */}
+                      {formatPrice(
+                        (item.variants[0]?.price ?? 0) as number,
+                        resolveCurrency(
+                          (item as unknown as { currency?: string }).currency
+                        )
+                      )}
+                    </span>
+                  </FontWrapper>
+                )}
               </FontWrapper>
             </div>
           </div>
-          {item.variants.length > 1 ? (
-            <div className="flex flex-col justify-end gap-1 self-end">
-              {item.variants.map(variant => {
-                const variantTranslation = translation?.getVariantTranslation(
-                  variant.id
-                )
-                const displayVariantName = normalizeMenuLabelCasing(
-                  variantTranslation?.name ?? variant.name
-                )
-                return (
-                  <div
-                    key={variant.id}
-                    className="grid grid-cols-[1fr_90px] gap-1 text-right"
-                  >
-                    <FontWrapper fontFamily={descriptionFontFamily}>
-                      <span
-                        className="text-sm"
-                        style={{
-                          color: `rgba(${Object.values(descriptionColor ?? { r: 0, g: 0, b: 0, a: 1 })})`
-                        }}
-                      >
-                        {displayVariantName}
-                      </span>
-                    </FontWrapper>
-                    <FontWrapper fontFamily={priceFontFamily}>
-                      <span
-                        style={{
-                          fontFamily: priceFontFamily,
-                          fontSize: `${priceFontSize}px`,
-                          color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
-                          fontWeight: priceFontWeight
-                        }}
-                        className="text-nowrap"
-                      >
-                        {formatPrice(
-                          variant.price,
-                          resolveCurrency(
-                            (item as unknown as { currency?: string }).currency
-                          )
-                        )}
-                      </span>
-                    </FontWrapper>
-                  </div>
-                )
-              })}
-            </div>
-          ) : (
-            <FontWrapper fontFamily={priceFontFamily}>
-              <span
-                style={{
-                  fontFamily: priceFontFamily,
-                  fontSize: `${priceFontSize}px`,
-                  color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
-                  fontWeight: priceFontWeight
-                }}
-                className="text-nowrap"
-              >
-                {/* If it has decimal values, show them in the price as well with 2 decimal places */}
-                {formatPrice(
-                  (item.variants[0]?.price ?? 0) as number,
-                  resolveCurrency(
-                    (item as unknown as { currency?: string }).currency
-                  )
-                )}
-              </span>
-            </FontWrapper>
-          )}
         </div>
       </div>
       <ItemDetail

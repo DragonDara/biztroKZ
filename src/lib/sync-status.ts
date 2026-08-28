@@ -277,6 +277,20 @@ function areCategoryItemsSynced(
   return true
 }
 
+function areMenuSectionsEqual(
+  menuSection: MenuData["categories"][number]["menuSection"],
+  dbSection: MenuData["categories"][number]["menuSection"]
+) {
+  if (!menuSection && !dbSection) return true
+  if (!menuSection || !dbSection) return false
+
+  return (
+    menuSection.id === dbSection.id &&
+    menuSection.name === dbSection.name &&
+    compareDates(menuSection.updatedAt, dbSection.updatedAt)
+  )
+}
+
 export function areCategoriesInSync(
   menuCategories: MenuData["categories"],
   dbCategories: MenuData["categories"]
@@ -292,6 +306,12 @@ export function areCategoriesInSync(
     }
 
     if (!compareDates(dbCategory.updatedAt, menuCategory.updatedAt)) {
+      return false
+    }
+
+    if (
+      !areMenuSectionsEqual(menuCategory.menuSection, dbCategory.menuSection)
+    ) {
       return false
     }
 

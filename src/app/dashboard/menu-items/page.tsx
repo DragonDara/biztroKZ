@@ -38,8 +38,10 @@ export default async function ItemsPage(props: {
     filter.category = searchParams.category as string
   }
 
-  const data = await getMenuItems(filter, currentOrg.id)
-  const categories = await getCategories(currentOrg.id)
+  const [data, categories] = await Promise.all([
+    getMenuItems(filter, currentOrg.id),
+    getCategories(currentOrg.id)
+  ])
 
   return (
     <div className="mx-auto grow px-4 sm:px-6">

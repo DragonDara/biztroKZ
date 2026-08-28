@@ -28,7 +28,9 @@ export async function getMenuItems(
         : undefined
     },
     include: {
-      category: true,
+      category: {
+        include: { menuSection: true }
+      },
       variants: true
     }
   })
@@ -43,7 +45,9 @@ export async function getMenuItemById(id: string) {
       id
     },
     include: {
-      category: true,
+      category: {
+        include: { menuSection: true }
+      },
       variants: {
         include: {
           translations: {
@@ -79,7 +83,28 @@ export async function getCategories(organizationId: string) {
   return await prisma.category.findMany({
     where: {
       organizationId
-    }
+    },
+    include: {
+      menuSection: true
+    },
+    orderBy: [{ menuSection: { name: "asc" } }, { name: "asc" }]
+  })
+}
+
+export async function getMenuSections(organizationId: string) {
+  "use cache"
+
+  cacheTag(`menu-sections-${organizationId}`)
+  if (!organizationId) return []
+
+  return await prisma.menuSection.findMany({
+    where: { organizationId },
+    include: {
+      _count: {
+        select: { categories: true }
+      }
+    },
+    orderBy: { name: "asc" }
   })
 }
 
@@ -104,6 +129,7 @@ export async function getCategoriesWithItems() {
       }
     },
     include: {
+      menuSection: true,
       menuItems: {
         where: {
           status: "ACTIVE"
@@ -119,7 +145,8 @@ export async function getCategoriesWithItems() {
           name: "asc"
         }
       }
-    }
+    },
+    orderBy: [{ menuSection: { name: "asc" } }, { name: "asc" }]
   })
 
   // Get the image URL for each item

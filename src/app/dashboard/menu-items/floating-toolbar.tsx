@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { toast } from "react-hot-toast"
-import type { Category } from "@/generated/prisma-client/client"
 import * as Sentry from "@sentry/nextjs"
 import type { Table } from "@tanstack/react-table"
 import { Combine, Loader, Star, Trash2, X } from "lucide-react"
@@ -36,8 +35,9 @@ import {
   bulkToggleFeature,
   bulkUpdateCategory
 } from "@/server/actions/item/mutations"
-import type { getMenuItems } from "@/server/actions/item/queries"
+import type { getCategories, getMenuItems } from "@/server/actions/item/queries"
 import { syncMenusAfterCatalogChange } from "@/server/actions/menu/sync"
+import { getCategoryLabel } from "@/lib/category-label"
 import { cn } from "@/lib/utils"
 
 function FloatingToolbar({
@@ -45,7 +45,7 @@ function FloatingToolbar({
   categories
 }: {
   table: Table<Awaited<ReturnType<typeof getMenuItems>>[0]>
-  categories: Category[]
+  categories: Awaited<ReturnType<typeof getCategories>>
 }) {
   const t = useTranslations("dashboard.menuItems.products")
   const tCommon = useTranslations("dashboard.common")
@@ -265,7 +265,7 @@ function FloatingToolbar({
               onSelect={() => handleUpdateCategory(category.id)}
               disabled={updateIsPending || !hasSelection}
             >
-              {category.name}
+              {getCategoryLabel(category)}
             </DropdownMenuItem>
           ))}
         </DropdownMenuContent>

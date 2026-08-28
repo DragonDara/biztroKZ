@@ -111,23 +111,23 @@ model Theme {
 }
 
 model MenuItem {
-  id             String                  @id @default(cuid())
+  id             String                @id @default(cuid())
   name           String
   description    String?
   image          String?
   imageAssetId   String?
-  imageAsset     MediaAsset?             @relation("MenuItemImageAsset", fields: [imageAssetId], references: [id], onDelete: SetNull)
-  status         String                  @default("DRAFT")
-  featured       Boolean                 @default(false)
-  createdAt      DateTime                @default(now())
-  updatedAt      DateTime                @updatedAt
+  imageAsset     MediaAsset?           @relation("MenuItemImageAsset", fields: [imageAssetId], references: [id], onDelete: SetNull)
+  status         String                @default("DRAFT")
+  featured       Boolean               @default(false)
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
   categoryId     String?
   organizationId String
-  organization   Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  category       Category?               @relation(fields: [categoryId], references: [id])
+  organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  category       Category?             @relation(fields: [categoryId], references: [id])
   variants       Variant[]
   allergens      String?
-  currency       Currency                @default(KZT)
+  currency       Currency              @default(KZT)
   translations   MenuItemTranslation[]
 
   @@unique([organizationId, name])
@@ -139,9 +139,26 @@ model Category {
   createdAt      DateTime              @default(now())
   updatedAt      DateTime              @updatedAt
   organizationId String
+  menuSectionId  String?
   organization   Organization          @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  menuSection    MenuSection?          @relation(fields: [menuSectionId], references: [id], onDelete: SetNull)
   menuItems      MenuItem[]
   translations   CategoryTranslation[]
+
+  @@index([menuSectionId])
+}
+
+model MenuSection {
+  id             String       @id @default(cuid())
+  name           String
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  categories     Category[]
+
+  @@unique([organizationId, name])
+  @@index([organizationId])
 }
 
 model Variant {

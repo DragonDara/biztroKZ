@@ -106,6 +106,7 @@ import { syncMenusAfterCatalogChange } from "@/server/actions/menu/sync"
 import { useItemFormLabels } from "@/app/dashboard/menu-items/[action]/[id]/use-item-form-labels"
 import { VariantCreate } from "@/app/dashboard/menu-items/[action]/[id]/variant-create"
 import VariantForm from "@/app/dashboard/menu-items/[action]/[id]/variant-form"
+import { getCategoryLabel } from "@/lib/category-label"
 import type { Currency } from "@/lib/currency"
 import { ImageType } from "@/lib/types/media"
 import {
@@ -1413,7 +1414,7 @@ export default function ItemForm({
                               <div className="min-w-0 flex-1">
                                 <Combobox
                                   data={categoryList.map(category => ({
-                                    label: category.name,
+                                    label: getCategoryLabel(category),
                                     value: category.id
                                   }))}
                                   type={t("categoryType")}
@@ -1452,7 +1453,7 @@ export default function ItemForm({
                                                   : "opacity-0"
                                               )}
                                             />
-                                            {category.name}
+                                            {getCategoryLabel(category)}
                                           </ComboboxItem>
                                         ))}
                                       </ComboboxGroup>

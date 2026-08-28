@@ -150,7 +150,11 @@ export default function ToolboxPanel({
         title={t("categoriesAndProducts")}
         className="editor-categories"
       >
-        {categories.map(category => {
+        {categories.map((category, index) => {
+          const previousCategory = categories[index - 1]
+          const shouldShowMenuSection =
+            category.menuSection &&
+            category.menuSection.id !== previousCategory?.menuSection?.id
           const categoryBlock = (
             <CategoryBlock
               data={category}
@@ -177,6 +181,14 @@ export default function ToolboxPanel({
                 }
               }}
             >
+              {shouldShowMenuSection ? (
+                <p
+                  className="text-muted-foreground px-2 pt-3 pb-1 text-xs
+                    font-semibold tracking-wide uppercase"
+                >
+                  {category.menuSection?.name}
+                </p>
+              ) : null}
               <ToolboxElement
                 title={category.name}
                 Icon={menuBlockIconMeta.category.icon}

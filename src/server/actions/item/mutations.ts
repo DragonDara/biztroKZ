@@ -17,7 +17,7 @@ import type { Currency } from "@/lib/currency"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
 import { BasicPlanLimits } from "@/lib/types/billing"
-import { categorySchema } from "@/lib/types/category"
+import { categorySchema, menuSectionSchema } from "@/lib/types/category"
 import { menuImportFileInputSchema } from "@/lib/types/menu-import"
 import {
   bulkMenuItemSchema,
@@ -839,7 +839,7 @@ export const deleteItem = authMemberActionClient
  */
 export const createCategory = authMemberActionClient
   .inputSchema(categorySchema)
-  .action(async ({ parsedInput: { name }, ctx: { member } }) => {
+  .action(async ({ parsedInput: { name, menuSectionId }, ctx: { member } }) => {
     const t = await getTranslations("errors.actions")
     const currentOrgId = member.organizationId
     if (!currentOrgId) {
@@ -851,14 +851,25 @@ export const createCategory = authMemberActionClient
     }
 
     try {
+      if (menuSectionId) {
+        const menuSectionExists = await prisma.menuSection.count({
+          where: { id: menuSectionId, organizationId: currentOrgId }
+        })
+        if (!menuSectionExists) {
+          return { failure: { reason: t("unknownError") } }
+        }
+      }
+
       const category = await prisma.category.create({
         data: {
           name,
+          menuSectionId: menuSectionId || null,
           organizationId: currentOrgId
         }
       })
 
       updateTag(`categories-${currentOrgId}`)
+      updateTag(`menu-sections-${currentOrgId}`)
       return { success: category }
     } catch (error) {
       let message
@@ -901,24 +912,46 @@ export const updateCategory = authMemberActionClient
       parsedInput: {
         id,
         name,
+        menuSectionId,
         organizationId,
         updatePublishedMenus,
         rememberPublishedChoice
-      }
+      },
+      ctx: { member }
     }) => {
+      const currentOrgId = member.organizationId
+      const t = await getTranslations("errors.actions")
+      if (!currentOrgId || currentOrgId !== organizationId) {
+        return { failure: { reason: t("noCurrentOrg") } }
+      }
+
       try {
+        if (!id) {
+          return { failure: { reason: t("unknownError") } }
+        }
+        if (menuSectionId) {
+          const menuSectionExists = await prisma.menuSection.count({
+            where: { id: menuSectionId, organizationId: currentOrgId }
+          })
+          if (!menuSectionExists) {
+            return { failure: { reason: t("unknownError") } }
+          }
+        }
+
         const category = await prisma.category.update({
-          where: { id },
+          where: { id, organizationId: currentOrgId },
           data: {
-            name
+            name,
+            menuSectionId: menuSectionId || null
           }
         })
 
-        updateTag(`categories-${organizationId}`)
-        updateTag(`menu-items-${organizationId}`)
+        updateTag(`categories-${currentOrgId}`)
+        updateTag(`menu-sections-${currentOrgId}`)
+        updateTag(`menu-items-${currentOrgId}`)
 
         const sync = await executeMenuSyncWithPreference({
-          organizationId: organizationId ?? "",
+          organizationId: currentOrgId,
           updatePublishedMenus,
           rememberPublishedChoice
         })
@@ -970,13 +1003,17 @@ export const deleteCategory = authMemberActionClient
       organizationId: z.string()
     })
   )
-  .action(async ({ parsedInput: { id, organizationId } }) => {
-    // const currentOrgId = member.organizationId
+  .action(async ({ parsedInput: { id, organizationId }, ctx: { member } }) => {
+    const currentOrgId = member.organizationId
     const t = await getTranslations("errors.actions")
+    if (!currentOrgId || currentOrgId !== organizationId) {
+      return { failure: { reason: t("noCurrentOrg") } }
+    }
+
     try {
       // Check if the category is being used by any item
       const items = await prisma.menuItem.findMany({
-        where: { categoryId: id }
+        where: { categoryId: id, organizationId: currentOrgId }
       })
 
       if (items.length > 0) {
@@ -988,10 +1025,11 @@ export const deleteCategory = authMemberActionClient
       }
 
       await prisma.category.delete({
-        where: { id }
+        where: { id, organizationId: currentOrgId }
       })
 
-      updateTag(`categories-${organizationId}`)
+      updateTag(`categories-${currentOrgId}`)
+      updateTag(`menu-sections-${currentOrgId}`)
       return { success: true }
     } catch (error) {
       let message
@@ -1010,6 +1048,130 @@ export const deleteCategory = authMemberActionClient
       return {
         failure: {
           reason: message
+        }
+      }
+    }
+  })
+
+export const createMenuSection = authMemberActionClient
+  .inputSchema(menuSectionSchema)
+  .action(async ({ parsedInput: { name }, ctx: { member } }) => {
+    const currentOrgId = member.organizationId
+    const t = await getTranslations("errors.actions")
+    if (!currentOrgId) {
+      return { failure: { reason: t("noCurrentOrg") } }
+    }
+
+    try {
+      const menuSection = await prisma.menuSection.create({
+        data: { name, organizationId: currentOrgId }
+      })
+      updateTag(`menu-sections-${currentOrgId}`)
+      return { success: menuSection }
+    } catch (error) {
+      Sentry.captureException(error, {
+        tags: { section: "item-mutations", operation: "createMenuSection" },
+        extra: { organizationId: currentOrgId, menuSectionName: name }
+      })
+      return {
+        failure: {
+          reason:
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            error.code === "P2002"
+              ? t("menuSectionExists")
+              : error instanceof Error
+                ? error.message
+                : t("unknownError")
+        }
+      }
+    }
+  })
+
+export const updateMenuSection = authMemberActionClient
+  .inputSchema(menuSectionSchema)
+  .action(
+    async ({
+      parsedInput: {
+        id,
+        name,
+        organizationId,
+        updatePublishedMenus,
+        rememberPublishedChoice
+      },
+      ctx: { member }
+    }) => {
+      const currentOrgId = member.organizationId
+      const t = await getTranslations("errors.actions")
+      if (!currentOrgId || currentOrgId !== organizationId) {
+        return { failure: { reason: t("noCurrentOrg") } }
+      }
+
+      try {
+        if (!id) {
+          return { failure: { reason: t("unknownError") } }
+        }
+        const menuSection = await prisma.menuSection.update({
+          where: { id, organizationId: currentOrgId },
+          data: { name }
+        })
+        updateTag(`menu-sections-${currentOrgId}`)
+        updateTag(`categories-${currentOrgId}`)
+        updateTag(`menu-items-${currentOrgId}`)
+        const sync = await executeMenuSyncWithPreference({
+          organizationId: currentOrgId,
+          updatePublishedMenus,
+          rememberPublishedChoice
+        })
+        return { success: { menuSection, sync } }
+      } catch (error) {
+        Sentry.captureException(error, {
+          tags: { section: "item-mutations", operation: "updateMenuSection" },
+          extra: { organizationId: currentOrgId, menuSectionId: id }
+        })
+        return {
+          failure: {
+            reason:
+              error instanceof Prisma.PrismaClientKnownRequestError &&
+              error.code === "P2002"
+                ? t("menuSectionExists")
+                : error instanceof Error
+                  ? error.message
+                  : t("unknownError")
+          }
+        }
+      }
+    }
+  )
+
+export const deleteMenuSection = authMemberActionClient
+  .inputSchema(z.object({ id: z.string(), organizationId: z.string() }))
+  .action(async ({ parsedInput: { id, organizationId }, ctx: { member } }) => {
+    const currentOrgId = member.organizationId
+    const t = await getTranslations("errors.actions")
+    if (!currentOrgId || currentOrgId !== organizationId) {
+      return { failure: { reason: t("noCurrentOrg") } }
+    }
+
+    try {
+      await prisma.menuSection.delete({
+        where: { id, organizationId: currentOrgId }
+      })
+      updateTag(`menu-sections-${currentOrgId}`)
+      updateTag(`categories-${currentOrgId}`)
+      updateTag(`menu-items-${currentOrgId}`)
+      const sync = await executeMenuSyncWithPreference({
+        organizationId: currentOrgId,
+        updatePublishedMenus: false
+      })
+      return { success: { deleted: true, sync } }
+    } catch (error) {
+      Sentry.captureException(error, {
+        tags: { section: "item-mutations", operation: "deleteMenuSection" },
+        extra: { organizationId: currentOrgId, menuSectionId: id }
+      })
+      return {
+        failure: {
+          reason: error instanceof Error ? error.message : t("unknownError")
         }
       }
     }

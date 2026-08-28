@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
+import { useRouter } from "next/navigation"
 import { usePostHog } from "posthog-js/react"
 import { TextMorph } from "torph/react"
 import { type z } from "zod/v4"
@@ -29,9 +30,24 @@ import {
   DrawerTitle,
   DrawerTrigger
 } from "@/components/ui/drawer"
-import { Field, FieldError, FieldLabel } from "@/components/ui/field"
+import {
+  Field,
+  FieldDescription,
+  FieldError,
+  FieldGroup,
+  FieldLabel
+} from "@/components/ui/field"
 import { Input } from "@/components/ui/input"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
 import { createCategory, updateCategory } from "@/server/actions/item/mutations"
+import type { getMenuSections } from "@/server/actions/item/queries"
 import { syncMenusAfterCatalogChange } from "@/server/actions/menu/sync"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { ActionType, categorySchema } from "@/lib/types/category"
@@ -39,11 +55,13 @@ import { ActionType, categorySchema } from "@/lib/types/category"
 export default function CategoryEdit({
   children,
   category,
-  action
+  action,
+  menuSections
 }: {
   children?: React.ReactNode
   category?: z.infer<typeof categorySchema>
   action: ActionType
+  menuSections: Awaited<ReturnType<typeof getMenuSections>>
 }) {
   const isMobile = useIsMobile()
   const t = useTranslations("dashboard.menuItems.categories")
@@ -65,6 +83,7 @@ export default function CategoryEdit({
             <CategoryEditForm
               category={category}
               action={action}
+              menuSections={menuSections}
               onClose={setOpen}
             />
           </div>
@@ -84,6 +103,7 @@ export default function CategoryEdit({
         <CategoryEditForm
           category={category}
           action={action}
+          menuSections={menuSections}
           onClose={setOpen}
         />
       </DialogContent>
@@ -94,10 +114,12 @@ export default function CategoryEdit({
 function CategoryEditForm({
   category,
   action,
+  menuSections,
   onClose
 }: {
   category?: z.infer<typeof categorySchema>
   action: ActionType
+  menuSections: Awaited<ReturnType<typeof getMenuSections>>
   onClose: (open: boolean) => void
 }) {
   const t = useTranslations("dashboard.menuItems.categories")
@@ -109,10 +131,12 @@ function CategoryEditForm({
     defaultValues: {
       id: category?.id ?? undefined,
       name: category?.name ?? "",
-      organizationId: category?.organizationId ?? undefined
+      organizationId: category?.organizationId ?? undefined,
+      menuSectionId: category?.menuSectionId ?? ""
     }
   })
   const posthog = usePostHog()
+  const router = useRouter()
   const [syncPrompt, setSyncPrompt] = useState({
     open: false,
     organizationId: category?.organizationId ?? "",
@@ -136,6 +160,7 @@ function CategoryEditForm({
         })
 
         onClose(false)
+        router.refresh()
       } else if (data?.failure.reason) {
         toast.error(data?.failure.reason)
       }
@@ -172,6 +197,7 @@ function CategoryEditForm({
         } else {
           onClose(false)
         }
+        router.refresh()
       } else if (data?.failure.reason) {
         toast.error(data?.failure.reason)
       }
@@ -180,6 +206,7 @@ function CategoryEditForm({
     },
     onError: () => {
       toast.error(t("updateError"))
+      resetUpdate()
     }
   })
 
@@ -199,6 +226,7 @@ function CategoryEditForm({
     },
     onError: () => {
       toast.error(tProducts("menuUpdateError"))
+      resetSyncMenus()
       setSyncPrompt(prev => ({ ...prev, open: false }))
     }
   })
@@ -231,32 +259,74 @@ function CategoryEditForm({
   }
 
   return (
-    <form className="space-y-6" onSubmit={form.handleSubmit(onSubmit)}>
-      <Controller
-        name="name"
-        control={form.control}
-        render={({ field, fieldState }) => (
-          <Field>
-            <FieldLabel htmlFor={field.name}>{t("nameLabel")}</FieldLabel>
-            <Input {...field} placeholder={t("namePlaceholder")} />
-            {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
-          </Field>
-        )}
-      />
-      <Button
-        disabled={statusInsert === "executing" || statusUpdate === "executing"}
-        onClick={form.handleSubmit(onSubmit)}
-        className="w-full"
-      >
-        {(statusInsert === "executing" || statusUpdate === "executing") && (
-          <Loader className="mr-2 h-4 w-4 animate-spin" />
-        )}
-        <TextMorph>
-          {statusInsert === "executing" || statusUpdate === "executing"
-            ? t("saving")
-            : tCommon("save")}
-        </TextMorph>
-      </Button>
+    <form onSubmit={form.handleSubmit(onSubmit)}>
+      <FieldGroup>
+        <Controller
+          name="name"
+          control={form.control}
+          render={({ field, fieldState }) => (
+            <Field data-invalid={fieldState.invalid}>
+              <FieldLabel htmlFor={field.name}>{t("nameLabel")}</FieldLabel>
+              <Input
+                {...field}
+                aria-invalid={fieldState.invalid}
+                placeholder={t("namePlaceholder")}
+              />
+              {fieldState.invalid && <FieldError errors={[fieldState.error]} />}
+            </Field>
+          )}
+        />
+        <Controller
+          name="menuSectionId"
+          control={form.control}
+          render={({ field }) => (
+            <Field>
+              <FieldLabel htmlFor="category-menu-section">
+                {t("menuSectionLabel")}
+              </FieldLabel>
+              <Select
+                value={field.value || "unassigned"}
+                onValueChange={value =>
+                  field.onChange(value === "unassigned" ? "" : value)
+                }
+              >
+                <SelectTrigger id="category-menu-section" className="w-full">
+                  <SelectValue placeholder={t("menuSectionPlaceholder")} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectItem value="unassigned">
+                      {t("withoutMenuSection")}
+                    </SelectItem>
+                    {menuSections.map(menuSection => (
+                      <SelectItem key={menuSection.id} value={menuSection.id}>
+                        {menuSection.name}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+              <FieldDescription>{t("menuSectionDescription")}</FieldDescription>
+            </Field>
+          )}
+        />
+        <Button
+          type="submit"
+          disabled={
+            statusInsert === "executing" || statusUpdate === "executing"
+          }
+          className="w-full"
+        >
+          {(statusInsert === "executing" || statusUpdate === "executing") && (
+            <Loader data-icon="inline-start" className="animate-spin" />
+          )}
+          <TextMorph>
+            {statusInsert === "executing" || statusUpdate === "executing"
+              ? t("saving")
+              : tCommon("save")}
+          </TextMorph>
+        </Button>
+      </FieldGroup>
       <MenuSyncDialog
         open={syncPrompt.open}
         onOpenChange={open =>

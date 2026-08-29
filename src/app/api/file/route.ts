@@ -111,6 +111,32 @@ export async function POST(req: NextRequest) {
       entityId = objectId
       field = "image"
       break
+    case ImageType.MENU_SECTION_COVER: {
+      if (!objectId) {
+        return new NextResponse("Menu section id is required", {
+          status: 400,
+          headers: corsHeaders
+        })
+      }
+
+      const menuSection = await prisma.menuSection.findFirst({
+        where: { id: objectId as string, organizationId },
+        select: { id: true }
+      })
+      if (!menuSection) {
+        return new NextResponse("Menu section not found", {
+          status: 404,
+          headers: corsHeaders
+        })
+      }
+
+      storageKey = `orgs/${organizationId}/menu-sections/${objectId}/cover`
+      assetScope = MediaAssetScope.MENU_SECTION_COVER
+      entityType = MediaUsageEntityType.MENU_SECTION
+      entityId = objectId as string
+      field = "coverImage"
+      break
+    }
     case ImageType.MENU_BACKGROUND: {
       if (!objectId) {
         return new NextResponse("Menu id is required", {
@@ -199,37 +225,44 @@ export async function POST(req: NextRequest) {
         contentType: contentType as string,
         width,
         height,
-        bytes
+        bytes,
+        unattachedAt:
+          imageType === ImageType.MENU_SECTION_COVER ? new Date() : undefined
       },
       update: {
         contentType: contentType as string,
         width,
         height,
         bytes,
+        deletedAt: null,
+        unattachedAt:
+          imageType === ImageType.MENU_SECTION_COVER ? undefined : null,
         updatedAt: new Date()
       }
     })
 
-    // Create or update MediaUsage record
-    await tx.mediaUsage.upsert({
-      where: {
-        assetId_entityType_entityId_field: {
+    // Section covers are attached only after Uppy confirms the R2 upload.
+    if (imageType !== ImageType.MENU_SECTION_COVER) {
+      await tx.mediaUsage.upsert({
+        where: {
+          assetId_entityType_entityId_field: {
+            assetId: asset.id,
+            entityType,
+            entityId,
+            field
+          }
+        },
+        create: {
           assetId: asset.id,
           entityType,
           entityId,
           field
+        },
+        update: {
+          updatedAt: new Date()
         }
-      },
-      create: {
-        assetId: asset.id,
-        entityType,
-        entityId,
-        field
-      },
-      update: {
-        updatedAt: new Date()
-      }
-    })
+      })
+    }
 
     // Update the entity's storage key field
     switch (imageType) {
@@ -251,6 +284,9 @@ export async function POST(req: NextRequest) {
           data: { image: storageKey, imageAssetId: asset.id }
         })
         break
+      case ImageType.MENU_SECTION_COVER:
+        // Finalized by syncMenuSectionCover after the R2 PUT succeeds.
+        break
       default:
         // Should not reach here due to earlier validation
         break
@@ -268,6 +304,11 @@ export async function POST(req: NextRequest) {
     case ImageType.MENUITEM:
       // Menu item image changed
       revalidateTag(`menu-item-${objectId}`, { expire: 0 })
+      break
+    case ImageType.MENU_SECTION_COVER:
+      revalidateTag(`menu-sections-${organizationId}`, { expire: 0 })
+      revalidateTag(`categories-${organizationId}`, { expire: 0 })
+      revalidateTag(`menu-items-${organizationId}`, { expire: 0 })
       break
     case ImageType.MENU_BACKGROUND:
       revalidateTag(`organization-${organizationId}`, "max")

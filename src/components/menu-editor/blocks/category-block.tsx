@@ -21,6 +21,11 @@ function normalizeColor(
   return `#${[r, g, b].map(x => x.toString(16).padStart(2, "0")).join("")}`
 }
 
+function colorWithOpacity(color: RgbaColor | undefined, opacity: number) {
+  const { r, g, b } = color ?? { r: 128, g: 128, b: 128 }
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`
+}
+
 export type CategoryHeadingShape =
   | "none"
   | "rectangle"
@@ -95,9 +100,21 @@ export default function CategoryBlock({
       custom.displayName = normalizeMenuLabelCasing(data.name)
     })
   }, [data.name, setCustom])
-  const { isEditing } = useEditor(state => ({
-    isEditing: state.options.enabled
-  }))
+  const { isEditing, hasPreviousCategory } = useEditor(state => {
+    const parentId = state.nodes[id]?.data.parent
+    const siblingNodeIds = parentId
+      ? (state.nodes[parentId]?.data.nodes ?? [])
+      : []
+    const currentIndex = siblingNodeIds.indexOf(id)
+    const hasPreviousCategory = siblingNodeIds
+      .slice(0, Math.max(0, currentIndex))
+      .some(nodeId => state.nodes[nodeId]?.data.name === "CategoryBlock")
+
+    return {
+      isEditing: state.options.enabled,
+      hasPreviousCategory
+    }
+  })
   const translation = useTranslation()
   const displayCategoryName = normalizeMenuLabelCasing(
     translation?.getCategoryTranslation(data.id)?.name ?? data.name
@@ -115,6 +132,13 @@ export default function CategoryBlock({
         backgroundMode === "custom" && "bg-black/50 backdrop-blur-md"
       )}
     >
+      {hasPreviousCategory ? (
+        <div
+          aria-hidden="true"
+          className="mb-4 h-px w-full"
+          style={{ backgroundColor: colorWithOpacity(categoryColor, 0.22) }}
+        />
+      ) : null}
       <div>
         <h2
           id={id}
@@ -149,28 +173,38 @@ export default function CategoryBlock({
             backgroundMode === "none" ? "gap-0" : "gap-4"
           )}
         >
-          {data.menuItems.map(item => {
+          {data.menuItems.map((item, index) => {
             return (
-              <ItemView
-                key={item.id}
-                {...{
-                  item,
-                  backgroundMode: "none",
-                  itemFontSize,
-                  itemColor,
-                  itemFontWeight,
-                  itemFontFamily,
-                  itemTextTransform,
-                  priceFontSize,
-                  priceColor,
-                  priceFontWeight,
-                  priceFontFamily,
-                  descriptionFontFamily,
-                  descriptionColor,
-                  showImage,
-                  isEditing
-                }}
-              />
+              <div key={item.id} className="min-w-0">
+                <ItemView
+                  {...{
+                    item,
+                    backgroundMode: "none",
+                    itemFontSize,
+                    itemColor,
+                    itemFontWeight,
+                    itemFontFamily,
+                    itemTextTransform,
+                    priceFontSize,
+                    priceColor,
+                    priceFontWeight,
+                    priceFontFamily,
+                    descriptionFontFamily,
+                    descriptionColor,
+                    showImage,
+                    isEditing
+                  }}
+                />
+                {index < data.menuItems.length - 1 ? (
+                  <div
+                    aria-hidden="true"
+                    className="mx-auto my-1 h-px w-2/3"
+                    style={{
+                      backgroundColor: colorWithOpacity(itemColor, 0.18)
+                    }}
+                  />
+                ) : null}
+              </div>
             )
           })}
         </div>

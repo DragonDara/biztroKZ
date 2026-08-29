@@ -8,6 +8,17 @@ import { type MenuItemQueryFilter } from "@/lib/types/menu-item"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 import { env } from "@/env.mjs"
 
+function hydrateMenuSectionCover<
+  T extends { coverImage: string | null; updatedAt: Date }
+>(menuSection: T | null) {
+  if (menuSection?.coverImage) {
+    menuSection.coverImage = getCacheBustedImageUrl(
+      menuSection.coverImage,
+      menuSection.updatedAt
+    )
+  }
+}
+
 export async function getMenuItems(
   filter: MenuItemQueryFilter,
   organizationId: string
@@ -28,7 +39,9 @@ export async function getMenuItems(
         : undefined
     },
     include: {
-      category: true,
+      category: {
+        include: { menuSection: true }
+      },
       variants: true
     }
   })
@@ -43,7 +56,9 @@ export async function getMenuItemById(id: string) {
       id
     },
     include: {
-      category: true,
+      category: {
+        include: { menuSection: true }
+      },
       variants: {
         include: {
           translations: {
@@ -76,11 +91,42 @@ export async function getCategories(organizationId: string) {
     return []
   }
 
-  return await prisma.category.findMany({
+  const categories = await prisma.category.findMany({
     where: {
       organizationId
-    }
+    },
+    include: {
+      menuSection: true
+    },
+    orderBy: [{ menuSection: { name: "asc" } }, { name: "asc" }]
   })
+
+  for (const category of categories) {
+    hydrateMenuSectionCover(category.menuSection)
+  }
+  return categories
+}
+
+export async function getMenuSections(organizationId: string) {
+  "use cache"
+
+  cacheTag(`menu-sections-${organizationId}`)
+  if (!organizationId) return []
+
+  const menuSections = await prisma.menuSection.findMany({
+    where: { organizationId },
+    include: {
+      _count: {
+        select: { categories: true }
+      }
+    },
+    orderBy: { name: "asc" }
+  })
+
+  for (const menuSection of menuSections) {
+    hydrateMenuSectionCover(menuSection)
+  }
+  return menuSections
 }
 
 export async function getCategoriesWithItems() {
@@ -104,6 +150,7 @@ export async function getCategoriesWithItems() {
       }
     },
     include: {
+      menuSection: true,
       menuItems: {
         where: {
           status: "ACTIVE"
@@ -119,11 +166,13 @@ export async function getCategoriesWithItems() {
           name: "asc"
         }
       }
-    }
+    },
+    orderBy: [{ menuSection: { name: "asc" } }, { name: "asc" }]
   })
 
   // Get the image URL for each item
   for (const category of data) {
+    hydrateMenuSectionCover(category.menuSection)
     for (const item of category.menuItems) {
       if (item.image) {
         item.image = getCacheBustedImageUrl(item.image, item.updatedAt)

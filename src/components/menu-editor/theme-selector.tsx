@@ -286,13 +286,6 @@ export default function ThemeSelector({
               }))
             })
             break
-          case "NavigatorBlock":
-            setIgnoreProp(key, props => {
-              return (props = Object.assign(props, {
-                color: hexToRgba(selectedTheme.brandColor)
-              }))
-            })
-            break
           case "FeaturedBlock":
             setIgnoreProp(key, props => {
               return (props = Object.assign(props, {

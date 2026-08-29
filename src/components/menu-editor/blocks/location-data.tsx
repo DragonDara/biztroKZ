@@ -2,9 +2,9 @@
 
 import * as React from "react"
 import {
+  ChevronRight,
   ExternalLink,
   HandPlatter,
-  InfoIcon,
   Motorbike,
   Phone,
   ShoppingBag
@@ -12,6 +12,7 @@ import {
 import { useLocale } from "next-intl"
 
 import { useTranslation } from "@/components/menu-editor/translation-provider"
+import { Button } from "@/components/ui/button"
 import {
   Dialog,
   DialogContent,
@@ -23,8 +24,10 @@ import {
 import {
   Drawer,
   DrawerContent,
+  DrawerDescription,
   DrawerHeader,
-  DrawerTitle
+  DrawerTitle,
+  DrawerTrigger
 } from "@/components/ui/drawer"
 import {
   Item,
@@ -114,16 +117,16 @@ export default function LocationData({
         : t("no_schedule")
 
   const hoursTrigger = (
-    <button
+    <Button
       type="button"
-      onClick={
-        isMobile ? () => setIsDrawerOpen(true) : () => setIsDialogOpen(true)
-      }
-      className="flex flex-row items-center gap-1 rounded-full border-[0.5px]
-        border-white/50 bg-white/20 px-1 py-0.5 backdrop-blur-md"
+      variant="secondary"
+      size="sm"
+      className="group bg-background/70 text-foreground hover:bg-background/90
+        max-w-[calc(100vw-2rem)] cursor-pointer rounded-full border
+        border-white/10 shadow-sm ring-1 ring-black/10 backdrop-blur-md"
       aria-label={t("view_hours")}
     >
-      <div className="dark">
+      <div className="dark" aria-hidden="true">
         {isOpenNow ? (
           <div
             className="flex-none rounded-full bg-green-500/10 p-1 text-green-500
@@ -140,9 +143,14 @@ export default function LocationData({
           </div>
         )}
       </div>
-      <span>{legend}</span>
-      <InfoIcon className="ml-1 inline-block size-3" />
-    </button>
+      <span className="min-w-0 truncate">{legend}</span>
+      <ChevronRight
+        data-icon="inline-end"
+        aria-hidden="true"
+        className="opacity-60 transition-transform duration-200 ease-out
+          group-hover:translate-x-0.5 motion-reduce:transition-none"
+      />
+    </Button>
   )
 
   const hoursList = (
@@ -296,22 +304,22 @@ export default function LocationData({
       {isOpenHoursVisible && location.openingHours && (
         <>
           {isMobile ? (
-            <>
-              {hoursTrigger}
-              <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
-                <DrawerContent className="space-y-1 px-4 pb-8">
-                  <DrawerHeader>
-                    <DrawerTitle>{t("information")}</DrawerTitle>
-                    <p className="text-muted-foreground text-xs">{legend}</p>
-                  </DrawerHeader>
-                  <div className="space-y-8">
-                    {address}
-                    {hoursList}
-                    {servicesList}
-                  </div>
-                </DrawerContent>
-              </Drawer>
-            </>
+            <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
+              <DrawerTrigger asChild>{hoursTrigger}</DrawerTrigger>
+              <DrawerContent className="space-y-1 px-4 pb-8">
+                <DrawerHeader>
+                  <DrawerTitle>{t("information")}</DrawerTitle>
+                  <DrawerDescription className="text-xs">
+                    {legend}
+                  </DrawerDescription>
+                </DrawerHeader>
+                <div className="space-y-8">
+                  {address}
+                  {hoursList}
+                  {servicesList}
+                </div>
+              </DrawerContent>
+            </Drawer>
           ) : (
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>{hoursTrigger}</DialogTrigger>

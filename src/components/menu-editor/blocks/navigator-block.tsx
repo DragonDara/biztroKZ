@@ -344,7 +344,7 @@ export default function NavigatorBlock() {
                     )}
                   </span>
                   <span
-                    className="flex min-h-16 items-center px-4 py-3 text-base
+                    className="flex min-h-12 items-center px-4 py-2 text-base
                       leading-snug font-medium text-pretty"
                     style={{
                       backgroundColor: isActive

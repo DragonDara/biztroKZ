@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from "react"
 import { useEditor, useNode } from "@craftjs/core"
-import type { RgbaColor } from "@uiw/react-color"
 import { ImageIcon, Menu } from "lucide-react"
 import { useMotionValueEvent, useScroll, useTransform } from "motion/react"
 import { useTranslations } from "next-intl"
@@ -19,10 +18,6 @@ import {
 import { useIsMobile } from "@/hooks/use-mobile"
 import { normalizeMenuLabelCasing } from "@/lib/menu-text"
 import { cn } from "@/lib/utils"
-
-export type NavigatorBlockProps = {
-  color?: RgbaColor
-}
 
 type CategoryNodeData = {
   id: string
@@ -51,9 +46,7 @@ type MenuSectionEntry = {
   categories: NavigationEntry[]
 }
 
-const FALLBACK_ACCENT: RgbaColor = { r: 184, g: 78, b: 5, a: 1 }
-
-export default function NavigatorBlock({ color }: NavigatorBlockProps) {
+export default function NavigatorBlock() {
   const t = useTranslations("menuEditor.blocks")
   const {
     connectors: { connect }
@@ -146,10 +139,6 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
         ...navigation.unsectionedEntries
       ]
     : navigation.entries
-  const accentColor = resolveAccentColor(color)
-  const accentCss = rgbaToCss(accentColor, FALLBACK_ACCENT)
-  const accentForeground = getContrastColor(accentColor)
-
   const { scrollY: viewportScrollY } = useScroll()
   const { scrollY: containerScrollY } = useScroll(
     hasContainerScrollRoot ? { container: scrollContainerRef } : {}
@@ -327,7 +316,9 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
                     hover:opacity-90 focus-visible:ring-2
                     focus-visible:ring-offset-2 sm:w-40"
                   style={{
-                    boxShadow: isActive ? `0 0 0 2px ${accentCss}` : undefined
+                    boxShadow: isActive
+                      ? "0 0 0 2px rgba(248, 248, 248, 0.92)"
+                      : undefined
                   }}
                 >
                   <span className="relative block aspect-4/3 overflow-hidden">
@@ -357,10 +348,10 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
                       leading-snug font-medium text-pretty"
                     style={{
                       backgroundColor: isActive
-                        ? accentCss
+                        ? "rgba(248, 248, 248, 0.96)"
                         : "rgba(15, 15, 15, 0.78)",
                       color: isActive
-                        ? accentForeground
+                        ? "rgba(15, 15, 15, 0.96)"
                         : "rgba(255, 255, 255, 0.94)"
                     }}
                   >
@@ -425,7 +416,7 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
                           backgroundColor: "rgba(15, 15, 15, 0.78)",
                           color: "rgba(255, 255, 255, 0.94)",
                           boxShadow: isActive
-                            ? `inset 0 0 0 1px ${accentCss}`
+                            ? "inset 0 0 0 1px rgba(248, 248, 248, 0.92)"
                             : "inset 0 0 0 1px rgba(255, 255, 255, 0.06)"
                         }}
                       >
@@ -495,9 +486,6 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
 
 NavigatorBlock.craft = {
   displayName: "navigation",
-  props: {
-    color: { r: 255, g: 255, b: 255, a: 1 }
-  },
   custom: {
     iconKey: "navigator"
   }
@@ -542,34 +530,4 @@ function getScrollTop(root: ScrollRoot, ownerDocument: Document) {
 
 function isElementScrollRoot(root: ScrollRoot): root is HTMLElement {
   return "scrollTop" in root
-}
-
-function resolveAccentColor(color?: RgbaColor) {
-  if (!color) return FALLBACK_ACCENT
-  const max = Math.max(color.r, color.g, color.b)
-  const min = Math.min(color.r, color.g, color.b)
-  const isNearlyNeutral = max - min < 36
-  const isTooLight = (color.r + color.g + color.b) / 3 > 225
-  return isNearlyNeutral || isTooLight ? FALLBACK_ACCENT : { ...color, a: 1 }
-}
-
-function getContrastColor(color: RgbaColor) {
-  const channels = [color.r, color.g, color.b].map(channel => {
-    const normalized = channel / 255
-    return normalized <= 0.03928
-      ? normalized / 12.92
-      : ((normalized + 0.055) / 1.055) ** 2.4
-  })
-  const luminance =
-    0.2126 * (channels[0] ?? 0) +
-    0.7152 * (channels[1] ?? 0) +
-    0.0722 * (channels[2] ?? 0)
-  return luminance > 0.48
-    ? "rgba(15, 15, 15, 0.94)"
-    : "rgba(255, 255, 255, 0.96)"
-}
-
-function rgbaToCss(color: RgbaColor | undefined, fallback: RgbaColor) {
-  const value = color ?? fallback
-  return `rgba(${value.r}, ${value.g}, ${value.b}, ${value.a ?? 1})`
 }

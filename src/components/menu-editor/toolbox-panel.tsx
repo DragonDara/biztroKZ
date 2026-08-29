@@ -112,9 +112,7 @@ export default function ToolboxPanel({
     />
   )
 
-  const navBlock = (
-    <NavigatorBlock color={hexToRgba(selectedColorTheme.brandColor)} />
-  )
+  const navBlock = <NavigatorBlock />
 
   const featuredBlock = (
     <FeaturedBlock

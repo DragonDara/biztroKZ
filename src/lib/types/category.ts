@@ -37,6 +37,13 @@ export const menuSectionSchema = z.object({
   rememberPublishedChoice: z.boolean().optional()
 })
 
+export const menuSectionCoverSchema = z.object({
+  id: z.string(),
+  organizationId: z.string(),
+  updatePublishedMenus: z.boolean().optional(),
+  rememberPublishedChoice: z.boolean().optional()
+})
+
 export const enum ActionType {
   CREATE = "CREATE",
   UPDATE = "UPDATE",

@@ -206,6 +206,12 @@ async function getCategoriesWithItemsByOrg(organizationId: string) {
   })
 
   for (const category of data) {
+    if (category.menuSection?.coverImage) {
+      category.menuSection.coverImage = getCacheBustedImageUrl(
+        category.menuSection.coverImage,
+        category.menuSection.updatedAt
+      )
+    }
     for (const item of category.menuItems) {
       if (item.image) {
         item.image = getCacheBustedImageUrl(item.image, item.updatedAt)

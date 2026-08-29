@@ -1,7 +1,8 @@
 "use client"
 
-import { Edit, Trash2 } from "lucide-react"
+import { Edit, ImageIcon, Trash2 } from "lucide-react"
 import { useTranslations } from "next-intl"
+import Image from "next/image"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -42,6 +43,29 @@ export default function MenuSectionList({
           <ItemGroup className="gap-2">
             {menuSections.map(menuSection => (
               <Item key={menuSection.id} variant="outline" size="sm">
+                <div
+                  className="bg-muted relative aspect-4/3 w-14 shrink-0
+                    overflow-hidden rounded-md"
+                >
+                  {menuSection.coverImage ? (
+                    <Image
+                      src={menuSection.coverImage}
+                      alt=""
+                      fill
+                      sizes="56px"
+                      className="object-cover"
+                      unoptimized
+                    />
+                  ) : (
+                    <div
+                      className="text-muted-foreground flex size-full
+                        items-center justify-center"
+                      aria-hidden="true"
+                    >
+                      <ImageIcon className="size-4" />
+                    </div>
+                  )}
+                </div>
                 <ItemContent>
                   <ItemTitle>
                     <span className="truncate">{menuSection.name}</span>

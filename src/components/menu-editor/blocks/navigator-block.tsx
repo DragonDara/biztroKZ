@@ -25,17 +25,14 @@ type CategoryNodeData = {
   menuSection?: {
     id: string
     name: string
+    coverImage?: string | null
   } | null
-  menuItems?: Array<{
-    image?: string | null
-  }>
 }
 
 type NavigationEntry = {
   id: string
   label: string
   menuSectionId: string | null
-  image: string | null
 }
 
 type MenuSectionEntry = {
@@ -68,8 +65,7 @@ export default function NavigatorBlock() {
         entries.push({
           id: node.id,
           label: node.data.props.text,
-          menuSectionId: null,
-          image: null
+          menuSectionId: null
         })
         continue
       }
@@ -83,8 +79,7 @@ export default function NavigatorBlock() {
         label: normalizeMenuLabelCasing(
           translation?.getCategoryTranslation(data.id)?.name ?? data.name
         ),
-        menuSectionId: data.menuSection?.id ?? null,
-        image: data.menuItems?.find(item => item.image)?.image ?? null
+        menuSectionId: data.menuSection?.id ?? null
       }
       entries.push(entry)
 
@@ -92,7 +87,6 @@ export default function NavigatorBlock() {
       const existingSection = sections.get(data.menuSection.id)
       if (existingSection) {
         existingSection.categories.push(entry)
-        existingSection.image ??= entry.image
         continue
       }
 
@@ -100,7 +94,7 @@ export default function NavigatorBlock() {
         id: data.menuSection.id,
         name: normalizeMenuLabelCasing(data.menuSection.name),
         firstNodeId: node.id,
-        image: entry.image,
+        image: data.menuSection.coverImage ?? null,
         categories: [entry]
       })
     }

@@ -287,6 +287,9 @@ function areMenuSectionsEqual(
   return (
     menuSection.id === dbSection.id &&
     menuSection.name === dbSection.name &&
+    (menuSection.coverImage ?? null) === (dbSection.coverImage ?? null) &&
+    (menuSection.coverImageAssetId ?? null) ===
+      (dbSection.coverImageAssetId ?? null) &&
     compareDates(menuSection.updatedAt, dbSection.updatedAt)
   )
 }

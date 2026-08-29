@@ -146,6 +146,7 @@ export const enum ImageType {
   LOGO = "LOGO",
   BANNER = "BANNER",
   MENUITEM = "MENUITEM",
+  MENU_SECTION_COVER = "MENU_SECTION_COVER",
   MENU_BACKGROUND = "MENU_BACKGROUND"
 }
 
@@ -157,6 +158,7 @@ export const enum MediaAssetType {
 
 export const enum MediaAssetScope {
   MENU_ITEM_IMAGE = "MENU_ITEM_IMAGE",
+  MENU_SECTION_COVER = "MENU_SECTION_COVER",
   ORG_LOGO = "ORG_LOGO",
   ORG_BANNER = "ORG_BANNER",
   PROMO = "PROMO",
@@ -165,6 +167,7 @@ export const enum MediaAssetScope {
 
 export const enum MediaUsageEntityType {
   MENU_ITEM = "MENU_ITEM",
+  MENU_SECTION = "MENU_SECTION",
   ORGANIZATION = "ORGANIZATION",
   PROMO = "PROMO"
 }

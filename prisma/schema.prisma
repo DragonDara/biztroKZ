@@ -22,6 +22,7 @@ enum MediaAssetType {
 
 enum MediaAssetScope {
   MENU_ITEM_IMAGE
+  MENU_SECTION_COVER
   ORG_LOGO
   ORG_BANNER
   PROMO
@@ -30,6 +31,7 @@ enum MediaAssetScope {
 
 enum MediaUsageEntityType {
   MENU_ITEM
+  MENU_SECTION
   ORGANIZATION
   PROMO
 }
@@ -149,16 +151,20 @@ model Category {
 }
 
 model MenuSection {
-  id             String       @id @default(cuid())
-  name           String
-  createdAt      DateTime     @default(now())
-  updatedAt      DateTime     @updatedAt
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  categories     Category[]
+  id                String       @id @default(cuid())
+  name              String
+  coverImage        String?
+  coverImageAssetId String?
+  coverImageAsset   MediaAsset?  @relation("MenuSectionCoverAsset", fields: [coverImageAssetId], references: [id], onDelete: SetNull)
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+  organizationId    String
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  categories        Category[]
 
   @@unique([organizationId, name])
   @@index([organizationId])
+  @@index([coverImageAssetId])
 }
 
 model Variant {
@@ -237,6 +243,7 @@ model MediaAsset {
   updatedAt      DateTime         @updatedAt
   usages         MediaUsage[]
   menuItems      MenuItem[]       @relation("MenuItemImageAsset")
+  menuSections   MenuSection[]    @relation("MenuSectionCoverAsset")
   orgLogos       Organization[]   @relation("OrganizationLogoAsset")
   orgBanners     Organization[]   @relation("OrganizationBannerAsset")
 

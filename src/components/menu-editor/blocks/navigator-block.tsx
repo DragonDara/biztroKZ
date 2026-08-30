@@ -16,6 +16,7 @@ import {
   DrawerTitle
 } from "@/components/ui/drawer"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { getOrderedMenuNodeIds } from "@/lib/menu-editor/node-order"
 import { normalizeMenuLabelCasing } from "@/lib/menu-text"
 import { cn } from "@/lib/utils"
 
@@ -53,11 +54,11 @@ export default function NavigatorBlock() {
   const isMobile = useIsMobile()
 
   const navigation = useMemo(() => {
-    const rootNodeIds = nodes.ROOT?.data?.nodes ?? []
+    const orderedNodeIds = getOrderedMenuNodeIds(nodes)
     const entries: NavigationEntry[] = []
     const sections = new Map<string, MenuSectionEntry>()
 
-    for (const nodeId of rootNodeIds) {
+    for (const nodeId of orderedNodeIds) {
       const node = nodes[nodeId]
       if (!node) continue
 

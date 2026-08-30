@@ -1192,6 +1192,9 @@
       "availableOnPro": "Available on Pro",
       "previewHeading": "Heading",
       "previewText": "Text",
+      "addCategory": "Add {name}",
+      "addMenuSection": "Add all categories from {name}",
+      "sectionCategoryCount": "{count, plural, one {# category} other {# categories}}",
       "blocks": {
         "header": "Header",
         "navigation": "Navigation",
@@ -1200,6 +1203,8 @@
         "text": "Text"
       },
       "toasts": {
+        "menuSectionAdded": "Menu section added",
+        "menuSectionComplete": "This menu section is already complete",
         "categoryAdded": "Category added",
         "productAdded": "Product added",
         "headerAdded": "Header added",
@@ -1217,6 +1222,7 @@
     "blocks": {
       "displayNames": {
         "site": "Site",
+        "menuSection": "Menu section",
         "header": "Header",
         "category": "Category",
         "product": "Product",

@@ -66,14 +66,14 @@ export default function LayerHeader() {
     actions,
     selected,
     topLevel,
-    nodes,
+    siblingNodeIds,
     parent,
     displayName,
     iconKey
   } = useEditor((state, query) => {
     const selected = query.getEvent("selected").first() === id
-    const nodes = query.node(ROOT_NODE).descendants()
     const parent = state.nodes[id]?.data.parent
+    const siblingNodeIds = parent ? (state.nodes[parent]?.data.nodes ?? []) : []
     const displayName = state.nodes[id]?.data.custom.displayName
       ? state.nodes[id]?.data.custom.displayName
       : state.nodes[id]?.data.displayName
@@ -85,14 +85,14 @@ export default function LayerHeader() {
       hidden: state.nodes[id]?.data.hidden,
       selected,
       topLevel: query.node(id).isTopLevelCanvas(),
-      nodes,
+      siblingNodeIds,
       parent,
       displayName,
       iconKey
     }
   })
 
-  const currentIndex = nodes.findIndex((node: string) => node === id)
+  const currentIndex = siblingNodeIds.indexOf(id)
 
   const divRef = useRef<HTMLDivElement>(null)
 

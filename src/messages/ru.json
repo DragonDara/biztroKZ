@@ -1192,6 +1192,9 @@
       "availableOnPro": "Доступно в Pro",
       "previewHeading": "Заголовок",
       "previewText": "Текст",
+      "addCategory": "Добавить {name}",
+      "addMenuSection": "Добавить все категории из {name}",
+      "sectionCategoryCount": "{count, plural, one {# категория} few {# категории} many {# категорий} other {# категории}}",
       "blocks": {
         "header": "Шапка",
         "navigation": "Навигация",
@@ -1200,6 +1203,8 @@
         "text": "Текст"
       },
       "toasts": {
+        "menuSectionAdded": "Раздел меню добавлен",
+        "menuSectionComplete": "Этот раздел меню уже добавлен полностью",
         "categoryAdded": "Категория добавлена",
         "productAdded": "Продукт добавлен",
         "headerAdded": "Шапка добавлена",
@@ -1217,6 +1222,7 @@
     "blocks": {
       "displayNames": {
         "site": "Сайт",
+        "menuSection": "Раздел меню",
         "header": "Шапка",
         "category": "Категория",
         "product": "Продукт",

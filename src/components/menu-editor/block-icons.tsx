@@ -1,6 +1,7 @@
 import type React from "react"
 import {
   Diamond,
+  FolderTree,
   Layers,
   LetterText,
   LinkIcon,
@@ -15,6 +16,7 @@ import { cn } from "@/lib/utils"
 type RenderableIcon = LucideIcon
 
 export type MenuBlockIconKey =
+  | "menuSection"
   | "category"
   | "item"
   | "header"
@@ -27,6 +29,7 @@ export const menuBlockIconMeta: Record<
   MenuBlockIconKey,
   { icon: RenderableIcon; color?: string }
 > = {
+  menuSection: { icon: FolderTree, color: "text-amber-400" },
   category: { icon: Layers, color: "text-orange-400" },
   item: { icon: Diamond, color: "text-purple-400" },
   header: { icon: PanelTop, color: "text-indigo-400" },

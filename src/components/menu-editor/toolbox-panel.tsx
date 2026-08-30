@@ -2,21 +2,30 @@
 
 import { useEffect, useState } from "react"
 import toast from "react-hot-toast"
-import { ROOT_NODE, useEditor } from "@craftjs/core"
+import { Element, ROOT_NODE, useEditor, type Node } from "@craftjs/core"
 import { useQuery } from "@tanstack/react-query"
 import { hexToRgba } from "@uiw/react-color"
 import { useAtomValue, useSetAtom } from "jotai"
-import { GripVertical, Lock, PlusSquare, type LucideIcon } from "lucide-react"
+import {
+  Check,
+  GripVertical,
+  Lock,
+  PlusSquare,
+  type LucideIcon
+} from "lucide-react"
 import { useTranslations } from "next-intl"
 import Link from "next/link"
 
 import { TooltipHelper } from "@/components/dashboard/tooltip-helper"
 import { menuBlockIconMeta } from "@/components/menu-editor/block-icons"
-import CategoryBlock from "@/components/menu-editor/blocks/category-block"
+import CategoryBlock, {
+  type CategoryBlockProps
+} from "@/components/menu-editor/blocks/category-block"
 import FeaturedBlock from "@/components/menu-editor/blocks/featured-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import HeadingElement from "@/components/menu-editor/blocks/heading-element"
 import ItemBlock from "@/components/menu-editor/blocks/item-block"
+import MenuSectionBlock from "@/components/menu-editor/blocks/menu-section-block"
 import NavigatorBlock from "@/components/menu-editor/blocks/navigator-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import SideSection from "@/components/menu-editor/side-section"
@@ -40,6 +49,21 @@ import {
 } from "@/lib/types/theme"
 import { cn } from "@/lib/utils"
 
+type Category = Awaited<ReturnType<typeof getCategoriesWithItems>>[number]
+
+type CategoryToolboxEntry =
+  | { type: "category"; category: Category }
+  | {
+      type: "menuSection"
+      menuSection: NonNullable<Category["menuSection"]>
+      categories: Category[]
+    }
+
+function getCategoryIdFromNode(node: Node | undefined) {
+  if (node?.data.name !== "CategoryBlock") return undefined
+  return (node.data.props.data as { id?: string } | undefined)?.id
+}
+
 export default function ToolboxPanel({
   organization,
   location,
@@ -56,7 +80,9 @@ export default function ToolboxPanel({
   isPro: boolean
 }) {
   const t = useTranslations("menuEditor.toolbox")
-  const { connectors, actions, query } = useEditor()
+  const { connectors, actions, query, nodes } = useEditor(state => ({
+    nodes: state.nodes
+  }))
   const fontThemeId = useAtomValue(fontThemeAtom)
   const colorThemeId = useAtomValue(colorThemeAtom)
 
@@ -142,67 +168,167 @@ export default function ToolboxPanel({
     />
   )
 
+  const getCategoryBlockProps = (category: Category): CategoryBlockProps => ({
+    data: category,
+    backgroundMode: "none",
+    categoryFontFamily: selectedFontTheme.fontDisplay,
+    categoryTextTransform: "none",
+    itemFontFamily: selectedFontTheme.fontDisplay,
+    itemTextTransform: "none",
+    priceFontFamily: selectedFontTheme.fontText,
+    descriptionFontFamily: selectedFontTheme.fontText,
+    categoryColor: hexToRgba(selectedColorTheme.accentColor),
+    itemColor: hexToRgba(selectedColorTheme.textColor),
+    priceColor: hexToRgba(selectedColorTheme.textColor),
+    descriptionColor: hexToRgba(selectedColorTheme.mutedColor)
+  })
+
+  const createCategoryBlock = (category: Category) => (
+    <CategoryBlock {...getCategoryBlockProps(category)} />
+  )
+
+  const categoryEntries: CategoryToolboxEntry[] = []
+  const addedMenuSectionIds = new Set<string>()
+
+  for (const category of categories) {
+    if (!category.menuSection) {
+      categoryEntries.push({ type: "category", category })
+      continue
+    }
+    if (addedMenuSectionIds.has(category.menuSection.id)) continue
+
+    addedMenuSectionIds.add(category.menuSection.id)
+    categoryEntries.push({
+      type: "menuSection",
+      menuSection: category.menuSection,
+      categories: categories.filter(
+        candidate => candidate.menuSection?.id === category.menuSection?.id
+      )
+    })
+  }
+
   return (
     <>
       <SideSection
         title={t("categoriesAndProducts")}
         className="editor-categories"
       >
-        {categories.map((category, index) => {
-          const previousCategory = categories[index - 1]
-          const shouldShowMenuSection =
-            category.menuSection &&
-            category.menuSection.id !== previousCategory?.menuSection?.id
-          const categoryBlock = (
-            <CategoryBlock
-              data={category}
-              backgroundMode="none"
-              categoryFontFamily={selectedFontTheme.fontDisplay}
-              categoryTextTransform="none"
-              itemFontFamily={selectedFontTheme.fontDisplay}
-              itemTextTransform="none"
-              priceFontFamily={selectedFontTheme.fontText}
-              descriptionFontFamily={selectedFontTheme.fontText}
-              categoryColor={hexToRgba(selectedColorTheme.accentColor)}
-              // categoryHeadingBgColor={selectedColorTheme.brandColor}
-              itemColor={hexToRgba(selectedColorTheme.textColor)}
-              priceColor={hexToRgba(selectedColorTheme.textColor)}
-              descriptionColor={hexToRgba(selectedColorTheme.mutedColor)}
-            />
-          )
-          return (
-            <div
-              key={category.id}
-              ref={ref => {
-                if (ref) {
-                  connectors.create(ref, categoryBlock)
-                }
-              }}
-            >
-              {shouldShowMenuSection ? (
-                <p
-                  className="text-muted-foreground px-2 pt-3 pb-1 text-xs
-                    font-semibold tracking-wide uppercase"
-                >
-                  {category.menuSection?.name}
-                </p>
-              ) : null}
-              <ToolboxElement
-                title={category.name}
-                Icon={menuBlockIconMeta.category.icon}
-                classNameIcon="text-orange-400"
-                addButton={
-                  <AddButton
-                    onClick={() => {
-                      const newNode = query
-                        .parseReactElement(categoryBlock)
-                        .toNodeTree()
-                      actions.addNodeTree(newNode, ROOT_NODE)
-                      toast.success(t("toasts.categoryAdded"))
-                    }}
-                  />
-                }
+        {categoryEntries.map(entry => {
+          if (entry.type === "category") {
+            const categoryBlock = createCategoryBlock(entry.category)
+            return (
+              <CategoryToolboxItem
+                key={entry.category.id}
+                category={entry.category}
+                categoryBlock={categoryBlock}
+                onAdd={() => {
+                  const newNode = query
+                    .parseReactElement(categoryBlock)
+                    .toNodeTree()
+                  actions.addNodeTree(newNode, ROOT_NODE)
+                  toast.success(t("toasts.categoryAdded"))
+                }}
+                connect={connectors.create}
+                addButtonLabel={t("addCategory", {
+                  name: entry.category.name
+                })}
               />
+            )
+          }
+
+          const categoryOrder = entry.categories.map(category => category.id)
+          const sectionNode = Object.values(nodes).find(
+            node =>
+              node.data.name === "MenuSectionBlock" &&
+              (node.data.props.data as { id?: string } | undefined)?.id ===
+                entry.menuSection.id
+          )
+          const placedCategoryIds = new Set(
+            (sectionNode?.data.nodes ?? [])
+              .map(nodeId => getCategoryIdFromNode(nodes[nodeId]))
+              .filter((categoryId): categoryId is string => Boolean(categoryId))
+          )
+          const isComplete =
+            Boolean(sectionNode) &&
+            categoryOrder.every(categoryId => placedCategoryIds.has(categoryId))
+          const menuSectionBlock = (
+            <Element
+              is={MenuSectionBlock}
+              canvas
+              data={entry.menuSection}
+              categoryOrder={categoryOrder}
+              reconcileOnMount
+            >
+              {entry.categories.map(category => (
+                <CategoryBlock
+                  key={category.id}
+                  {...getCategoryBlockProps(category)}
+                />
+              ))}
+            </Element>
+          )
+
+          return (
+            <div key={entry.menuSection.id} className="space-y-1 pt-2">
+              <div
+                ref={ref => {
+                  if (ref && !isComplete) {
+                    connectors.create(ref, menuSectionBlock)
+                  }
+                }}
+              >
+                <ToolboxElement
+                  title={entry.menuSection.name}
+                  Icon={menuBlockIconMeta.menuSection.icon}
+                  classNameIcon="text-amber-400"
+                  isDraggable={!isComplete}
+                  meta={t("sectionCategoryCount", {
+                    count: entry.categories.length
+                  })}
+                  addButton={
+                    <AddButton
+                      isComplete={isComplete}
+                      label={t("addMenuSection", {
+                        name: entry.menuSection.name
+                      })}
+                      onClick={() => {
+                        if (isComplete) {
+                          toast(t("toasts.menuSectionComplete"))
+                          return
+                        }
+                        const newNode = query
+                          .parseReactElement(menuSectionBlock)
+                          .toNodeTree()
+                        actions.addNodeTree(newNode, ROOT_NODE)
+                        toast.success(t("toasts.menuSectionAdded"))
+                      }}
+                    />
+                  }
+                />
+              </div>
+              <div className="space-y-1 pl-4">
+                {entry.categories.map(category => {
+                  const categoryBlock = createCategoryBlock(category)
+                  return (
+                    <CategoryToolboxItem
+                      key={category.id}
+                      category={category}
+                      categoryBlock={categoryBlock}
+                      onAdd={() => {
+                        const newNode = query
+                          .parseReactElement(categoryBlock)
+                          .toNodeTree()
+                        actions.addNodeTree(newNode, ROOT_NODE)
+                        toast.success(t("toasts.categoryAdded"))
+                      }}
+                      connect={connectors.create}
+                      addButtonLabel={t("addCategory", {
+                        name: category.name
+                      })}
+                    />
+                  )
+                })}
+              </div>
             </div>
           )
         })}
@@ -435,34 +561,81 @@ function ToolboxElement({
   title,
   Icon,
   classNameIcon,
-  addButton
+  addButton,
+  isDraggable = true,
+  meta
 }: {
   title: string
   Icon: LucideIcon
   classNameIcon?: string
   addButton?: React.ReactNode
+  isDraggable?: boolean
+  meta?: string
 }) {
   return (
     <div
-      className="group flex cursor-move items-center justify-between gap-2
-        rounded-sm bg-gray-100 p-4 hover:bg-gray-50 sm:p-2 sm:text-sm
-        dark:bg-gray-800/50 dark:hover:bg-gray-800"
+      className={cn(
+        `group flex items-center justify-between gap-2 rounded-sm bg-gray-100
+        p-4 hover:bg-gray-50 sm:p-2 sm:text-sm dark:bg-gray-800/50
+        dark:hover:bg-gray-800`,
+        isDraggable ? "cursor-move" : "cursor-default opacity-70"
+      )}
     >
-      <div className="flex items-center gap-2">
+      <div className="flex min-w-0 items-center gap-2">
         <Icon
           className={cn(
             "size-5 text-indigo-400 group-hover:text-current sm:size-3.5",
             classNameIcon
           )}
         />
-        <span>{title}</span>
+        <span className="truncate">{title}</span>
+        {meta ? (
+          <span className="text-muted-foreground shrink-0 text-xs">{meta}</span>
+        ) : null}
       </div>
       {addButton}
     </div>
   )
 }
 
-function AddButton({ onClick }: { onClick: () => void }) {
+function CategoryToolboxItem({
+  category,
+  categoryBlock,
+  onAdd,
+  connect,
+  addButtonLabel
+}: {
+  category: Category
+  categoryBlock: React.ReactElement
+  onAdd: () => void
+  connect: (element: HTMLElement, reactElement: React.ReactElement) => void
+  addButtonLabel: string
+}) {
+  return (
+    <div
+      ref={ref => {
+        if (ref) connect(ref, categoryBlock)
+      }}
+    >
+      <ToolboxElement
+        title={category.name}
+        Icon={menuBlockIconMeta.category.icon}
+        classNameIcon="text-orange-400"
+        addButton={<AddButton onClick={onAdd} label={addButtonLabel} />}
+      />
+    </div>
+  )
+}
+
+function AddButton({
+  onClick,
+  isComplete = false,
+  label
+}: {
+  onClick: () => void
+  isComplete?: boolean
+  label?: string
+}) {
   return (
     <>
       <Button
@@ -470,13 +643,25 @@ function AddButton({ onClick }: { onClick: () => void }) {
         size="icon"
         className="h-5 sm:hidden"
         onClick={onClick}
+        aria-label={label}
+        title={label}
       >
-        <PlusSquare className="size-5 text-green-500 dark:text-green-400" />
+        {isComplete ? (
+          <Check className="size-5 text-green-500 dark:text-green-400" />
+        ) : (
+          <PlusSquare className="size-5 text-green-500 dark:text-green-400" />
+        )}
       </Button>
 
-      <GripVertical
-        className="hidden size-5 text-gray-300 sm:block dark:text-gray-700/50"
-      />
+      {isComplete ? (
+        <Check
+          className="hidden size-4 text-green-500 sm:block dark:text-green-400"
+        />
+      ) : (
+        <GripVertical
+          className="hidden size-5 text-gray-300 sm:block dark:text-gray-700/50"
+        />
+      )}
     </>
   )
 }

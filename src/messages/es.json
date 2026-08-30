@@ -1192,6 +1192,9 @@
       "availableOnPro": "Disponible en la versión Pro",
       "previewHeading": "Encabezado",
       "previewText": "Texto",
+      "addCategory": "Agregar {name}",
+      "addMenuSection": "Agregar todas las categorías de {name}",
+      "sectionCategoryCount": "{count, plural, one {# categoría} other {# categorías}}",
       "blocks": {
         "header": "Cabecera",
         "navigation": "Navegación",
@@ -1200,6 +1203,8 @@
         "text": "Texto"
       },
       "toasts": {
+        "menuSectionAdded": "Se agregó la sección del menú",
+        "menuSectionComplete": "Esta sección del menú ya está completa",
         "categoryAdded": "Categoría agregada",
         "productAdded": "Producto agregado",
         "headerAdded": "Cabecera agregada",
@@ -1217,6 +1222,7 @@
     "blocks": {
       "displayNames": {
         "site": "Sitio",
+        "menuSection": "Sección del menú",
         "header": "Cabecera",
         "category": "Categoría",
         "product": "Producto",

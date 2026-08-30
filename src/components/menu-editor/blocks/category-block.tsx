@@ -6,6 +6,7 @@ import CategorySettings from "@/components/menu-editor/blocks/category-settings"
 import { ItemView } from "@/components/menu-editor/blocks/item-block"
 import { useTranslation } from "@/components/menu-editor/translation-provider"
 import type { getCategoriesWithItems } from "@/server/actions/item/queries"
+import { getOrderedMenuNodeIds } from "@/lib/menu-editor/node-order"
 import { normalizeMenuLabelCasing } from "@/lib/menu-text"
 import type { MenuTextTransform } from "@/lib/types/theme"
 import { cn } from "@/lib/utils"
@@ -101,12 +102,9 @@ export default function CategoryBlock({
     })
   }, [data.name, setCustom])
   const { isEditing, hasPreviousCategory } = useEditor(state => {
-    const parentId = state.nodes[id]?.data.parent
-    const siblingNodeIds = parentId
-      ? (state.nodes[parentId]?.data.nodes ?? [])
-      : []
-    const currentIndex = siblingNodeIds.indexOf(id)
-    const hasPreviousCategory = siblingNodeIds
+    const orderedNodeIds = getOrderedMenuNodeIds(state.nodes)
+    const currentIndex = orderedNodeIds.indexOf(id)
+    const hasPreviousCategory = orderedNodeIds
       .slice(0, Math.max(0, currentIndex))
       .some(nodeId => state.nodes[nodeId]?.data.name === "CategoryBlock")
 

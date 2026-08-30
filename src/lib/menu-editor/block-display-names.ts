@@ -5,6 +5,7 @@
 
 export const BLOCK_DISPLAY_NAME = {
   site: "site",
+  menuSection: "menuSection",
   header: "header",
   category: "category",
   product: "product",
@@ -24,6 +25,7 @@ export type BlockDisplayNameKey =
 export const DISPLAY_NAME_ALIASES: Record<string, BlockDisplayNameKey> = {
   // Canonical keys (current craft defaults)
   site: "site",
+  menuSection: "menuSection",
   header: "header",
   category: "category",
   product: "product",
@@ -34,6 +36,7 @@ export const DISPLAY_NAME_ALIASES: Record<string, BlockDisplayNameKey> = {
 
   // Spanish (legacy craft defaults / old serial data)
   Sitio: "site",
+  "Sección del menú": "menuSection",
   Cabecera: "header",
   Categoría: "category",
   Producto: "product",
@@ -44,6 +47,7 @@ export const DISPLAY_NAME_ALIASES: Record<string, BlockDisplayNameKey> = {
 
   // English (localized custom names)
   Site: "site",
+  "Menu section": "menuSection",
   Header: "header",
   Category: "category",
   Product: "product",
@@ -53,6 +57,7 @@ export const DISPLAY_NAME_ALIASES: Record<string, BlockDisplayNameKey> = {
   Text: "text",
 
   // Russian (localized custom names)
+  "Раздел меню": "menuSection",
   Сайт: "site",
   Шапка: "header",
   Категория: "category",

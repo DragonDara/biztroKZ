@@ -34,10 +34,17 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
   const tCommon = useTranslations("dashboard.common")
   const resolveBlockDisplayName = useResolveBlockDisplayName()
   const { id } = useNode()
-  const { actions, query, isActive, nodes } = useEditor((_state, query) => ({
-    isActive: query.getEvent("selected").contains(id),
-    nodes: query.node(ROOT_NODE).descendants()
-  }))
+  const { actions, query, isActive, siblingNodeIds } = useEditor(
+    (state, query) => {
+      const parentId = state.nodes[id]?.data.parent
+      return {
+        isActive: query.getEvent("selected").contains(id),
+        siblingNodeIds: parentId
+          ? (state.nodes[parentId]?.data.nodes ?? [])
+          : []
+      }
+    }
+  )
 
   const {
     isHover,
@@ -67,8 +74,8 @@ export const RenderNode = ({ render }: { render: ReactNode }) => {
 
   useEffect(() => {
     if (!isActive) return
-    setIndex(nodes.findIndex((node: string) => node === id))
-  }, [isActive, nodes, id, index])
+    setIndex(siblingNodeIds.indexOf(id))
+  }, [isActive, siblingNodeIds, id, index])
 
   useEffect(() => {
     if (dom) {

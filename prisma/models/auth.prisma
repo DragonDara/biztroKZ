@@ -75,23 +75,24 @@ model Verification {
 }
 
 model Organization {
-  id            String       @id @default(cuid())
+  id            String        @id @default(cuid())
   name          String
   description   String?
   logo          String?
   logoAssetId   String?
-  logoAsset     MediaAsset?  @relation("OrganizationLogoAsset", fields: [logoAssetId], references: [id], onDelete: SetNull)
+  logoAsset     MediaAsset?   @relation("OrganizationLogoAsset", fields: [logoAssetId], references: [id], onDelete: SetNull)
   banner        String?
   bannerAssetId String?
-  bannerAsset   MediaAsset?  @relation("OrganizationBannerAsset", fields: [bannerAssetId], references: [id], onDelete: SetNull)
-  status        String       @default("ACTIVE")
-  plan          String       @default("BASIC")
-  createdAt     DateTime     @default(now())
-  updatedAt     DateTime     @updatedAt
-  customDomain  String?      @unique
-  activeMenuId  String?      @unique
-  activeMenu    Menu?        @relation("ActiveMenu", fields: [activeMenuId], references: [id], onDelete: SetNull)
+  bannerAsset   MediaAsset?   @relation("OrganizationBannerAsset", fields: [bannerAssetId], references: [id], onDelete: SetNull)
+  status        String        @default("ACTIVE")
+  plan          String        @default("BASIC")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  customDomain  String?       @unique
+  activeMenuId  String?       @unique
+  activeMenu    Menu?         @relation("ActiveMenu", fields: [activeMenuId], references: [id], onDelete: SetNull)
   categories    Category[]
+  menuSections  MenuSection[]
   location      Location[]
   menus         Menu[]
   menuItems     MenuItem[]

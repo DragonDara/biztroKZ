@@ -193,6 +193,7 @@ async function getCategoriesWithItemsByOrg(organizationId: string) {
       }
     },
     include: {
+      menuSection: true,
       menuItems: {
         where: { status: "ACTIVE" },
         include: {
@@ -200,10 +201,17 @@ async function getCategoriesWithItemsByOrg(organizationId: string) {
         },
         orderBy: { name: "asc" }
       }
-    }
+    },
+    orderBy: [{ menuSection: { name: "asc" } }, { name: "asc" }]
   })
 
   for (const category of data) {
+    if (category.menuSection?.coverImage) {
+      category.menuSection.coverImage = getCacheBustedImageUrl(
+        category.menuSection.coverImage,
+        category.menuSection.updatedAt
+      )
+    }
     for (const item of category.menuItems) {
       if (item.image) {
         item.image = getCacheBustedImageUrl(item.image, item.updatedAt)

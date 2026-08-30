@@ -1,16 +1,17 @@
 "use client"
 
-import { type Category } from "@/generated/prisma-client/client"
 import { useTranslations } from "next-intl"
 import { parseAsArrayOf, parseAsString, useQueryState } from "nuqs"
 
 import { DataTableFilter } from "@/components/data-table/data-table-filter"
+import type { getCategories } from "@/server/actions/item/queries"
+import { getCategoryLabel } from "@/lib/category-label"
 import { MenuItemStatus } from "@/lib/types/menu-item"
 
 export default function FilterToolbar({
   categories
 }: {
-  categories: Category[]
+  categories: Awaited<ReturnType<typeof getCategories>>
 }) {
   const t = useTranslations("dashboard.menuItems.products")
 
@@ -50,7 +51,12 @@ export default function FilterToolbar({
       />
       <DataTableFilter
         title={t("filterCategory")}
-        options={categories?.map(d => ({ value: d.id, label: d.name })) ?? []}
+        options={
+          categories?.map(category => ({
+            value: category.id,
+            label: getCategoryLabel(category)
+          })) ?? []
+        }
         value={categoryValue}
         onChange={setCategoryValue}
       />

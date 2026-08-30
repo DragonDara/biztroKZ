@@ -72,7 +72,7 @@ export function ItemDetail({
           width={400}
           height={300}
           alt={item.name}
-          className="h-48 w-full rounded-lg object-cover shadow-sm"
+          className="h-2/3 w-full rounded-lg object-cover shadow-sm"
           unoptimized
         />
       ) : (

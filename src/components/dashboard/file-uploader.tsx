@@ -173,7 +173,7 @@ export function FileUploader({
   }, [uppy, uppyLocale])
 
   useEffect(() => {
-    uppy.on("file-added", async file => {
+    const handleFileAdded = async (file: UppyFile<Meta, Body>) => {
       // If the file is an image, get the dimensions and resize if needed
       if (file.type?.startsWith("image/")) {
         try {
@@ -268,8 +268,11 @@ export function FileUploader({
         uppy.info("El archivo no es una imagen", "error", 3000)
         uppy.removeFile(file.id)
       }
-    })
-    uppy.on("upload-error", (file, error) => {
+    }
+    const handleUploadError = (
+      file: UppyFile<Meta, Body> | undefined,
+      error: Error
+    ) => {
       // Guard against undefined file (Uppy may call this without a file)
       if (!file) return
 
@@ -299,11 +302,22 @@ export function FileUploader({
           error instanceof Error ? error : new Error(t("fileUploadFailed"))
         )
       }
-    })
-    uppy.on("complete", result => {
+    }
+    const handleComplete = (result: UploadResult<Meta, Body>) => {
       console.log("Upload complete:", result)
+      if (!result.successful?.length || result.failed?.length) return
       onUploadSuccess(result)
-    })
+    }
+
+    uppy.on("file-added", handleFileAdded)
+    uppy.on("upload-error", handleUploadError)
+    uppy.on("complete", handleComplete)
+
+    return () => {
+      uppy.off("file-added", handleFileAdded)
+      uppy.off("upload-error", handleUploadError)
+      uppy.off("complete", handleComplete)
+    }
   }, [
     uppy,
     imageType,

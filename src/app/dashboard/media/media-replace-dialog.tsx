@@ -4,6 +4,7 @@ import { useMemo } from "react"
 import toast from "react-hot-toast"
 import { Info } from "lucide-react"
 import { useTranslations } from "next-intl"
+import { useAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
 
 import { FileUploader } from "@/components/dashboard/file-uploader"
@@ -22,6 +23,7 @@ import {
   DrawerNested,
   DrawerTitle
 } from "@/components/ui/drawer"
+import { syncMenuSectionCover } from "@/server/actions/item/mutations"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { ImageType } from "@/lib/types/media"
 
@@ -77,6 +79,23 @@ function resolveReplaceTarget(asset: MediaAsset): {
         limitDimension: 1200
       }
     }
+    case "MENU_SECTION_COVER": {
+      const usage = asset.usages.find(
+        u =>
+          u.entityType === "MENU_SECTION" &&
+          u.field === "coverImage" &&
+          typeof u.entityId === "string" &&
+          u.entityId.length > 0
+      )
+
+      if (!usage) return null
+
+      return {
+        imageType: ImageType.MENU_SECTION_COVER,
+        objectId: usage.entityId,
+        limitDimension: 1200
+      }
+    }
     default:
       return null
   }
@@ -96,6 +115,22 @@ export function MediaReplaceDialog({
   const t = useTranslations("dashboard.settings.media")
 
   const target = useMemo(() => resolveReplaceTarget(asset), [asset])
+  const coverFinalizeAction = useAction(syncMenuSectionCover, {
+    onSuccess: ({ data }) => {
+      if (data?.failure?.reason) {
+        toast.error(data.failure.reason)
+      } else if (data?.success) {
+        toast.success(t("replaceSuccess"))
+        onOpenChange(false)
+        router.refresh()
+      }
+      coverFinalizeAction.reset()
+    },
+    onError: () => {
+      toast.error(t("replaceError"))
+      coverFinalizeAction.reset()
+    }
+  })
 
   const replaceContent = target ? (
     <FileUploader
@@ -104,6 +139,14 @@ export function MediaReplaceDialog({
       objectId={target.objectId}
       limitDimension={target.limitDimension}
       onUploadSuccess={() => {
+        if (target.imageType === ImageType.MENU_SECTION_COVER) {
+          coverFinalizeAction.execute({
+            id: target.objectId,
+            organizationId: asset.organizationId,
+            updatePublishedMenus: false
+          })
+          return
+        }
         toast.success(t("replaceSuccess"))
         onOpenChange(false)
         router.refresh()

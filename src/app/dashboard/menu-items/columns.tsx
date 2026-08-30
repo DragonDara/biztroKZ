@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import type { getMenuItems } from "@/server/actions/item/queries"
 import ItemDelete from "@/app/dashboard/menu-items/item-delete"
+import { getCategoryLabel } from "@/lib/category-label"
 import { formatPrice, resolveCurrency } from "@/lib/currency"
 import { MenuItemStatus } from "@/lib/types/menu-item"
 
@@ -112,6 +113,10 @@ export function useMenuItemColumns() {
             )}
           </Button>
         ),
+        cell: ({ row }) =>
+          row.original.category
+            ? getCategoryLabel(row.original.category)
+            : null,
         enableHiding: true
       },
       {

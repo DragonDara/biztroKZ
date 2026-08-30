@@ -1,18 +1,11 @@
 "use client"
 
-import React, { useEffect, useRef, useState } from "react"
+import { useEffect, useMemo, useRef, useState } from "react"
 import { useEditor, useNode } from "@craftjs/core"
-import type { RgbaColor } from "@uiw/react-color"
-import { ChevronsRight, Menu } from "lucide-react"
-import {
-  AnimatePresence,
-  motion,
-  useMotionValueEvent,
-  useScroll,
-  useTransform
-} from "motion/react"
+import { ImageIcon, Menu } from "lucide-react"
+import { useMotionValueEvent, useScroll, useTransform } from "motion/react"
 import { useTranslations } from "next-intl"
-import Link from "next/link"
+import Image from "next/image"
 
 import { useTranslation } from "@/components/menu-editor/translation-provider"
 import { Button } from "@/components/ui/button"
@@ -26,34 +19,120 @@ import { useIsMobile } from "@/hooks/use-mobile"
 import { normalizeMenuLabelCasing } from "@/lib/menu-text"
 import { cn } from "@/lib/utils"
 
-export type NavigatorBlockProps = {
-  color?: RgbaColor
+type CategoryNodeData = {
+  id: string
+  name: string
+  menuSection?: {
+    id: string
+    name: string
+    coverImage?: string | null
+  } | null
 }
 
-export default function NavigatorBlock({ color }: NavigatorBlockProps) {
+type NavigationEntry = {
+  id: string
+  label: string
+  menuSectionId: string | null
+}
+
+type MenuSectionEntry = {
+  id: string
+  name: string
+  firstNodeId: string
+  image: string | null
+  categories: NavigationEntry[]
+}
+
+export default function NavigatorBlock() {
   const t = useTranslations("menuEditor.blocks")
   const {
     connectors: { connect }
   } = useNode()
+  const { nodes } = useEditor(state => ({ nodes: state.nodes }))
+  const translation = useTranslation()
+  const isMobile = useIsMobile()
 
-  const { nodes } = useEditor(state => ({
-    nodes: state.nodes
-  }))
+  const navigation = useMemo(() => {
+    const rootNodeIds = nodes.ROOT?.data?.nodes ?? []
+    const entries: NavigationEntry[] = []
+    const sections = new Map<string, MenuSectionEntry>()
 
-  const [ids, setIds] = useState<string[]>([])
-  const [displayNames, setDisplayNames] = useState<string[]>([])
-  const [visibleId, setVisibleId] = useState<string | null>(null)
+    for (const nodeId of rootNodeIds) {
+      const node = nodes[nodeId]
+      if (!node) continue
+
+      if (node.data.name === "HeadingElement") {
+        entries.push({
+          id: node.id,
+          label: node.data.props.text,
+          menuSectionId: null
+        })
+        continue
+      }
+
+      if (node.data.name !== "CategoryBlock") continue
+      const data = node.data.props.data as CategoryNodeData | undefined
+      if (!data?.id || !data.name) continue
+
+      const entry: NavigationEntry = {
+        id: node.id,
+        label: normalizeMenuLabelCasing(
+          translation?.getCategoryTranslation(data.id)?.name ?? data.name
+        ),
+        menuSectionId: data.menuSection?.id ?? null
+      }
+      entries.push(entry)
+
+      if (!data.menuSection) continue
+      const existingSection = sections.get(data.menuSection.id)
+      if (existingSection) {
+        existingSection.categories.push(entry)
+        continue
+      }
+
+      sections.set(data.menuSection.id, {
+        id: data.menuSection.id,
+        name: normalizeMenuLabelCasing(data.menuSection.name),
+        firstNodeId: node.id,
+        image: data.menuSection.coverImage ?? null,
+        categories: [entry]
+      })
+    }
+
+    return {
+      entries,
+      sections: Array.from(sections.values()),
+      unsectionedEntries: entries.filter(entry => !entry.menuSectionId)
+    }
+  }, [nodes, translation])
+
+  const [selectedMenuSectionId, setSelectedMenuSectionId] = useState<
+    string | null
+  >(null)
+  const [activeEntryId, setActiveEntryId] = useState<string | null>(null)
   const [isSticky, setIsSticky] = useState(false)
   const [isOverflowing, setIsOverflowing] = useState(false)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const observer = useRef<IntersectionObserver | null>(null)
   const navRef = useRef<HTMLElement | null>(null)
-  const ulRef = useRef<HTMLUListElement | null>(null)
+  const categoryListRef = useRef<HTMLUListElement | null>(null)
   const scrollContainerRef = useRef<HTMLElement | null>(null)
   const [hasContainerScrollRoot, setHasContainerScrollRoot] = useState(false)
-  const isMobile = useIsMobile()
-  const translation = useTranslation()
 
+  const effectiveMenuSectionId = navigation.sections.some(
+    section => section.id === selectedMenuSectionId
+  )
+    ? selectedMenuSectionId
+    : (navigation.sections[0]?.id ?? null)
+  const selectedMenuSection = navigation.sections.find(
+    section => section.id === effectiveMenuSectionId
+  )
+  const visibleEntries = navigation.sections.length
+    ? [
+        ...(selectedMenuSection?.categories ?? []),
+        ...navigation.unsectionedEntries
+      ]
+    : navigation.entries
   const { scrollY: viewportScrollY } = useScroll()
   const { scrollY: containerScrollY } = useScroll(
     hasContainerScrollRoot ? { container: scrollContainerRef } : {}
@@ -66,72 +145,45 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
     setIsSticky(latest > 8)
   })
 
-  const handleSectionNavigation = (id: string, shouldCloseDrawer = false) => {
-    if (shouldCloseDrawer) {
-      setIsDrawerOpen(false)
+  const handleNavigation = (id: string, shouldCloseDrawer = false) => {
+    const targetEntry = navigation.entries.find(entry => entry.id === id)
+    if (targetEntry?.menuSectionId) {
+      setSelectedMenuSectionId(targetEntry.menuSectionId)
     }
+    setActiveEntryId(id)
 
-    requestAnimationFrame(() => {
-      const target = document.getElementById(id)
+    if (shouldCloseDrawer) setIsDrawerOpen(false)
 
-      if (target) {
-        // Calculate target scroll position accounting for the sticky nav height
-        const navHeight = navRef.current?.offsetHeight ?? 0
-        const headerOffset = getHeaderOffset()
-        const extraSpacing = 8 // small breathing room so heading isn't flush with nav
-        const targetRect = target.getBoundingClientRect()
-        const scrollRoot = scrollContainerRef.current
+    const ownerDocument = navRef.current?.ownerDocument ?? document
+    const ownerWindow = ownerDocument.defaultView ?? window
+    ownerWindow.requestAnimationFrame(() => {
+      const target = ownerDocument.getElementById(id)
+      if (!target) return
 
-        if (scrollRoot) {
-          // Container scroll: compute offset relative to the scroll container
-          const containerRect = scrollRoot.getBoundingClientRect()
-          const absoluteTop =
-            scrollRoot.scrollTop + targetRect.top - containerRect.top
-          const scrollTop = Math.max(
-            0,
-            absoluteTop - navHeight - headerOffset - extraSpacing
-          )
-          scrollRoot.scrollTo({ top: scrollTop, behavior: "smooth" })
-        } else {
-          const absoluteTop = window.scrollY + targetRect.top
-          const scrollTop = Math.max(
-            0,
-            absoluteTop - navHeight - headerOffset - extraSpacing
-          )
-          window.scrollTo({ top: scrollTop, behavior: "smooth" })
-        }
+      const navHeight = navRef.current?.offsetHeight ?? 0
+      const headerOffset = getHeaderOffset(ownerDocument)
+      const targetRect = target.getBoundingClientRect()
+      const scrollRoot = scrollContainerRef.current
+
+      if (scrollRoot) {
+        const containerRect = scrollRoot.getBoundingClientRect()
+        const absoluteTop =
+          scrollRoot.scrollTop + targetRect.top - containerRect.top
+        scrollRoot.scrollTo({
+          top: Math.max(0, absoluteTop - navHeight - headerOffset - 8),
+          behavior: "smooth"
+        })
+      } else {
+        const absoluteTop = ownerWindow.scrollY + targetRect.top
+        ownerWindow.scrollTo({
+          top: Math.max(0, absoluteTop - navHeight - headerOffset - 8),
+          behavior: "smooth"
+        })
       }
 
-      window.history.replaceState(null, "", `#${id}`)
+      ownerWindow.history.replaceState(null, "", `#${id}`)
     })
   }
-
-  useEffect(() => {
-    const rootNode = nodes.ROOT
-    const rootNodeArray = rootNode?.data?.nodes || []
-
-    const filteredAndSortedNodes = rootNodeArray
-      .map(id => nodes[id])
-      .filter(
-        (node): node is NonNullable<typeof node> =>
-          node?.data.name === "CategoryBlock" ||
-          node?.data.name === "HeadingElement"
-      )
-
-    setIds(filteredAndSortedNodes.map(node => node.id))
-    setDisplayNames(
-      filteredAndSortedNodes.map(node => {
-        if (node.data.name === "CategoryBlock") {
-          return normalizeMenuLabelCasing(
-            translation?.getCategoryTranslation(node.data.props.data.id)
-              ?.name ?? node.data.props.data.name
-          )
-        } else {
-          return node.data.props.text
-        }
-      })
-    )
-  }, [nodes, translation])
 
   useEffect(() => {
     const navNode = navRef.current
@@ -146,226 +198,300 @@ export default function NavigatorBlock({ color }: NavigatorBlockProps) {
   }, [])
 
   useEffect(() => {
-    const handleIntersection = (entries: IntersectionObserverEntry[]) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          setVisibleId(entry.target.id)
+    const ownerDocument = navRef.current?.ownerDocument
+    if (!ownerDocument || !navigation.entries.length) return
+
+    observer.current?.disconnect()
+    const IntersectionObserverConstructor =
+      ownerDocument.defaultView?.IntersectionObserver ?? IntersectionObserver
+    observer.current = new IntersectionObserverConstructor(
+      entries => {
+        const visibleEntry = entries
+          .filter(entry => entry.isIntersecting)
+          .sort(
+            (first, second) =>
+              Math.abs(first.boundingClientRect.top) -
+              Math.abs(second.boundingClientRect.top)
+          )[0]
+        if (!visibleEntry) return
+
+        const entry = navigation.entries.find(
+          candidate => candidate.id === visibleEntry.target.id
+        )
+        if (!entry) return
+        setActiveEntryId(entry.id)
+        if (entry.menuSectionId) {
+          setSelectedMenuSectionId(entry.menuSectionId)
         }
-      })
-    }
-
-    observer.current = new IntersectionObserver(handleIntersection, {
-      root: null,
-      rootMargin: "0px 0px -30% 0px",
-      threshold: 1.0
-    })
-
-    ids.forEach(id => {
-      const element = document.getElementById(id)
-      if (element) {
-        observer.current?.observe(element)
+      },
+      {
+        root: scrollContainerRef.current,
+        rootMargin: "-15% 0px -60% 0px",
+        threshold: [0, 0.25, 0.75]
       }
-    })
+    )
 
-    return () => {
-      observer.current?.disconnect()
+    for (const entry of navigation.entries) {
+      const element = ownerDocument.getElementById(entry.id)
+      if (element) observer.current.observe(element)
     }
-  }, [ids])
+
+    return () => observer.current?.disconnect()
+  }, [hasContainerScrollRoot, navigation.entries])
 
   useEffect(() => {
-    const checkOverflow = () => {
-      if (ulRef.current) {
-        setIsOverflowing(ulRef.current.scrollWidth > ulRef.current.offsetWidth)
-      }
-    }
+    const list = categoryListRef.current
+    if (!list) return
 
+    const checkOverflow = () => {
+      setIsOverflowing(list.scrollWidth > list.clientWidth)
+    }
     const handleScroll = () => {
-      if (ulRef.current) {
-        const isAtEnd =
-          ulRef.current.scrollLeft + ulRef.current.clientWidth >=
-          ulRef.current.scrollWidth
-        setIsOverflowing(!isAtEnd)
-      }
+      const isAtEnd = list.scrollLeft + list.clientWidth >= list.scrollWidth - 1
+      setIsOverflowing(!isAtEnd && list.scrollWidth > list.clientWidth)
     }
 
     checkOverflow()
-    window.addEventListener("resize", checkOverflow)
-    const ulElement = ulRef.current
-    ulElement?.addEventListener("scroll", handleScroll)
-
+    const ResizeObserverConstructor =
+      list.ownerDocument.defaultView?.ResizeObserver ?? ResizeObserver
+    const resizeObserver = new ResizeObserverConstructor(checkOverflow)
+    resizeObserver.observe(list)
+    list.addEventListener("scroll", handleScroll, { passive: true })
     return () => {
-      window.removeEventListener("resize", checkOverflow)
-      ulElement?.removeEventListener("scroll", handleScroll)
+      resizeObserver.disconnect()
+      list.removeEventListener("scroll", handleScroll)
     }
-  }, [ids])
+  }, [effectiveMenuSectionId, visibleEntries.length])
 
-  // Auto-scroll navigation to keep active section in view.
-  // Scroll only horizontally within the <ul> — never scroll the page vertically.
-  // Using scrollIntoView() would pull the entire page up to reveal the nav when
-  // it has scrolled off-screen (position: relative in the editor), causing the
-  // "jump to top" bug.
   useEffect(() => {
-    if (visibleId && ulRef.current) {
-      const activeIndex = ids.indexOf(visibleId)
-      if (activeIndex !== -1) {
-        const activeLink = ulRef.current.children[activeIndex] as HTMLElement
-        if (activeLink) {
-          const ul = ulRef.current
-          const targetScrollLeft =
-            activeLink.offsetLeft -
-            (ul.offsetWidth - activeLink.offsetWidth) / 2
-          ul.scrollTo({
-            left: Math.max(0, targetScrollLeft),
-            behavior: "smooth"
-          })
-        }
-      }
-    }
-  }, [visibleId, ids])
+    const list = categoryListRef.current
+    if (!activeEntryId || !list) return
+    const activeButton = Array.from(
+      list.querySelectorAll<HTMLElement>("[data-navigation-id]")
+    ).find(button => button.dataset.navigationId === activeEntryId)
+    if (!activeButton) return
+
+    const targetScrollLeft =
+      activeButton.offsetLeft -
+      (list.offsetWidth - activeButton.offsetWidth) / 2
+    list.scrollTo({
+      left: Math.max(0, targetScrollLeft),
+      behavior: "smooth"
+    })
+  }, [activeEntryId, effectiveMenuSectionId])
 
   return (
-    <>
+    <div
+      ref={ref => {
+        if (ref) connect(ref)
+      }}
+      className="w-full"
+    >
+      {navigation.sections.length ? (
+        <div className="px-3 pt-3 pb-5">
+          <div
+            role="group"
+            aria-label={t("displayNames.navigation")}
+            className="no-scrollbar mask-fade flex gap-3 overflow-x-auto px-0.5
+              py-0.5"
+          >
+            {navigation.sections.map((menuSection, index) => {
+              const isActive = menuSection.id === effectiveMenuSectionId
+              return (
+                <button
+                  key={menuSection.id}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => handleNavigation(menuSection.firstNodeId)}
+                  className="focus-visible:ring-ring w-36 shrink-0
+                    cursor-pointer overflow-hidden rounded-2xl bg-black/55
+                    text-left ring-1 ring-white/10
+                    transition-[box-shadow,opacity] duration-200 outline-none
+                    hover:opacity-90 focus-visible:ring-2
+                    focus-visible:ring-offset-2 sm:w-40"
+                  style={{
+                    boxShadow: isActive
+                      ? "0 0 0 2px rgba(248, 248, 248, 0.92)"
+                      : undefined
+                  }}
+                >
+                  <span className="relative block aspect-4/3 overflow-hidden">
+                    {menuSection.image ? (
+                      <Image
+                        src={menuSection.image}
+                        alt=""
+                        width={160}
+                        height={120}
+                        sizes="(max-width: 640px) 144px, 160px"
+                        className="size-full object-cover"
+                        loading={index < 3 ? "eager" : "lazy"}
+                        unoptimized
+                      />
+                    ) : (
+                      <span
+                        className="flex size-full items-center justify-center
+                          bg-black/25 text-white/55"
+                        aria-hidden="true"
+                      >
+                        <ImageIcon className="size-6" />
+                      </span>
+                    )}
+                  </span>
+                  <span
+                    className="flex min-h-12 items-center px-4 py-2 text-base
+                      leading-snug font-medium text-pretty"
+                    style={{
+                      backgroundColor: isActive
+                        ? "rgba(248, 248, 248, 0.96)"
+                        : "rgba(15, 15, 15, 0.78)",
+                      color: isActive
+                        ? "rgba(15, 15, 15, 0.96)"
+                        : "rgba(255, 255, 255, 0.94)"
+                    }}
+                  >
+                    {menuSection.name}
+                  </span>
+                </button>
+              )
+            })}
+          </div>
+        </div>
+      ) : null}
+
       <nav
-        ref={ref => {
-          if (ref) {
-            connect(ref)
-          }
-          navRef.current = ref
-        }}
-        className={cn(
-          "sticky z-20 w-screen p-3 transition delay-150 ease-in-out sm:w-full",
-          {
-            "backdrop-blur-md": isSticky
-          }
-        )}
+        ref={navRef}
+        aria-label={t("displayNames.navigation")}
+        className="sticky z-20 w-screen p-3 transition-colors duration-200
+          sm:w-full"
         style={{
           top: "var(--menu-header-offset, 0px)",
-          color: isSticky
-            ? "rgba(255, 255, 255, 0.96)"
-            : rgbaToCss(color, { r: 255, g: 255, b: 255, a: 1 }),
-          backgroundColor: isSticky ? "rgba(0, 0, 0, 0.62)" : "transparent"
+          backgroundColor: isSticky ? "rgba(15, 15, 15, 0.86)" : "transparent"
         }}
       >
-        {ids.length === 0 ? (
-          <p>Navegador</p>
-        ) : (
+        {visibleEntries.length ? (
           <div className="relative flex items-center gap-2">
-            {/* Menu button - visible only on mobile */}
             <Button
               variant="ghost"
               size="icon-sm"
-              className="shrink-0 md:hidden"
+              className="shrink-0 text-white hover:bg-white/10 hover:text-white
+                md:hidden"
               onClick={() => setIsDrawerOpen(true)}
               aria-label={t("navigator.openMenuAria")}
             >
-              <Menu className="size-4" />
+              <Menu />
             </Button>
-
-            {/* Horizontal navigation */}
-            <div className="relative flex-1 overflow-hidden">
+            <div className="relative min-w-0 flex-1 overflow-hidden">
               <ul
-                ref={ulRef}
+                ref={categoryListRef}
                 className={cn(
-                  "no-scrollbar flex space-x-4 overflow-x-auto",
-                  isOverflowing ? "mask-fade justify-normal" : "justify-center"
+                  "no-scrollbar flex gap-2.5 overflow-x-auto py-0.5",
+                  isOverflowing && "mask-fade"
                 )}
               >
-                {ids.map((id, index) => (
-                  <li key={id} className="shrink-0">
-                    <Link
-                      href={`#${id}`}
-                      onClick={event => {
-                        event.preventDefault()
-                        handleSectionNavigation(id)
-                      }}
-                      prefetch={false}
-                      className={cn(
-                        visibleId === id
-                          ? "underline decoration-2 underline-offset-4"
-                          : ""
-                      )}
-                    >
-                      {displayNames[index]}
-                    </Link>
-                  </li>
-                ))}
+                {visibleEntries.map((entry, index) => {
+                  const isActive = activeEntryId
+                    ? activeEntryId === entry.id
+                    : index === 0
+                  return (
+                    <li key={entry.id} className="shrink-0">
+                      <button
+                        type="button"
+                        data-navigation-id={entry.id}
+                        aria-current={isActive ? "location" : undefined}
+                        onClick={() => handleNavigation(entry.id)}
+                        className="focus-visible:ring-ring cursor-pointer
+                          rounded-full px-5 py-2.5 text-sm leading-none
+                          font-medium whitespace-nowrap ring-1
+                          transition-[background-color,color,opacity]
+                          duration-200 outline-none hover:opacity-90
+                          focus-visible:ring-2 focus-visible:ring-offset-2
+                          sm:text-base"
+                        style={{
+                          backgroundColor: "rgba(15, 15, 15, 0.78)",
+                          color: "rgba(255, 255, 255, 0.94)",
+                          boxShadow: isActive
+                            ? "inset 0 0 0 1px rgba(248, 248, 248, 0.92)"
+                            : "inset 0 0 0 1px rgba(255, 255, 255, 0.06)"
+                        }}
+                      >
+                        {entry.label}
+                      </button>
+                    </li>
+                  )
+                })}
               </ul>
-              <AnimatePresence>
-                {isOverflowing && (
-                  <motion.div
-                    initial={{ opacity: 0, x: 10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: 10 }}
-                    transition={{ duration: 0.3 }}
-                    className="pointer-events-none absolute top-0 right-0 flex
-                      h-full items-center"
-                  >
-                    <ChevronsRight className="size-4" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
             </div>
           </div>
+        ) : (
+          <p className="text-sm text-white/70">
+            {t("displayNames.navigation")}
+          </p>
         )}
       </nav>
 
-      {/* Mobile drawer for navigation */}
-      {isMobile && ids.length > 0 && (
+      {isMobile && navigation.entries.length ? (
         <Drawer open={isDrawerOpen} onOpenChange={setIsDrawerOpen}>
           <DrawerContent className="max-h-[85%]">
             <DrawerHeader>
               <DrawerTitle>{t("displayNames.navigation")}</DrawerTitle>
             </DrawerHeader>
-            <nav className="no-scrollbar overflow-y-auto px-4 pb-8">
-              <ul className="flex flex-col space-y-2">
-                {ids.map((id, index) => (
-                  <li key={id}>
-                    <Link
-                      href={`#${id}`}
-                      onClick={event => {
-                        event.preventDefault()
-                        handleSectionNavigation(id, true)
-                      }}
-                      prefetch={false}
-                      className={cn(
-                        `hover:bg-accent block rounded-md px-4 py-3 text-lg
-                        transition-colors`,
-                        visibleId === id ? "bg-accent font-semibold" : ""
-                      )}
-                    >
-                      {displayNames[index]}
-                    </Link>
-                  </li>
-                ))}
+            <nav
+              aria-label={t("displayNames.navigation")}
+              className="no-scrollbar overflow-y-auto px-4 pb-8"
+            >
+              <ul className="flex flex-col gap-1">
+                {navigation.entries.map(entry => {
+                  const menuSection = navigation.sections.find(
+                    section => section.id === entry.menuSectionId
+                  )
+                  return (
+                    <li key={entry.id}>
+                      <button
+                        type="button"
+                        onClick={() => handleNavigation(entry.id, true)}
+                        className={cn(
+                          `hover:bg-accent focus-visible:ring-ring flex w-full
+                            cursor-pointer flex-col items-start rounded-md px-4
+                            py-3 text-left transition-colors outline-none
+                            focus-visible:ring-2`,
+                          activeEntryId === entry.id && "bg-accent"
+                        )}
+                      >
+                        {menuSection ? (
+                          <span className="text-muted-foreground text-xs">
+                            {menuSection.name}
+                          </span>
+                        ) : null}
+                        <span className="text-base font-medium">
+                          {entry.label}
+                        </span>
+                      </button>
+                    </li>
+                  )
+                })}
               </ul>
             </nav>
           </DrawerContent>
         </Drawer>
-      )}
-    </>
+      ) : null}
+    </div>
   )
 }
 
 NavigatorBlock.craft = {
   displayName: "navigation",
-  props: {
-    color: { r: 255, g: 255, b: 255, a: 1 }
-  },
   custom: {
     iconKey: "navigator"
   }
 }
 
-function getHeaderOffset() {
-  const rawValue = window
-    .getComputedStyle(document.documentElement)
+function getHeaderOffset(ownerDocument: Document) {
+  const rawValue = ownerDocument.defaultView
+    ?.getComputedStyle(ownerDocument.documentElement)
     .getPropertyValue("--menu-header-offset")
     .trim()
-
-  const parsedValue = Number.parseFloat(rawValue)
-  if (Number.isNaN(parsedValue)) return 0
-
-  return parsedValue
+  const parsedValue = Number.parseFloat(rawValue ?? "")
+  return Number.isNaN(parsedValue) ? 0 : parsedValue
 }
 
 type ScrollRoot = Window | HTMLElement
@@ -375,20 +501,15 @@ function getScrollRoot(node: HTMLElement): ScrollRoot {
   const ownerWindow = node.ownerDocument.defaultView ?? window
 
   while (current) {
-    if (current.dataset.menuScrollRoot === "true") {
-      return current
-    }
+    if (current.dataset.menuScrollRoot === "true") return current
 
     const styles = ownerWindow.getComputedStyle(current)
-    const overflowY = styles.overflowY
-
     if (
-      /(auto|scroll|overlay)/.test(overflowY) &&
+      /(auto|scroll|overlay)/.test(styles.overflowY) &&
       current.scrollHeight > current.clientHeight
     ) {
       return current
     }
-
     current = current.parentElement
   }
 
@@ -396,18 +517,11 @@ function getScrollRoot(node: HTMLElement): ScrollRoot {
 }
 
 function getScrollTop(root: ScrollRoot, ownerDocument: Document) {
-  if (isElementScrollRoot(root)) {
-    return root.scrollTop
-  }
-
-  return root.scrollY || ownerDocument.documentElement.scrollTop || 0
+  return isElementScrollRoot(root)
+    ? root.scrollTop
+    : root.scrollY || ownerDocument.documentElement.scrollTop || 0
 }
 
 function isElementScrollRoot(root: ScrollRoot): root is HTMLElement {
   return "scrollTop" in root
-}
-
-function rgbaToCss(color: RgbaColor | undefined, fallback: RgbaColor) {
-  const value = color ?? fallback
-  return `rgba(${value.r}, ${value.g}, ${value.b}, ${value.a ?? 1})`
 }

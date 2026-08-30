@@ -34,6 +34,7 @@ import FeaturedBlock from "@/components/menu-editor/blocks/featured-block"
 import HeaderBlock from "@/components/menu-editor/blocks/header-block"
 import HeadingElement from "@/components/menu-editor/blocks/heading-element"
 import ItemBlock from "@/components/menu-editor/blocks/item-block"
+import MenuSectionBlock from "@/components/menu-editor/blocks/menu-section-block"
 import NavigatorBlock from "@/components/menu-editor/blocks/navigator-block"
 import TextElement from "@/components/menu-editor/blocks/text-element"
 import { BottomBar } from "@/components/menu-editor/bottom-bar"
@@ -755,6 +756,7 @@ export default function Workbench({
               HeadingElement,
               TextElement,
               CategoryBlock,
+              MenuSectionBlock,
               ItemBlock,
               NavigatorBlock,
               FeaturedBlock
@@ -823,6 +825,7 @@ export default function Workbench({
             HeadingElement,
             TextElement,
             CategoryBlock,
+            MenuSectionBlock,
             ItemBlock,
             NavigatorBlock,
             FeaturedBlock

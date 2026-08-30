@@ -170,6 +170,7 @@ export type BulkMenuItem = {
   variantName?: string
   status?: string
   category?: string
+  menuSection?: string
   currency?: "MXN" | "USD" | "KZT"
   image?: string
   externalId?: string
@@ -183,6 +184,7 @@ export const bulkMenuItemSchema = z.array(
     variantName: z.string().optional(),
     status: z.string().optional(),
     category: z.string().optional(),
+    menuSection: z.string().optional(),
     currency: z.enum(["MXN", "USD", "KZT"]).optional(),
     image: z.url().optional(),
     externalId: z.string().min(1).optional()

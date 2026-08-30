@@ -84,7 +84,7 @@ export function buildKamiThumbnailUrl(value?: string): string | undefined {
 /** Map a Kami export row to the canonical bron.cafe CSV fields. */
 export function normalizeKamiMenuCsvRow(
   row: Record<string, string | undefined>
-): Partial<MenuItemCsvFields> {
+): Partial<MenuItemCsvFields> & { menuSection?: string } {
   const kamiRow = normalizeKamiRowKeys(row)
 
   return {
@@ -92,6 +92,7 @@ export function normalizeKamiMenuCsvRow(
     description: trimOptional(kamiRow.description_ru),
     price: trimOptional(kamiRow.price_kzt),
     category: trimOptional(kamiRow.category_ru),
+    menuSection: trimOptional(kamiRow.section_ru),
     currency: "KZT",
     image: buildKamiThumbnailUrl(kamiRow.image),
     externalId: trimOptional(kamiRow.item_id)

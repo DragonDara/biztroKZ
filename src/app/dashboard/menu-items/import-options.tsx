@@ -37,6 +37,10 @@ type ImportError = {
   errors: string[]
 }
 
+type NormalizedImportRow = Partial<MenuItemCsvFields> & {
+  menuSection?: string
+}
+
 type ImportValidationKey =
   | "nameRequired"
   | "priceRequired"
@@ -237,7 +241,7 @@ export default function MenuImportOptions({
         const isKami = isKamiMenuCsv(results.meta.fields ?? [])
 
         results.data.forEach((rawRow, index) => {
-          const row = isKami
+          const row: NormalizedImportRow = isKami
             ? normalizeKamiMenuCsvRow(rawRow)
             : normalizeMenuItemCsvRow(rawRow, columnLabels)
           const rowErrors = validateRow(row, key => tValidation(key))
@@ -259,6 +263,7 @@ export default function MenuImportOptions({
             price: parseFloat(row.price!),
             status: MenuItemStatus.ACTIVE,
             category: row.category,
+            menuSection: row.menuSection?.trim() || undefined,
             currency:
               currency === "USD" ? "USD" : currency === "MXN" ? "MXN" : "KZT",
             image: row.image?.trim() || undefined,

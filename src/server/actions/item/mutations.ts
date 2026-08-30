@@ -21,7 +21,6 @@ import { appConfig } from "@/app/config"
 import type { Currency } from "@/lib/currency"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
-import { BasicPlanLimits } from "@/lib/types/plan"
 import {
   categorySchema,
   menuSectionCoverSchema,
@@ -35,6 +34,7 @@ import {
   MenuItemStatus,
   variantSchema
 } from "@/lib/types/menu-item"
+import { BasicPlanLimits } from "@/lib/types/plan"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 import { env } from "@/env.mjs"
 
@@ -239,6 +239,7 @@ type GroupedImportItem = {
   description?: string
   status?: string
   category?: string
+  menuSection?: string
   currency?: Currency
   image?: string
   externalId?: string
@@ -251,6 +252,7 @@ export type FailedImportRow = {
   description?: string
   price: number
   category?: string
+  menuSection?: string
   currency?: "MXN" | "USD" | "KZT"
   image?: string
   externalId?: string
@@ -267,6 +269,17 @@ const IMAGE_REASON_KEY = {
   uploadFailed: "imageUploadFailed"
 } as const satisfies Record<ExternalImageErrorCode, string>
 
+function normalizeImportLookup(value: string): string {
+  return value.trim().toLocaleLowerCase()
+}
+
+function getImportCategoryKey(
+  categoryName: string,
+  menuSectionName?: string
+): string {
+  return `${menuSectionName ? normalizeImportLookup(menuSectionName) : ""}\u0000${normalizeImportLookup(categoryName)}`
+}
+
 /** Emit one failed CSV row per variant so the download round-trips back into an import. */
 function pushFailedRows(
   target: FailedImportRow[],
@@ -280,6 +293,7 @@ function pushFailedRows(
       description: item.description,
       price: variant.price,
       category: item.category,
+      menuSection: item.menuSection,
       currency: item.currency as FailedImportRow["currency"],
       image: item.image,
       externalId: item.externalId,
@@ -329,6 +343,7 @@ export const bulkCreateItems = authMemberActionClient
           description: item.description?.trim() || undefined,
           status: item.status,
           category: item.category?.trim() || undefined,
+          menuSection: item.menuSection?.trim() || undefined,
           currency: item.currency,
           image: item.image?.trim() || undefined,
           externalId,
@@ -352,6 +367,10 @@ export const bulkCreateItems = authMemberActionClient
 
       if (!existingItem.category && item.category?.trim()) {
         existingItem.category = item.category.trim()
+      }
+
+      if (!existingItem.menuSection && item.menuSection?.trim()) {
+        existingItem.menuSection = item.menuSection.trim()
       }
 
       if (!existingItem.currency && item.currency) {
@@ -420,33 +439,153 @@ export const bulkCreateItems = authMemberActionClient
       const defaultCurrency =
         (defaultLocation?.currency as Currency) ?? ("KZT" as Currency)
 
-      // Ensure all referenced categories exist, then build a name -> id map.
-      const categoryNames = new Set<string>()
+      // Preserve Kami's section -> category -> item hierarchy. Existing records
+      // are reused case-insensitively; missing sections/categories are created.
+      const menuSectionNames = new Map<string, string>()
+      const categoryReferences = new Map<
+        string,
+        { name: string; menuSection?: string }
+      >()
+
       for (const item of groupedItems) {
-        if (item.category) categoryNames.add(item.category.trim())
+        const menuSection = item.menuSection?.trim() || undefined
+        const category = item.category?.trim() || undefined
+
+        if (menuSection) {
+          menuSectionNames.set(normalizeImportLookup(menuSection), menuSection)
+        }
+        if (category) {
+          categoryReferences.set(getImportCategoryKey(category, menuSection), {
+            name: category,
+            menuSection
+          })
+        }
       }
-      const existingCategories = await prisma.category.findMany({
+
+      const existingMenuSections = await prisma.menuSection.findMany({
         where: { organizationId: currentOrgId }
       })
-      const categoryMap = new Map(
-        existingCategories.map(cat => [cat.name.toLowerCase(), cat.id])
+      const menuSectionMap = new Map(
+        existingMenuSections.map(menuSection => [
+          normalizeImportLookup(menuSection.name),
+          menuSection.id
+        ])
       )
-      const newCategoryNames = Array.from(categoryNames).filter(
-        name => !categoryMap.has(name.toLowerCase())
+      const newMenuSectionNames = Array.from(menuSectionNames).filter(
+        ([key]) => !menuSectionMap.has(key)
       )
-      if (newCategoryNames.length > 0) {
-        await prisma.category.createMany({
-          data: newCategoryNames.map(name => ({
+
+      if (newMenuSectionNames.length > 0) {
+        await prisma.menuSection.createMany({
+          data: newMenuSectionNames.map(([, name]) => ({
             name,
             organizationId: currentOrgId
           }))
         })
-        const refreshedCategories = await prisma.category.findMany({
+
+        const refreshedMenuSections = await prisma.menuSection.findMany({
           where: { organizationId: currentOrgId }
         })
-        categoryMap.clear()
-        for (const cat of refreshedCategories) {
-          categoryMap.set(cat.name.toLowerCase(), cat.id)
+        menuSectionMap.clear()
+        for (const menuSection of refreshedMenuSections) {
+          menuSectionMap.set(
+            normalizeImportLookup(menuSection.name),
+            menuSection.id
+          )
+        }
+      }
+
+      const existingCategories = await prisma.category.findMany({
+        where: { organizationId: currentOrgId },
+        include: { menuSection: true }
+      })
+      const exactCategoryMap = new Map(
+        existingCategories.map(category => [
+          getImportCategoryKey(
+            category.name,
+            category.menuSection?.name ?? undefined
+          ),
+          category.id
+        ])
+      )
+      const categoryByName = new Map<string, string>()
+      const unassignedCategoryByName = new Map<
+        string,
+        (typeof existingCategories)[number]
+      >()
+
+      for (const category of existingCategories) {
+        const nameKey = normalizeImportLookup(category.name)
+        if (!categoryByName.has(nameKey)) {
+          categoryByName.set(nameKey, category.id)
+        }
+        if (!category.menuSectionId) {
+          unassignedCategoryByName.set(nameKey, category)
+        }
+      }
+
+      const categoryUpdates = []
+      const newCategories: Array<{
+        name: string
+        organizationId: string
+        menuSectionId?: string
+      }> = []
+
+      for (const [key, reference] of categoryReferences) {
+        if (exactCategoryMap.has(key)) continue
+
+        const nameKey = normalizeImportLookup(reference.name)
+        const menuSectionId = reference.menuSection
+          ? menuSectionMap.get(normalizeImportLookup(reference.menuSection))
+          : undefined
+
+        if (!reference.menuSection && categoryByName.has(nameKey)) continue
+
+        const unassignedCategory = reference.menuSection
+          ? unassignedCategoryByName.get(nameKey)
+          : undefined
+        if (unassignedCategory && menuSectionId) {
+          categoryUpdates.push(
+            prisma.category.update({
+              where: { id: unassignedCategory.id },
+              data: { menuSectionId }
+            })
+          )
+          unassignedCategoryByName.delete(nameKey)
+          continue
+        }
+
+        newCategories.push({
+          name: reference.name,
+          organizationId: currentOrgId,
+          menuSectionId
+        })
+      }
+
+      if (categoryUpdates.length > 0) {
+        await Promise.all(categoryUpdates)
+      }
+      if (newCategories.length > 0) {
+        await prisma.category.createMany({ data: newCategories })
+      }
+
+      const refreshedCategories = await prisma.category.findMany({
+        where: { organizationId: currentOrgId },
+        include: { menuSection: true }
+      })
+      const categoryMap = new Map<string, string>()
+      const fallbackCategoryMap = new Map<string, string>()
+      for (const category of refreshedCategories) {
+        categoryMap.set(
+          getImportCategoryKey(
+            category.name,
+            category.menuSection?.name ?? undefined
+          ),
+          category.id
+        )
+        const nameKey = normalizeImportLookup(category.name)
+        if (!fallbackCategoryMap.has(nameKey)) {
+          fallbackCategoryMap.set(nameKey, category.id)
         }
       }
 
@@ -464,7 +603,9 @@ export const bulkCreateItems = authMemberActionClient
       // Sequential: each image row triggers an external fetch before its DB write.
       for (const item of groupedItems) {
         const categoryId = item.category
-          ? categoryMap.get(item.category.toLowerCase())
+          ? (categoryMap.get(
+              getImportCategoryKey(item.category, item.menuSection)
+            ) ?? fallbackCategoryMap.get(normalizeImportLookup(item.category)))
           : undefined
         const currency = item.currency
           ? (item.currency as Currency)
@@ -557,6 +698,7 @@ export const bulkCreateItems = authMemberActionClient
 
       updateTag(`menu-items-${currentOrgId}`)
       updateTag(`categories-${currentOrgId}`)
+      updateTag(`menu-sections-${currentOrgId}`)
       return { success: createdItems, failedItems }
     } catch (error) {
       console.error(error)

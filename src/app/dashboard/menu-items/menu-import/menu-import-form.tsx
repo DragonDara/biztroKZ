@@ -20,7 +20,6 @@ import {
 import { AnimatePresence, motion } from "motion/react"
 import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
 
@@ -862,13 +861,12 @@ export default function MenuImportForm({
           {!isPro && items.length === 0 && (
             <p className="text-muted-foreground text-center text-xs">
               {t("basicPlanLimit", { limit: appConfig.itemLimit })}{" "}
-              <Link
-                href="/dashboard/settings/billing"
-                prefetch={false}
+              <a
+                href="mailto:contacto@biztro.co"
                 className="text-primary underline-offset-4 hover:underline"
               >
                 {t("upgradeLink")}
-              </Link>{" "}
+              </a>{" "}
               {t("importUnlimited")}
             </p>
           )}
@@ -962,9 +960,7 @@ export default function MenuImportForm({
                     })}
                   </span>
                   <Button asChild size="sm" className="self-start">
-                    <Link href="/dashboard/settings/billing" prefetch={false}>
-                      {t("upgradeToPro")}
-                    </Link>
+                    <a href="mailto:contacto@biztro.co">{t("upgradeToPro")}</a>
                   </Button>
                 </AlertDescription>
               </Alert>

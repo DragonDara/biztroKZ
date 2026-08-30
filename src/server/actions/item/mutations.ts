@@ -1,6 +1,6 @@
 "use server"
 
-import { Prisma } from "@/generated/prisma-client/client"
+import { Prisma, type MenuItem } from "@/generated/prisma-client/client"
 import { DeleteObjectCommand, S3Client } from "@aws-sdk/client-s3"
 import * as Sentry from "@sentry/nextjs"
 import { getTranslations } from "next-intl/server"
@@ -8,6 +8,10 @@ import { updateTag } from "next/cache"
 import { z } from "zod/v4"
 
 import { getItemCount } from "@/server/actions/item/queries"
+import {
+  fetchAndStoreExternalImage,
+  type ExternalImageErrorCode
+} from "@/server/actions/media/external-fetch"
 import { CACHE_TAGS } from "@/server/actions/media/constants"
 import { extractMenuItemsFromFile } from "@/server/actions/menu-import/ai"
 import { createImportNameAllocator } from "@/server/actions/menu-import/item-names"
@@ -17,6 +21,7 @@ import { appConfig } from "@/app/config"
 import type { Currency } from "@/lib/currency"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
+import { categorySchema } from "@/lib/types/category"
 import { BasicPlanLimits } from "@/lib/types/billing"
 import {
   categorySchema,
@@ -31,6 +36,7 @@ import {
   MenuItemStatus,
   variantSchema
 } from "@/lib/types/menu-item"
+import { BasicPlanLimits } from "@/lib/types/plan"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 import { env } from "@/env.mjs"
 
@@ -230,6 +236,60 @@ export const createItem = authMemberActionClient
     }
   )
 
+type GroupedImportItem = {
+  name: string
+  description?: string
+  status?: string
+  category?: string
+  currency?: Currency
+  image?: string
+  externalId?: string
+  variants: { name: string; price: number }[]
+}
+
+export type FailedImportRow = {
+  name: string
+  variantName?: string
+  description?: string
+  price: number
+  category?: string
+  currency?: "MXN" | "USD" | "KZT"
+  image?: string
+  externalId?: string
+  reason: string
+}
+
+const IMAGE_REASON_KEY = {
+  invalidUrl: "imageInvalidUrl",
+  blockedHost: "imageBlockedHost",
+  fetchFailed: "imageFetchFailed",
+  notImage: "imageNotImage",
+  tooLarge: "imageTooLarge",
+  corruptImage: "imageCorruptImage",
+  uploadFailed: "imageUploadFailed"
+} as const satisfies Record<ExternalImageErrorCode, string>
+
+/** Emit one failed CSV row per variant so the download round-trips back into an import. */
+function pushFailedRows(
+  target: FailedImportRow[],
+  item: GroupedImportItem,
+  reason: string
+) {
+  for (const variant of item.variants) {
+    target.push({
+      name: item.name,
+      variantName: variant.name,
+      description: item.description,
+      price: variant.price,
+      category: item.category,
+      currency: item.currency as FailedImportRow["currency"],
+      image: item.image,
+      externalId: item.externalId,
+      reason
+    })
+  }
+}
+
 /**
  * Creates multiple items in bulk.
  */
@@ -247,23 +307,16 @@ export const bulkCreateItems = authMemberActionClient
       }
     }
 
-    const groupedItemsMap = new Map<
-      string,
-      {
-        name: string
-        description?: string
-        status?: string
-        category?: string
-        currency?: Currency
-        variants: { name: string; price: number }[]
-      }
-    >()
+    const groupedItemsMap = new Map<string, GroupedImportItem>()
 
     for (const item of items) {
       const normalizedName = item.name.trim()
       if (!normalizedName) continue
 
-      const itemKey = normalizedName.toLowerCase()
+      const externalId = item.externalId?.trim() || undefined
+      const itemKey = externalId
+        ? `ext:${externalId.toLowerCase()}`
+        : `name:${normalizedName.toLowerCase()}`
       const existingItem = groupedItemsMap.get(itemKey)
 
       const nextVariantBaseName =
@@ -279,6 +332,8 @@ export const bulkCreateItems = authMemberActionClient
           status: item.status,
           category: item.category?.trim() || undefined,
           currency: item.currency,
+          image: item.image?.trim() || undefined,
+          externalId,
           variants: [{ name: nextVariantBaseName, price: item.price }]
         })
         continue
@@ -308,15 +363,41 @@ export const bulkCreateItems = authMemberActionClient
       if (!existingItem.status && item.status) {
         existingItem.status = item.status
       }
+
+      if (!existingItem.image && item.image?.trim()) {
+        existingItem.image = item.image.trim()
+      }
     }
 
     const groupedItems = Array.from(groupedItemsMap.values())
-
     const proMember = await isProMember()
-    const itemCount = await getItemCount()
 
+    // Resolve which grouped items already exist (upsert by externalId).
+    const externalIds = groupedItems
+      .map(item => item.externalId)
+      .filter((value): value is string => Boolean(value))
+    const existingByExternalId = new Map<string, string>()
+    if (externalIds.length > 0) {
+      const matched = await prisma.menuItem.findMany({
+        where: {
+          organizationId: currentOrgId,
+          externalId: { in: externalIds }
+        },
+        select: { id: true, externalId: true }
+      })
+      for (const match of matched) {
+        if (match.externalId)
+          existingByExternalId.set(match.externalId, match.id)
+      }
+    }
+
+    const netNewCount = groupedItems.filter(
+      item => !(item.externalId && existingByExternalId.has(item.externalId))
+    ).length
+
+    const itemCount = await getItemCount()
     const itemLimit = appConfig.itemLimit || 10
-    if (!proMember && itemCount + groupedItems.length > itemLimit) {
+    if (!proMember && itemCount + netNewCount > itemLimit) {
       return {
         failure: {
           reason: t("limitExceeded"),
@@ -325,81 +406,138 @@ export const bulkCreateItems = authMemberActionClient
       }
     }
 
+    // Free-tier media budget: how many new images we may store this import.
+    let mediaBudget = Number.POSITIVE_INFINITY
+    if (!proMember) {
+      const assetCount = await prisma.mediaAsset.count({
+        where: { organizationId: currentOrgId, deletedAt: null }
+      })
+      mediaBudget = Math.max(0, appConfig.mediaLimit - assetCount)
+    }
+
     try {
-      const createdItems = await prisma.$transaction(async tx => {
-        // Resolve default currency from the organization's default location
-        const defaultLocation = await tx.location.findFirst({
-          where: { organizationId: currentOrgId }
-        })
-        // First, fetch all existing categories for the organization
-        const existingCategories = await tx.category.findMany({
-          where: {
-            organizationId: currentOrgId
-          }
-        })
+      const defaultLocation = await prisma.location.findFirst({
+        where: { organizationId: currentOrgId }
+      })
+      const defaultCurrency =
+        (defaultLocation?.currency as Currency) ?? ("KZT" as Currency)
 
-        // Create a map of lowercase category names to their IDs
-        const categoryMap = new Map(
-          existingCategories.map(cat => [cat.name.toLowerCase(), cat.id])
-        )
-
-        // Track new categories to be created
-        const newCategoryNames = new Set<string>()
-
-        // First pass - collect unique new categories
-        groupedItems.forEach(item => {
-          if (item.category) {
-            const normalizedName = item.category.trim()
-            if (!categoryMap.has(normalizedName.toLowerCase())) {
-              newCategoryNames.add(normalizedName)
-            }
-          }
-        })
-
-        // Bulk create new categories
-        await tx.category.createMany({
-          data: Array.from(newCategoryNames).map(name => ({
+      // Ensure all referenced categories exist, then build a name -> id map.
+      const categoryNames = new Set<string>()
+      for (const item of groupedItems) {
+        if (item.category) categoryNames.add(item.category.trim())
+      }
+      const existingCategories = await prisma.category.findMany({
+        where: { organizationId: currentOrgId }
+      })
+      const categoryMap = new Map(
+        existingCategories.map(cat => [cat.name.toLowerCase(), cat.id])
+      )
+      const newCategoryNames = Array.from(categoryNames).filter(
+        name => !categoryMap.has(name.toLowerCase())
+      )
+      if (newCategoryNames.length > 0) {
+        await prisma.category.createMany({
+          data: newCategoryNames.map(name => ({
             name,
             organizationId: currentOrgId
           }))
         })
+        const refreshedCategories = await prisma.category.findMany({
+          where: { organizationId: currentOrgId }
+        })
+        categoryMap.clear()
+        for (const cat of refreshedCategories) {
+          categoryMap.set(cat.name.toLowerCase(), cat.id)
+        }
+      }
 
-        // Refresh category map with new categories
-        const updatedCategories = await tx.category.findMany({
-          where: {
-            organizationId: currentOrgId
+      const existingItemNames = await prisma.menuItem.findMany({
+        where: { organizationId: currentOrgId },
+        select: { name: true }
+      })
+      const allocateItemName = createImportNameAllocator(
+        existingItemNames.map(item => item.name)
+      )
+
+      const createdItems: MenuItem[] = []
+      const failedItems: FailedImportRow[] = []
+
+      // Sequential: each image row triggers an external fetch before its DB write.
+      for (const item of groupedItems) {
+        const categoryId = item.category
+          ? categoryMap.get(item.category.toLowerCase())
+          : undefined
+        const currency = item.currency
+          ? (item.currency as Currency)
+          : defaultCurrency
+        const existingId = item.externalId
+          ? existingByExternalId.get(item.externalId)
+          : undefined
+        const itemId = existingId ?? crypto.randomUUID()
+
+        let imageAssetId: string | undefined
+        let imageStorageKey: string | undefined
+
+        if (item.image) {
+          if (mediaBudget <= 0) {
+            pushFailedRows(failedItems, item, t("imageMediaLimit"))
+            continue
           }
-        })
-        const updatedCategoryMap = new Map(
-          updatedCategories.map(cat => [cat.name.toLowerCase(), cat.id])
-        )
-        const existingItems = await tx.menuItem.findMany({
-          where: { organizationId: currentOrgId },
-          select: { name: true }
-        })
-        const allocateItemName = createImportNameAllocator(
-          existingItems.map(item => item.name)
-        )
 
-        return Promise.all(
-          groupedItems.map(item => {
-            let categoryId = undefined
+          const result = await fetchAndStoreExternalImage({
+            organizationId: currentOrgId,
+            entityId: itemId,
+            sourceUrl: item.image
+          })
 
-            if (item.category) {
-              const normalizedName = item.category.trim()
-              categoryId = updatedCategoryMap.get(normalizedName.toLowerCase())
-            }
+          if (!result.ok) {
+            pushFailedRows(failedItems, item, t(IMAGE_REASON_KEY[result.code]))
+            continue
+          }
 
-            return tx.menuItem.create({
+          imageAssetId = result.assetId
+          imageStorageKey = result.storageKey
+          mediaBudget -= 1
+        }
+
+        try {
+          if (existingId) {
+            const updated = await prisma.menuItem.update({
+              where: { id: existingId },
               data: {
+                name: item.name,
+                description: item.description || "",
+                status: item.status || MenuItemStatus.ACTIVE,
+                categoryId: categoryId ?? null,
+                currency,
+                ...(imageAssetId && imageStorageKey
+                  ? { imageAssetId, image: imageStorageKey }
+                  : {}),
+                variants: {
+                  deleteMany: {},
+                  create: item.variants.map(variant => ({
+                    name: variant.name,
+                    price: variant.price
+                  }))
+                }
+              }
+            })
+            createdItems.push(updated)
+          } else {
+            const created = await prisma.menuItem.create({
+              data: {
+                id: itemId,
                 name: allocateItemName(item.name),
+                externalId: item.externalId,
                 description: item.description || "",
                 status: item.status || MenuItemStatus.ACTIVE,
                 categoryId,
-                currency: item.currency
-                  ? (item.currency as Currency)
-                  : ((defaultLocation?.currency as Currency) ?? "KZT"),
+                currency,
                 organizationId: currentOrgId,
+                ...(imageAssetId && imageStorageKey
+                  ? { imageAssetId, image: imageStorageKey }
+                  : {}),
                 variants: {
                   create: item.variants.map(variant => ({
                     name: variant.name,
@@ -408,13 +546,20 @@ export const bulkCreateItems = authMemberActionClient
                 }
               }
             })
+            createdItems.push(created)
+          }
+        } catch (error) {
+          Sentry.captureException(error, {
+            tags: { section: "item-mutations", operation: "bulkCreateItems" },
+            extra: { organizationId: currentOrgId, externalId: item.externalId }
           })
-        )
-      })
+          pushFailedRows(failedItems, item, t("bulkSaveRetry"))
+        }
+      }
 
       updateTag(`menu-items-${currentOrgId}`)
       updateTag(`categories-${currentOrgId}`)
-      return { success: createdItems }
+      return { success: createdItems, failedItems }
     } catch (error) {
       console.error(error)
       Sentry.captureException(error, {

@@ -7,7 +7,6 @@ import { headers } from "next/headers"
 import { z } from "zod/v4"
 
 import { getOrganizationBySlug } from "@/server/actions/organization/queries"
-import { getCurrentSubscription } from "@/server/actions/subscriptions/queries"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { deleteOrganizationAssetsFromR2 } from "@/lib/r2"
@@ -99,9 +98,7 @@ export const bootstrapOrg = authActionClient
         if (org?.id) {
           updateTag(`organization-${org.id}`)
           updateTag(`organization-${org.id}-members`)
-          updateTag(`organization-${org.id}-subscription`)
         }
-        updateTag(`subscription-current`)
 
         return {
           success: {
@@ -220,7 +217,6 @@ export const createOrg = authActionClient
         if (org.id) {
           updateTag(`organization-${org.id}`)
           updateTag(`organization-${org.id}-members`)
-          updateTag(`organization-${org.id}-subscription`)
         }
 
         return { success: true }
@@ -322,13 +318,11 @@ export const updateOrg = authActionClient
       updateTag("organization-current")
       updateTag("page-settings")
       updateTag("page-settings-members")
-      updateTag("subscription-current")
       updateTag("permissions-all")
       updateTag("membership-current")
       updateTag("membership-current-role")
       updateTag(`organization-${id}`)
       updateTag(`organization-${id}-members`)
-      updateTag(`organization-${id}-subscription`)
 
       return { success: true }
     } catch (error) {
@@ -423,61 +417,47 @@ export const deleteOrganization = authActionClient
         }
       }
 
-      const subscription = await getCurrentSubscription(id)
-      if (
-        subscription &&
-        (subscription.status === "active" || subscription.status === "trialing")
-      ) {
+      await deleteOrganizationAssetsFromR2(id)
+
+      // Delete organization through Better Auth server API and revalidate cache
+      const deleted = await auth.api.deleteOrganization({
+        body: { organizationId: id },
+        headers: await headers()
+      })
+
+      if (!deleted) {
         return {
           failure: {
-            reason: t("orgDeleteActiveSubscription")
+            reason: t("orgDeleteFailed")
           }
         }
-      } else {
-        await deleteOrganizationAssetsFromR2(id)
+      }
 
-        // Delete organization through Better Auth server API and revalidate cache
-        const deleted = await auth.api.deleteOrganization({
-          body: { organizationId: id },
-          headers: await headers()
+      updateTag("organizations-list")
+      updateTag("organization-current")
+      updateTag("membership-current")
+      updateTag("membership-current-role")
+      updateTag("permissions-all")
+      if (id) {
+        updateTag(`organization-${id}`)
+        updateTag(`organization-${id}-members`)
+      }
+
+      // Attempt to sign out the current session via Better Auth API so the
+      // client session cookie is cleared after the organization is deleted.
+      try {
+        // Call signOut directly per docs. Best-effort: log and continue on error.
+        await auth.api.signOut({ headers: await headers() })
+      } catch (err) {
+        console.warn("Failed to sign out after organization deletion:", err)
+        Sentry.captureException(err, {
+          tags: { section: "organization-mutations", operation: "signOut" },
+          extra: { organizationId: id }
         })
+      }
 
-        if (!deleted) {
-          return {
-            failure: {
-              reason: t("orgDeleteFailed")
-            }
-          }
-        }
-
-        updateTag("organizations-list")
-        updateTag("organization-current")
-        updateTag("membership-current")
-        updateTag("membership-current-role")
-        updateTag("permissions-all")
-        updateTag("subscription-current")
-        if (id) {
-          updateTag(`organization-${id}`)
-          updateTag(`organization-${id}-members`)
-          updateTag(`organization-${id}-subscription`)
-        }
-
-        // Attempt to sign out the current session via Better Auth API so the
-        // client session cookie is cleared after the organization is deleted.
-        try {
-          // Call signOut directly per docs. Best-effort: log and continue on error.
-          await auth.api.signOut({ headers: await headers() })
-        } catch (err) {
-          console.warn("Failed to sign out after organization deletion:", err)
-          Sentry.captureException(err, {
-            tags: { section: "organization-mutations", operation: "signOut" },
-            extra: { organizationId: id }
-          })
-        }
-
-        return {
-          success: true
-        }
+      return {
+        success: true
       }
     } catch (error) {
       let message

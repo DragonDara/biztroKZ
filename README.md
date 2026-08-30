@@ -19,9 +19,8 @@ It uses a modern TypeScript + React stack with Prisma for persistence and Tailwi
 - Server actions: next-safe-action
 - Forms & validation: React Hook Form + Zod
 - Data caching: @tanstack/react-query
-- Analytics & monitoring: PostHog + Sentry
+- Monitoring: Sentry
 - File uploads: Uppy (S3 / R2 adapters)
-- Payments: Stripe
 
 ## Useful files
 
@@ -56,7 +55,7 @@ npx prisma generate
 3. Configure environment variables
 
 - Create a `.env` file at the project root (or set env vars in your shell). The required variables are validated in `src/env.mjs`.
-- Important variables include Turso/LibSQL URL and keys, R2 credentials, Stripe keys, Better-auth keys, and analytics/Sentry keys.
+- Important variables include Turso/LibSQL URL and keys, R2 credentials, Better Auth keys, and Sentry keys.
 
 4. Start a local dev database
 
@@ -81,7 +80,6 @@ npm run dev
 - `npm run db:dev` — start local Turso dev DB
 - `npm run email` — run email dev tooling
 - `npm run build:content` — build Contentlayer content
-- `npm run stripe:listen` — forward Stripe webhooks to local server
 
 ## Conventions & notes
 

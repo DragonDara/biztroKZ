@@ -46,7 +46,6 @@ Use `bun run <script>` unless the user requests otherwise.
 - `typecheck` — TypeScript typecheck.
 - `format` — Prettier.
 - `db:dev` — Local Turso DB (`local.db`).
-- `stripe:listen` — Forward Stripe webhooks to local.
 - `build:content` — Contentlayer build.
 
 ## Code Style and Structure

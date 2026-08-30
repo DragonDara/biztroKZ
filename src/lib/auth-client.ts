@@ -1,4 +1,3 @@
-import { stripeClient } from "@better-auth/stripe/client"
 import {
   inferOrgAdditionalFields,
   organizationClient
@@ -12,9 +11,6 @@ export const authClient = createAuthClient({
     // Add any necessary plugins here
     organizationClient({
       schema: inferOrgAdditionalFields<typeof auth>()
-    }),
-    stripeClient({
-      subscription: true
     })
   ]
 })

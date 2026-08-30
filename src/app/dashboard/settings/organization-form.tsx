@@ -42,9 +42,9 @@ import {
 import { Textarea } from "@/components/ui/textarea"
 import { updateOrg } from "@/server/actions/organization/mutations"
 import type { getCurrentOrganization } from "@/server/actions/user/queries"
-import { type Plan, type SubscriptionStatus } from "@/lib/types/billing"
 import { ImageType } from "@/lib/types/media"
 import { orgSchema } from "@/lib/types/organization"
+import { type OrganizationStatus, type Plan } from "@/lib/types/plan"
 import { getInitials } from "@/lib/utils"
 
 export default function OrganizationForm({
@@ -64,7 +64,7 @@ export default function OrganizationForm({
       name: data.name,
       description: data.description ?? undefined,
       slug: data.slug,
-      status: data.status as SubscriptionStatus,
+      status: data.status as OrganizationStatus,
       plan: data.plan?.toUpperCase() as Plan
     }
   })
@@ -110,7 +110,7 @@ export default function OrganizationForm({
       name: data.name,
       description: data.description ?? undefined,
       slug: data.slug,
-      status: data.status as SubscriptionStatus,
+      status: data.status as OrganizationStatus,
       plan: data.plan?.toUpperCase() as Plan
     })
   }, [data, form])

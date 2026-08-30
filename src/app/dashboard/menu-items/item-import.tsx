@@ -42,7 +42,9 @@ export default function ItemImport() {
     description: t("csvColumns.description"),
     price: t("csvColumns.price"),
     category: t("csvColumns.category"),
-    currency: t("csvColumns.currency")
+    currency: t("csvColumns.currency"),
+    image: t("csvColumns.image"),
+    externalId: t("csvColumns.externalId")
   }
 
   const {
@@ -76,7 +78,8 @@ export default function ItemImport() {
               description: item.description ?? "",
               price: validPrice.toFixed(2),
               category: item.category?.name,
-              currency: item.currency ?? "KZT"
+              currency: item.currency ?? "KZT",
+              externalId: item.externalId ?? undefined
             },
             columnLabels
           )

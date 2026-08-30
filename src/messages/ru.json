@@ -338,8 +338,7 @@
       "settings": "Настройки",
       "general": "Общие",
       "location": "Филиал",
-      "members": "Участники",
-      "billing": "Подписка"
+      "members": "Участники"
     },
     "sidebar": {
       "upgradeTitle": "Перейти на Pro",
@@ -487,18 +486,6 @@
       "update": "Обновить"
     },
     "settings": {
-      "subscriptionStatus": {
-        "active": "Активна",
-        "trialing": "Пробный период",
-        "canceled": "Отменена",
-        "incomplete": "Неполная",
-        "incompleteExpired": "Истекла",
-        "pastDue": "Просрочена",
-        "unpaid": "Не оплачена",
-        "paused": "Приостановлена",
-        "sponsored": "Спонсорская",
-        "unknown": "Неизвестно"
-      },
       "organization": {
         "metaTitle": "Моя организация",
         "metaDescription": "Общая информация о бизнесе",
@@ -527,7 +514,6 @@
         "irreversible": "Это действие необратимо.",
         "confirmTitle": "Удалить организацию",
         "confirmDescription": "Вы уверены, что хотите удалить эту организацию? Это действие необратимо. Все данные организации будут удалены без возможности восстановления. Сохраните нужные данные перед продолжением.",
-        "cancelSubscription": "Отмените подписку перед удалением организации.",
         "confirmHint": "Для безопасности введите {word} и нажмите удалить.",
         "confirmAria": "Подтвердите, введя УДАЛИТЬ",
         "confirmWord": "УДАЛИТЬ",
@@ -561,39 +547,6 @@
         "deleteDescription": "Вы уверены, что хотите удалить этого участника? Это действие нельзя отменить.",
         "deleting": "Удаление участника...",
         "deleted": "Участник успешно удалён"
-      },
-      "billing": {
-        "metaTitle": "Подписка",
-        "title": "Тарифные планы",
-        "description": "Управление подпиской и историей платежей",
-        "ownerOnlyTitle": "Уведомление",
-        "ownerOnlyDescription": "Только владельцы организации могут открыть эту страницу",
-        "plan": "План",
-        "basic": "Базовый",
-        "free": "Бесплатно",
-        "monthly": "Месяц",
-        "yearly": "Год",
-        "yearlyDiscount": "-20%",
-        "usage": "Использовано {count} из {limit} продуктов по вашему плану",
-        "usageHint": "Обновите план, чтобы добавить больше продуктов и открыть дополнительные возможности.",
-        "checkoutError": "Не удалось начать оплату. Попробуйте снова.",
-        "upgradeMonthly": "Pro на месяц",
-        "upgradeYearly": "Pro на год",
-        "perMonth": "MXN/мес",
-        "perYear": "MXN/год",
-        "sponsoredTitle": "Спонсорская организация",
-        "sponsoredDescription": "У вашей организации спонсорский план Pro. Пользуйтесь всеми функциями Biztro Pro бесплатно.",
-        "price": "Цена",
-        "activePeriod": "Текущий период",
-        "cancelsOn": "Отмена",
-        "nextRenewal": "Следующее продление",
-        "trialEnds": "Заканчивается {date}",
-        "cancelScheduledTitle": "Подписка будет отменена",
-        "cancelScheduledDescription": "Подписка завершится {date}. Доступ сохранится до этой даты. Чтобы возобновить, перейдите в платёжный портал.",
-        "manageInStripe": "Управляйте подпиской в Stripe",
-        "supportPrefix": "Проблемы с подпиской? Напишите на",
-        "portal": "Перейти в портал клиента",
-        "portalError": "Не удалось открыть портал клиента"
       },
       "location": {
         "metaTitle": "Местоположение",
@@ -764,7 +717,9 @@
           "description": "описание",
           "price": "цена",
           "category": "категория",
-          "currency": "валюта"
+          "currency": "валюта",
+          "image": "изображение",
+          "externalId": "внешний_ид"
         },
         "defaultVariantName": "Обычный",
         "selectedCount": "Выбрано: {count}",
@@ -802,6 +757,7 @@
             "priceRequired": "Цена обязательна",
             "priceInvalid": "Цена должна быть положительным числом",
             "currencyInvalid": "Недопустимая валюта. Используйте MXN или USD.",
+            "imageInvalid": "Неверный URL изображения. Используйте ссылку https://.",
             "emptyFile": "Файл пуст",
             "maxRows": "Нельзя импортировать более 200 продуктов за раз",
             "csvParseError": "Не удалось обработать CSV: {message}"
@@ -812,7 +768,16 @@
             "description": "Описание продукта",
             "category": "Категория (необязательно)",
             "variantRegular": "Обычный",
-            "variantLarge": "Большой"
+            "variantLarge": "Большой",
+            "image": "https://example.com/produkt.jpg",
+            "externalId": "SKU-001"
+          },
+          "failedRows": {
+            "title": "Некоторые строки не удалось импортировать",
+            "toast": "{count, plural, one {# строка не импортирована} few {# строки не импортированы} many {# строк не импортировано} other {# строк не импортировано}}",
+            "download": "Скачать строки с ошибками",
+            "reasonColumn": "причина",
+            "fileName": "produkty-s-oshibkami.csv"
           }
         },
         "ai": {
@@ -892,6 +857,14 @@
           "addAtLeastOneProduct": "Добавьте хотя бы один продукт с названием",
           "duplicateEntry": "Дублирующаяся запись",
           "invalidReference": "Недопустимая ссылка",
+          "imageInvalidUrl": "Неверный URL изображения",
+          "imageBlockedHost": "URL изображения не разрешён",
+          "imageFetchFailed": "Не удалось загрузить изображение",
+          "imageNotImage": "Файл не является поддерживаемым изображением (PNG, JPEG или WebP)",
+          "imageTooLarge": "Изображение слишком большое (макс. 8 МБ)",
+          "imageCorruptImage": "Файл изображения повреждён или не читается",
+          "imageUploadFailed": "Не удалось сохранить изображение",
+          "imageMediaLimit": "Достигнут лимит медиа на базовом тарифе",
           "visualDesignFailed": "Не удалось создать дизайн меню. Попробуйте снова или импортируйте только продукты.",
           "limitExceeded": "Вы превысите лимит продуктов на базовом плане",
           "bulkSaveFailed": "Не удалось сохранить импортированные продукты",
@@ -1725,7 +1698,6 @@
       "orgIdRequired": "Требуется ID организации",
       "orgUpdateFailed": "Не удалось обновить организацию",
       "orgDeleteConfirm": "Подтвердите удаление, введя ELIMINAR",
-      "orgDeleteActiveSubscription": "Нельзя удалить организацию с активной подпиской",
       "orgDeleteFailed": "Не удалось удалить организацию",
       "noCurrentOrg": "Не удалось получить текущую организацию",
       "translationProOnly": "Перевод меню доступен только в плане Pro",

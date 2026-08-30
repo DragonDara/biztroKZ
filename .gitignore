@@ -58,3 +58,6 @@ yarn-error.log*
 generated
 *datalocal.db*
 *khanbiztroKZ-da
+
+# specs for agents
+spec/

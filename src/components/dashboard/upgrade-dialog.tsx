@@ -3,7 +3,6 @@
 import { useCallback, useState } from "react"
 import { Crown } from "lucide-react"
 import { useTranslations } from "next-intl"
-import { useRouter } from "next/navigation"
 
 import { RainbowButton } from "@/components/magicui/rainbow-button"
 import { Button } from "@/components/ui/button"
@@ -30,7 +29,6 @@ export function UpgradeDialog({
   description
 }: UpgradeDialogProps) {
   const t = useTranslations("dashboard.upgrade")
-  const router = useRouter()
 
   return (
     <Dialog open={open} onOpenChange={onClose}>
@@ -57,10 +55,8 @@ export function UpgradeDialog({
           </DialogDescription>
         </DialogHeader>
         <DialogFooter className="gap-4 sm:flex-col">
-          <RainbowButton
-            onClick={() => router.push("/dashboard/settings/billing")}
-          >
-            {t("cta")}
+          <RainbowButton asChild>
+            <a href="mailto:contacto@biztro.co">{t("cta")}</a>
           </RainbowButton>
           <Button
             variant="link"

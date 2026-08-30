@@ -8,6 +8,8 @@ export type MenuItemCsvFields = {
   price: string
   category?: string
   currency?: string
+  image?: string
+  externalId?: string
 }
 
 export type MenuItemCsvColumnLabels = {
@@ -17,6 +19,8 @@ export type MenuItemCsvColumnLabels = {
   price: string
   category: string
   currency: string
+  image: string
+  externalId: string
 }
 
 type CanonicalField = keyof MenuItemCsvFields
@@ -28,7 +32,9 @@ const STATIC_ALIASES: Record<CanonicalField, string[]> = {
   description: ["descripcion", "descripción", "description", "описание"],
   price: ["precio", "price", "цена"],
   category: ["categoria", "categoría", "category", "категория"],
-  currency: ["moneda", "currency", "валюта"]
+  currency: ["moneda", "currency", "валюта"],
+  image: ["imagen", "image", "изображение", "foto", "photo"],
+  externalId: ["id externo", "external id", "externalid", "sku", "внешний ид"]
 }
 
 function normalizeHeader(value: string): string {
@@ -78,7 +84,9 @@ export function toLocalizedMenuItemCsvRow(
     [labels.description]: fields.description,
     [labels.price]: fields.price,
     [labels.category]: fields.category,
-    [labels.currency]: fields.currency
+    [labels.currency]: fields.currency,
+    [labels.image]: fields.image,
+    [labels.externalId]: fields.externalId
   }
 }
 

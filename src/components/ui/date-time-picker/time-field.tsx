@@ -12,17 +12,25 @@ import { useTimeFieldState } from "react-stately"
 import { cn } from "@/lib/utils"
 import { DateSegment } from "./date-segment"
 
-function TimeField(props: AriaTimeFieldProps<TimeValue>) {
+function TimeField({
+  hourCycle = 24,
+  ...props
+}: AriaTimeFieldProps<TimeValue>) {
   const ref = useRef<HTMLDivElement | null>(null)
-
   const { locale } = useLocale()
-  const state = useTimeFieldState({
+
+  const timeFieldProps: AriaTimeFieldProps<TimeValue> = {
     ...props,
+    hourCycle
+  }
+
+  const state = useTimeFieldState({
+    ...timeFieldProps,
     locale
   })
   const {
     fieldProps: { ...fieldProps }
-  } = useTimeField(props, state, ref)
+  } = useTimeField(timeFieldProps, state, ref)
 
   return (
     <div

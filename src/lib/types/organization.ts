@@ -1,6 +1,6 @@
 import { z } from "zod/v4"
 
-import { SubscriptionStatus } from "@/lib/types/billing"
+import { OrganizationStatus } from "@/lib/types/plan"
 
 export const orgSchema = z.object({
   id: z.string().optional(),
@@ -18,7 +18,7 @@ export const orgSchema = z.object({
   description: z.string().optional(),
   logo: z.url().optional(),
   banner: z.url().optional(),
-  status: z.enum(SubscriptionStatus),
+  status: z.enum(OrganizationStatus),
   plan: z.enum(["BASIC", "PRO"]),
   subdomain: z
     .string()

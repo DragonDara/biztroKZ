@@ -1,13 +1,6 @@
 "use client"
 
-import {
-  Fragment,
-  use,
-  useEffect,
-  useRef,
-  useState,
-  useTransition
-} from "react"
+import { Fragment, useEffect, useRef, useState, useTransition } from "react"
 import toast from "react-hot-toast"
 import { Link } from "@/i18n/navigation"
 import * as Sentry from "@sentry/nextjs"
@@ -16,7 +9,6 @@ import { useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   ChevronRight,
   ChevronsUpDown,
-  Crown,
   Images,
   LayoutTemplate,
   Megaphone,
@@ -34,14 +26,6 @@ import {
 } from "next/navigation"
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle
-} from "@/components/ui/card"
 import {
   Collapsible,
   CollapsibleContent,
@@ -73,7 +57,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { switchOrganization } from "@/server/actions/user/mutations"
 import { getCurrentOrganization } from "@/server/actions/user/queries"
 import { authClient } from "@/lib/auth-client"
-import { Plan } from "@/lib/types/billing"
+import { Plan } from "@/lib/types/plan"
 import { getInitials } from "@/lib/utils"
 
 type NavigationItem = {
@@ -106,21 +90,14 @@ function useNavigationItems(): NavigationItem[] {
       items: [
         { title: t("general"), url: "/dashboard/settings" },
         { title: t("location"), url: "/dashboard/settings/locations" },
-        { title: t("members"), url: "/dashboard/settings/members" },
-        { title: t("billing"), url: "/dashboard/settings/billing" }
+        { title: t("members"), url: "/dashboard/settings/members" }
       ]
     }
   ]
 }
 
-export default function AppSidebar({
-  promiseOrganization
-}: {
-  promiseOrganization: ReturnType<typeof getCurrentOrganization>
-}) {
-  const currentOrg = use(promiseOrganization)
+export default function AppSidebar() {
   const navigation = useNavigationItems()
-  const tSidebar = useTranslations("dashboard.sidebar")
   const { isMobile, setOpenMobile } = useSidebar()
 
   const closeMobileSidebar = () => {
@@ -183,40 +160,6 @@ export default function AppSidebar({
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        {currentOrg?.plan === Plan.BASIC && (
-          <div className="p-1">
-            <Card
-              className="border-indigo-400/50 bg-radial-[at_0%_100%]
-                from-pink-500/50 via-indigo-500/20 to-transparent shadow-none"
-            >
-              <CardHeader className="p-3 pb-2">
-                <CardTitle className="text-sm">
-                  <Crown
-                    className="mr-1.5 inline size-4 align-text-top
-                      text-amber-600 dark:text-amber-500"
-                  />
-                  {tSidebar("upgradeTitle")}
-                </CardTitle>
-                <CardDescription
-                  className="dark:text-foreground/80 text-foreground/60 text-xs"
-                >
-                  {tSidebar("upgradeDescription")}
-                </CardDescription>
-              </CardHeader>
-              <CardFooter className="px-3">
-                <Button size="xs" variant="default" className="w-full" asChild>
-                  <Link
-                    href="/dashboard/settings/billing"
-                    prefetch={false}
-                    onClick={closeMobileSidebar}
-                  >
-                    {tSidebar("upgradeCta")}
-                  </Link>
-                </Button>
-              </CardFooter>
-            </Card>
-          </div>
-        )}
         <SidebarGroup className="mt-auto">
           <SidebarGroupContent>
             <SidebarMenu>

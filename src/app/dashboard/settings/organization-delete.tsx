@@ -4,7 +4,6 @@ import { useState } from "react"
 import toast from "react-hot-toast"
 import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 
 import {
@@ -95,17 +94,7 @@ function OrganizationDelete({ organizationId }: { organizationId: string }) {
                 <AlertDialogTitle>{t("confirmTitle")}</AlertDialogTitle>
                 <AlertDialogDescription asChild>
                   <div className="flex flex-col gap-8">
-                    <div>
-                      {t("confirmDescription")}{" "}
-                      <Link
-                        href="/dashboard/settings/billing"
-                        prefetch={false}
-                        className="text-blue-600 underline underline-offset-2
-                          hover:text-blue-800"
-                      >
-                        {t("cancelSubscription")}
-                      </Link>
-                    </div>
+                    <div>{t("confirmDescription")}</div>
                     <div className="flex flex-col gap-2">
                       <p className="text-muted-foreground text-xs">
                         {t("confirmHint", { word: confirmationWord })}

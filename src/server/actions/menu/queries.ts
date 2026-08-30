@@ -6,8 +6,8 @@ import { cacheTag } from "next/cache"
 
 import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
-import { SubscriptionStatus } from "@/lib/types/billing"
 import { MenuStatus } from "@/lib/types/menu"
+import { OrganizationStatus } from "@/lib/types/plan"
 import { getCacheBustedImageUrl } from "@/lib/utils"
 
 export async function getMenus(currentOrgId: string) {
@@ -79,7 +79,8 @@ export async function getMenuById(id: string) {
             : undefined
         if (resolvedName === "ContainerBlock") {
           const propsObj = compRec["props"] as
-            Record<string, unknown> | undefined
+            | Record<string, unknown>
+            | undefined
           const bg =
             typeof propsObj?.["backgroundImage"] === "string"
               ? (propsObj["backgroundImage"] as string)
@@ -139,9 +140,9 @@ export async function getActiveMenuByOrganizationSlug(slug: string) {
   })
 
   const activeStatuses: string[] = [
-    SubscriptionStatus.ACTIVE,
-    SubscriptionStatus.TRIALING,
-    SubscriptionStatus.SPONSORED
+    OrganizationStatus.ACTIVE,
+    OrganizationStatus.TRIALING,
+    OrganizationStatus.SPONSORED
   ]
   const organization = org && activeStatuses.includes(org.status) ? org : null
 

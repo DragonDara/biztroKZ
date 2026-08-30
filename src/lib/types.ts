@@ -1,5 +1,5 @@
 export * from "@/lib/types/auth"
-export * from "@/lib/types/billing"
+export * from "@/lib/types/plan"
 export * from "@/lib/types/category"
 export * from "@/lib/types/legacy"
 export * from "@/lib/types/location"

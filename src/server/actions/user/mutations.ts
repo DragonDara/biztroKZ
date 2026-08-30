@@ -42,10 +42,6 @@ export const switchOrganization = authActionClient
         updateTag("membership-current")
         updateTag("membership-current-role")
         updateTag("permissions-all")
-        updateTag(`organization-${organizationId}-subscription`)
-        if (currentOrganizationId) {
-          updateTag(`organization-${currentOrganizationId}-subscription`)
-        }
         updateTag(`organization-${organizationId}-members`)
         if (currentOrganizationId) {
           updateTag(`organization-${currentOrganizationId}-members`)
@@ -56,7 +52,6 @@ export const switchOrganization = authActionClient
           updateTag(`menus-${currentOrganizationId}`)
           updateTag(`translations-${currentOrganizationId}`)
         }
-        updateTag("subscription-current")
         updateTag("page-settings")
         updateTag("page-settings-members")
         updateTag(`page-settings-${organizationId}`)
@@ -202,8 +197,6 @@ export const acceptInvite = authActionClient
         updateTag(`organization-${activeOrg.id}-members`)
         updateTag(`organization:${activeOrg.id}`)
         updateTag(`organization-${activeOrg.id}`)
-        updateTag(`organization:${activeOrg.id}:subscription`)
-        updateTag(`organization-${activeOrg.id}-subscription`)
         updateTag(`page:settings:${activeOrg.id}`)
         updateTag(`page:settings:members:${activeOrg.id}`)
       }
@@ -258,7 +251,6 @@ export const removeMember = authActionClient
       if (activeOrg?.id) {
         updateTag(`organization-${activeOrg.id}-members`)
         updateTag(`organization-${activeOrg.id}`)
-        updateTag(`organization-${activeOrg.id}-subscription`)
       }
       updateTag("permissions-all")
       updateTag("membership-current")

@@ -21,7 +21,7 @@ import { appConfig } from "@/app/config"
 import type { Currency } from "@/lib/currency"
 import prisma from "@/lib/prisma"
 import { authMemberActionClient } from "@/lib/safe-actions"
-import { BasicPlanLimits } from "@/lib/types/billing"
+import { BasicPlanLimits } from "@/lib/types/plan"
 import {
   categorySchema,
   menuSectionCoverSchema,

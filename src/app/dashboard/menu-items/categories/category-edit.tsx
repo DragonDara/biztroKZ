@@ -7,6 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod"
 import { Loader } from "lucide-react"
 import { useTranslations } from "next-intl"
 import { useAction } from "next-safe-action/hooks"
+import { useRouter } from "next/navigation"
 import { TextMorph } from "torph/react"
 import { type z } from "zod/v4"
 
@@ -123,6 +124,7 @@ function CategoryEditForm({
   const t = useTranslations("dashboard.menuItems.categories")
   const tCommon = useTranslations("dashboard.common")
   const tProducts = useTranslations("dashboard.menuItems.products")
+  const router = useRouter()
 
   const form = useForm({
     resolver: zodResolver(categorySchema),

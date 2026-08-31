@@ -66,7 +66,7 @@ export function FramePreviewContent({
     const style = frameDocument.createElement("style")
     style.id = "editor-canvas-overrides"
     style.textContent =
-      "header, nav { position: relative !important; top: unset !important; }"
+      "header, nav, [data-menu-navigation-root] { position: relative !important; top: unset !important; }"
     frameDocument.head.appendChild(style)
     return () => {
       frameDocument.getElementById("editor-canvas-overrides")?.remove()

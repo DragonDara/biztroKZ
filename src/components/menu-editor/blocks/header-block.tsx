@@ -51,6 +51,13 @@ export default function HeaderBlock({
   const scrollContainerRef = React.useRef<HTMLElement | null>(null)
   const [hasContainerScrollRoot, setHasContainerScrollRoot] =
     React.useState(false)
+  const textColor = rgbaToCss(accentColor, { r: 0, g: 0, b: 0, a: 1 })
+  const background = rgbaToCss(backgroundColor, {
+    r: 255,
+    g: 255,
+    b: 255,
+    a: 1
+  })
 
   const { scrollY: viewportScrollY } = useScroll()
   const { scrollY: containerScrollY } = useScroll(
@@ -92,6 +99,14 @@ export default function HeaderBlock({
     }
 
     publishHeaderOffset()
+    headerNode.ownerDocument.documentElement.style.setProperty(
+      "--menu-header-background-color",
+      background
+    )
+    headerNode.ownerDocument.documentElement.style.setProperty(
+      "--menu-header-text-color",
+      textColor
+    )
 
     const ResizeObserverClass = ownerWindow.ResizeObserver ?? ResizeObserver
     const resizeObserver = new ResizeObserverClass(publishHeaderOffset)
@@ -102,16 +117,14 @@ export default function HeaderBlock({
       headerNode.ownerDocument.documentElement.style.removeProperty(
         "--menu-header-offset"
       )
+      headerNode.ownerDocument.documentElement.style.removeProperty(
+        "--menu-header-background-color"
+      )
+      headerNode.ownerDocument.documentElement.style.removeProperty(
+        "--menu-header-text-color"
+      )
     }
-  }, [])
-
-  const textColor = rgbaToCss(accentColor, { r: 0, g: 0, b: 0, a: 1 })
-  const background = rgbaToCss(backgroundColor, {
-    r: 255,
-    g: 255,
-    b: 255,
-    a: 1
-  })
+  }, [background, textColor])
   const expandedHeight = showAddress || showSocialMedia ? 286 : 238
   const collapsedHeight = 76
 
@@ -277,14 +290,7 @@ export default function HeaderBlock({
             opacity: collapsedOpacity,
             y: collapsedY,
             pointerEvents: collapsedPointerEvents,
-            backgroundColor: showBanner
-              ? undefined
-              : rgbaToCss(backgroundColor, {
-                  r: 255,
-                  g: 255,
-                  b: 255,
-                  a: 1
-                })
+            backgroundColor: background
           }}
           className={cn(
             "absolute inset-0 flex h-full items-center px-4 py-2",

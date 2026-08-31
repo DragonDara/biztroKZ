@@ -286,15 +286,24 @@ export default function NavigatorBlock() {
       ref={ref => {
         if (ref) connect(ref)
       }}
-      className="w-full"
+      data-menu-navigation-root="true"
+      className="sticky z-20 w-full transition-colors duration-200"
+      style={{
+        top: "var(--menu-header-offset, 0px)",
+        backgroundColor: isSticky
+          ? "var(--menu-header-background-color, rgb(255, 255, 255))"
+          : "transparent"
+      }}
     >
       {navigation.sections.length ? (
-        <div className="px-3 pt-3 pb-5">
+        <div className={cn("px-3", isSticky ? "py-2" : "pt-3 pb-5")}>
           <div
             role="group"
             aria-label={t("displayNames.navigation")}
-            className="no-scrollbar mask-fade flex gap-3 overflow-x-auto px-0.5
-              py-0.5"
+            className={cn(
+              "no-scrollbar mask-fade flex overflow-x-auto px-0.5 py-0.5",
+              isSticky ? "gap-2" : "gap-3"
+            )}
           >
             {navigation.sections.map((menuSection, index) => {
               const isActive = menuSection.id === effectiveMenuSectionId
@@ -304,43 +313,53 @@ export default function NavigatorBlock() {
                   type="button"
                   aria-pressed={isActive}
                   onClick={() => handleNavigation(menuSection.firstNodeId)}
-                  className="focus-visible:ring-ring w-36 shrink-0
-                    cursor-pointer overflow-hidden rounded-2xl bg-black/55
-                    text-left ring-1 ring-white/10
-                    transition-[box-shadow,opacity] duration-200 outline-none
-                    hover:opacity-90 focus-visible:ring-2
-                    focus-visible:ring-offset-2 sm:w-40"
+                  className={cn(
+                    `focus-visible:ring-ring shrink-0 cursor-pointer
+                      overflow-hidden bg-black/55 text-left ring-1 ring-white/10
+                      transition-[box-shadow,opacity] duration-200 outline-none
+                      hover:opacity-90 focus-visible:ring-2
+                      focus-visible:ring-offset-2`,
+                    isSticky
+                      ? "w-auto rounded-full"
+                      : "w-36 rounded-2xl sm:w-40"
+                  )}
                   style={{
                     boxShadow: isActive
                       ? "0 0 0 2px rgba(248, 248, 248, 0.92)"
                       : undefined
                   }}
                 >
-                  <span className="relative block aspect-4/3 overflow-hidden">
-                    {menuSection.image ? (
-                      <Image
-                        src={menuSection.image}
-                        alt=""
-                        width={160}
-                        height={120}
-                        sizes="(max-width: 640px) 144px, 160px"
-                        className="size-full object-cover"
-                        loading={index < 3 ? "eager" : "lazy"}
-                        unoptimized
-                      />
-                    ) : (
-                      <span
-                        className="flex size-full items-center justify-center
-                          bg-black/25 text-white/55"
-                        aria-hidden="true"
-                      >
-                        <ImageIcon className="size-6" />
-                      </span>
-                    )}
-                  </span>
+                  {!isSticky ? (
+                    <span className="relative block aspect-4/3 overflow-hidden">
+                      {menuSection.image ? (
+                        <Image
+                          src={menuSection.image}
+                          alt=""
+                          width={160}
+                          height={120}
+                          sizes="(max-width: 640px) 144px, 160px"
+                          className="size-full object-cover"
+                          loading={index < 3 ? "eager" : "lazy"}
+                          unoptimized
+                        />
+                      ) : (
+                        <span
+                          className="flex size-full items-center justify-center
+                            bg-black/25 text-white/55"
+                          aria-hidden="true"
+                        >
+                          <ImageIcon className="size-6" />
+                        </span>
+                      )}
+                    </span>
+                  ) : null}
                   <span
-                    className="flex min-h-12 items-center px-4 py-2 text-base
-                      leading-snug font-medium text-pretty"
+                    className={cn(
+                      "flex items-center px-4 font-medium text-pretty",
+                      isSticky
+                        ? "min-h-0 py-2.5 text-sm leading-none sm:text-base"
+                        : "min-h-12 py-2 text-base leading-snug"
+                    )}
                     style={{
                       backgroundColor: isActive
                         ? "rgba(248, 248, 248, 0.96)"
@@ -362,11 +381,11 @@ export default function NavigatorBlock() {
       <nav
         ref={navRef}
         aria-label={t("displayNames.navigation")}
-        className="sticky z-20 w-screen p-3 transition-colors duration-200
-          sm:w-full"
+        className="w-screen p-3 transition-colors duration-200 sm:w-full"
         style={{
-          top: "var(--menu-header-offset, 0px)",
-          backgroundColor: isSticky ? "rgba(15, 15, 15, 0.86)" : "transparent"
+          backgroundColor: isSticky
+            ? "var(--menu-header-background-color, rgb(255, 255, 255))"
+            : "transparent"
         }}
       >
         {visibleEntries.length ? (
@@ -374,8 +393,10 @@ export default function NavigatorBlock() {
             <Button
               variant="ghost"
               size="icon-sm"
-              className="shrink-0 text-white hover:bg-white/10 hover:text-white
-                md:hidden"
+              className="shrink-0 hover:bg-neutral-500/15 md:hidden"
+              style={{
+                color: "var(--menu-header-text-color, rgb(15, 15, 15))"
+              }}
               onClick={() => setIsDrawerOpen(true)}
               aria-label={t("navigator.openMenuAria")}
             >

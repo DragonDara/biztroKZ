@@ -115,6 +115,7 @@ export default function NavigatorBlock() {
   const [isOverflowing, setIsOverflowing] = useState(false)
   const [isDrawerOpen, setIsDrawerOpen] = useState(false)
   const observer = useRef<IntersectionObserver | null>(null)
+  const navigationRootRef = useRef<HTMLDivElement | null>(null)
   const navRef = useRef<HTMLElement | null>(null)
   const categoryListRef = useRef<HTMLUListElement | null>(null)
   const scrollContainerRef = useRef<HTMLElement | null>(null)
@@ -161,7 +162,10 @@ export default function NavigatorBlock() {
       const target = ownerDocument.getElementById(id)
       if (!target) return
 
-      const navHeight = navRef.current?.offsetHeight ?? 0
+      const navigationHeight =
+        navigationRootRef.current?.offsetHeight ??
+        navRef.current?.offsetHeight ??
+        0
       const headerOffset = getHeaderOffset(ownerDocument)
       const targetRect = target.getBoundingClientRect()
       const scrollRoot = scrollContainerRef.current
@@ -171,13 +175,13 @@ export default function NavigatorBlock() {
         const absoluteTop =
           scrollRoot.scrollTop + targetRect.top - containerRect.top
         scrollRoot.scrollTo({
-          top: Math.max(0, absoluteTop - navHeight - headerOffset - 8),
+          top: Math.max(0, absoluteTop - navigationHeight - headerOffset - 8),
           behavior: "smooth"
         })
       } else {
         const absoluteTop = ownerWindow.scrollY + targetRect.top
         ownerWindow.scrollTo({
-          top: Math.max(0, absoluteTop - navHeight - headerOffset - 8),
+          top: Math.max(0, absoluteTop - navigationHeight - headerOffset - 8),
           behavior: "smooth"
         })
       }
@@ -284,6 +288,7 @@ export default function NavigatorBlock() {
   return (
     <div
       ref={ref => {
+        navigationRootRef.current = ref
         if (ref) connect(ref)
       }}
       data-menu-navigation-root="true"

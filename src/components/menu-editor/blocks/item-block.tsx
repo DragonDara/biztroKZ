@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useEditor, useNode } from "@craftjs/core"
 import type { RgbaColor } from "@uiw/react-color"
+import { ImageIcon } from "lucide-react"
 import Image from "next/image"
 
 import { Allergens } from "@/components/menu-editor/blocks/item-allergens"
@@ -159,17 +160,27 @@ export function ItemView({
               hasVariants ? "flex-col-reverse" : "flex-row items-start"
             )}
           >
-            {item.image && showImage && (
-              <Image
-                src={item.image}
-                width={128}
-                height={128}
-                alt={displayName}
-                className="h-32 w-32 shrink-0 rounded-sm object-cover"
-                loading="eager"
-                unoptimized
-              ></Image>
-            )}
+            {showImage ? (
+              item.image ? (
+                <Image
+                  src={item.image}
+                  width={128}
+                  height={128}
+                  alt={displayName}
+                  className="h-32 w-32 shrink-0 rounded-sm object-cover"
+                  loading="eager"
+                  unoptimized
+                />
+              ) : (
+                <span
+                  className="flex h-32 w-32 shrink-0 items-center justify-center
+                    rounded-sm bg-black/25 text-white/55"
+                  aria-hidden="true"
+                >
+                  <ImageIcon className="size-6" />
+                </span>
+              )
+            ) : null}
             <div>
               <FontWrapper fontFamily={itemFontFamily}>
                 <div className="flex flex-row gap-3">

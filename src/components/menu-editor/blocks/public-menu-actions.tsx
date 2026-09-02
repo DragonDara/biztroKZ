@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Menu } from "bloom-menu"
 import Fuse, { type IFuseOptions } from "fuse.js"
-import { Globe, Search } from "lucide-react"
+import { Globe, ImageIcon, Search } from "lucide-react"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
 
@@ -329,14 +329,24 @@ function SearchResultRow({
         className="size-12 rounded-lg inset-ring inset-ring-black/10
           dark:inset-ring-white/10"
       >
-        <Image
-          src={item.image ?? "/bg/leaf.svg"}
-          alt={item.name}
-          width={48}
-          height={48}
-          className="size-full object-cover"
-          unoptimized
-        />
+        {item.image ? (
+          <Image
+            src={item.image}
+            alt={item.name}
+            width={48}
+            height={48}
+            className="size-full object-cover"
+            unoptimized
+          />
+        ) : (
+          <span
+            className="flex size-full items-center justify-center bg-black/25
+              text-white/55"
+            aria-hidden="true"
+          >
+            <ImageIcon className="size-5" />
+          </span>
+        )}
       </ItemMedia>
       <ItemContent>
         <ItemTitle>{item.name}</ItemTitle>

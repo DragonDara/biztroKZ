@@ -1,3 +1,4 @@
+import { ImageIcon } from "lucide-react"
 import Image from "next/image"
 
 import { Allergens } from "@/components/menu-editor/blocks/item-allergens"
@@ -77,12 +78,12 @@ export function ItemDetail({
         />
       ) : (
         <div
-          className="h-48 w-full rounded-lg bg-gray-50 bg-cover bg-center
-            shadow-sm dark:bg-gray-800"
-          style={{
-            backgroundImage: 'url("/bg/leaf.svg")'
-          }}
-        ></div>
+          className="flex h-48 w-full items-center justify-center rounded-lg
+            bg-black/25 text-white/55 shadow-sm"
+          aria-hidden="true"
+        >
+          <ImageIcon className="size-10" />
+        </div>
       )}
       <FontWrapper fontFamily={itemFontFamily}>
         <h2

@@ -5,7 +5,7 @@ import type { MenuItemGetPayload } from "@/generated/prisma-client/models/MenuIt
 import { useEditor, useNode } from "@craftjs/core"
 import type { RgbaColor } from "@uiw/react-color"
 import Autoplay from "embla-carousel-autoplay"
-import { CircleAlert } from "lucide-react"
+import { CircleAlert, ImageIcon } from "lucide-react"
 import { useTranslations } from "next-intl"
 
 import FeaturedSettings from "@/components/menu-editor/blocks/featured-settings"
@@ -40,7 +40,6 @@ export type FeaturedBlockProps = {
 
 export default function FeaturedBlock({
   items,
-  backgroundColor,
   itemFontFamily = "Inter",
   itemFontWeight = "500",
   descriptionFontFamily = "Inter",
@@ -131,12 +130,12 @@ export default function FeaturedBlock({
                         />
                       ) : (
                         <div
-                          className="absolute inset-0 bg-cover bg-center"
-                          style={{
-                            backgroundImage: "url('/bg/leaf.svg')",
-                            backgroundColor: `rgba(${Object.values(backgroundColor ?? { r: 0, g: 0, b: 0, a: 1 })}`
-                          }}
-                        />
+                          className="absolute inset-0 flex items-center
+                            justify-center bg-black/25 text-white/55"
+                          aria-hidden="true"
+                        >
+                          <ImageIcon className="size-8" />
+                        </div>
                       )}
                       <div
                         className="relative z-50 bg-linear-to-t from-black/80

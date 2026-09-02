@@ -38,6 +38,7 @@ export type UILabelKey =
   | "no_results"
   | "no_results_description"
   | "from"
+  | "ask_waiter_for_price"
   | "link_copied"
   | "link_copy_error"
   | "view_hours"
@@ -76,6 +77,7 @@ const labels: Record<string, UILabels> = {
     no_results_description:
       "Intenta con otro nombre o una palabra de la descripción.",
     from: "Desde",
+    ask_waiter_for_price: "Consulta el precio con el mesero",
     link_copied: "Enlace copiado",
     link_copy_error: "No se pudo copiar el enlace",
     view_hours: "Ver horario",
@@ -110,6 +112,7 @@ const labels: Record<string, UILabels> = {
     no_results: "No results",
     no_results_description: "Try another name or a word from the description.",
     from: "From",
+    ask_waiter_for_price: "Ask your waiter for the price",
     link_copied: "Link copied",
     link_copy_error: "Could not copy link",
     view_hours: "View hours",
@@ -144,6 +147,7 @@ const labels: Record<string, UILabels> = {
     no_results: "Aucun résultat",
     no_results_description: "Essayez un autre nom ou un mot de la description.",
     from: "À partir de",
+    ask_waiter_for_price: "Demandez le prix au serveur",
     link_copied: "Lien copié",
     link_copy_error: "Impossible de copier le lien",
     view_hours: "Voir les horaires",
@@ -179,6 +183,7 @@ const labels: Record<string, UILabels> = {
     no_results_description:
       "Versuche einen anderen Namen oder ein Wort aus der Beschreibung.",
     from: "Ab",
+    ask_waiter_for_price: "Fragen Sie den Service nach dem Preis",
     link_copied: "Link kopiert",
     link_copy_error: "Link konnte nicht kopiert werden",
     view_hours: "Öffnungszeiten anzeigen",
@@ -213,6 +218,7 @@ const labels: Record<string, UILabels> = {
     no_results: "Sem resultados",
     no_results_description: "Tente outro nome ou uma palavra da descrição.",
     from: "A partir de",
+    ask_waiter_for_price: "Consulte o garçom sobre o preço",
     link_copied: "Link copiado",
     link_copy_error: "Não foi possível copiar o link",
     view_hours: "Ver horário",
@@ -248,6 +254,7 @@ const labels: Record<string, UILabels> = {
     no_results_description:
       "Prova un altro nome o una parola dalla descrizione.",
     from: "Da",
+    ask_waiter_for_price: "Chiedi il prezzo al cameriere",
     link_copied: "Link copiato",
     link_copy_error: "Impossibile copiare il link",
     view_hours: "Vedi orari",
@@ -282,6 +289,7 @@ const labels: Record<string, UILabels> = {
     no_results: "結果なし",
     no_results_description: "別の名前か説明の単語で試してください。",
     from: "から",
+    ask_waiter_for_price: "価格はスタッフにお尋ねください",
     link_copied: "リンクをコピーしました",
     link_copy_error: "リンクをコピーできませんでした",
     view_hours: "営業時間を見る",
@@ -316,6 +324,7 @@ const labels: Record<string, UILabels> = {
     no_results: "无结果",
     no_results_description: "请尝试其他名称或描述中的词语。",
     from: "起价",
+    ask_waiter_for_price: "请向服务员询价",
     link_copied: "链接已复制",
     link_copy_error: "无法复制链接",
     view_hours: "查看营业时间",
@@ -350,6 +359,7 @@ const labels: Record<string, UILabels> = {
     no_results: "Нет результатов",
     no_results_description: "Попробуйте другое название или слово из описания.",
     from: "От",
+    ask_waiter_for_price: "Уточните цену у официанта",
     link_copied: "Ссылка скопирована",
     link_copy_error: "Не удалось скопировать ссылку",
     view_hours: "Показать часы работы",

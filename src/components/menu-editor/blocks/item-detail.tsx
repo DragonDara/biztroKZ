@@ -1,3 +1,4 @@
+import { ImageIcon } from "lucide-react"
 import Image from "next/image"
 
 import { Allergens } from "@/components/menu-editor/blocks/item-allergens"
@@ -77,12 +78,12 @@ export function ItemDetail({
         />
       ) : (
         <div
-          className="h-48 w-full rounded-lg bg-gray-50 bg-cover bg-center
-            shadow-sm dark:bg-gray-800"
-          style={{
-            backgroundImage: 'url("/bg/leaf.svg")'
-          }}
-        ></div>
+          className="flex h-48 w-full items-center justify-center rounded-lg
+            bg-black/25 text-white/55 shadow-sm"
+          aria-hidden="true"
+        >
+          <ImageIcon className="size-10" />
+        </div>
       )}
       <FontWrapper fontFamily={itemFontFamily}>
         <h2
@@ -103,19 +104,28 @@ export function ItemDetail({
           {item.variants.map(variant => (
             <div key={variant.id} className="flex justify-between">
               {item.variants.length > 1 && <span>{variant.name}</span>}
-              <span
-                style={{
-                  fontWeight: priceFontWeight
-                }}
-                className={
-                  item.variants.length === 1 ? "w-full text-left text-lg" : ""
-                }
-              >
-                {formatPrice(
-                  variant.price ?? 0,
-                  resolveCurrency(item.currency ?? undefined)
-                )}
-              </span>
+              {typeof variant.price === "number" ? (
+                <span
+                  style={{
+                    fontWeight: variant.price === 0 ? "400" : priceFontWeight,
+                    fontStyle: variant.price === 0 ? "italic" : undefined
+                  }}
+                  className={
+                    variant.price === 0
+                      ? "text-muted-foreground text-sm"
+                      : item.variants.length === 1
+                        ? "w-full text-left text-lg"
+                        : ""
+                  }
+                >
+                  {variant.price === 0
+                    ? t("ask_waiter_for_price")
+                    : formatPrice(
+                        variant.price,
+                        resolveCurrency(item.currency ?? undefined)
+                      )}
+                </span>
+              ) : null}
             </div>
           ))}
         </div>

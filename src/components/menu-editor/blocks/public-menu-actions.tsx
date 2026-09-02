@@ -3,7 +3,7 @@
 import * as React from "react"
 import { Menu } from "bloom-menu"
 import Fuse, { type IFuseOptions } from "fuse.js"
-import { Globe, Search } from "lucide-react"
+import { Globe, ImageIcon, Search } from "lucide-react"
 import { useTranslations } from "next-intl"
 import Image from "next/image"
 
@@ -300,14 +300,18 @@ function SearchResultRow({
   onSelect: () => void
 }) {
   const firstVariant = item.variants[0]
-  const pricePreview = firstVariant
-    ? formatPrice(
-        firstVariant.price,
-        resolveCurrency(item.currency ?? undefined)
-      )
-    : null
   const translation = useTranslation()
   const t = translation?.t ?? getUILabels(null)
+  const isPriceUnknown = firstVariant?.price === 0
+  const pricePreview =
+    typeof firstVariant?.price === "number"
+      ? isPriceUnknown
+        ? t("ask_waiter_for_price")
+        : formatPrice(
+            firstVariant.price,
+            resolveCurrency(item.currency ?? undefined)
+          )
+      : null
 
   return (
     <Item
@@ -328,14 +332,24 @@ function SearchResultRow({
         className="size-12 rounded-lg inset-ring inset-ring-black/10
           dark:inset-ring-white/10"
       >
-        <Image
-          src={item.image ?? "/bg/leaf.svg"}
-          alt={item.name}
-          width={48}
-          height={48}
-          className="size-full object-cover"
-          unoptimized
-        />
+        {item.image ? (
+          <Image
+            src={item.image}
+            alt={item.name}
+            width={48}
+            height={48}
+            className="size-full object-cover"
+            unoptimized
+          />
+        ) : (
+          <span
+            className="flex size-full items-center justify-center bg-black/25
+              text-white/55"
+            aria-hidden="true"
+          >
+            <ImageIcon className="size-5" />
+          </span>
+        )}
       </ItemMedia>
       <ItemContent>
         <ItemTitle>{item.name}</ItemTitle>
@@ -344,13 +358,20 @@ function SearchResultRow({
             {item.description}
           </ItemDescription>
         )}
-        {pricePreview && (
-          <p className="text-muted-foreground text-xs">
-            {item.variants.length > 1
-              ? `${t("from")} ${pricePreview}`
-              : pricePreview}
+        {pricePreview ? (
+          <p
+            className={cn(
+              "text-muted-foreground text-xs",
+              isPriceUnknown ? "font-normal italic" : null
+            )}
+          >
+            {isPriceUnknown
+              ? pricePreview
+              : item.variants.length > 1
+                ? `${t("from")} ${pricePreview}`
+                : pricePreview}
           </p>
-        )}
+        ) : null}
       </ItemContent>
     </Item>
   )

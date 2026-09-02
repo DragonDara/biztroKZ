@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react"
 import { useEditor, useNode } from "@craftjs/core"
 import type { RgbaColor } from "@uiw/react-color"
+import { ImageIcon } from "lucide-react"
 import Image from "next/image"
 
 import { Allergens } from "@/components/menu-editor/blocks/item-allergens"
@@ -17,6 +18,7 @@ import {
   normalizeMenuLabelCasing
 } from "@/lib/menu-text"
 import type { MenuTextTransform } from "@/lib/types/theme"
+import { getUILabels } from "@/lib/ui-labels"
 import { cn } from "@/lib/utils"
 
 export type ItemBlockProps = {
@@ -124,6 +126,7 @@ export function ItemView({
   const [isDetailOpen, setIsDetailOpen] = useState(false)
   const hasVariants = item.variants.length > 1
   const translation = useTranslation()
+  const t = translation?.t ?? getUILabels(null)
   const itemTranslation = translation?.getItemTranslation(item.id)
 
   const displayName = normalizeMenuLabelCasing(
@@ -159,17 +162,27 @@ export function ItemView({
               hasVariants ? "flex-col-reverse" : "flex-row items-start"
             )}
           >
-            {item.image && showImage && (
-              <Image
-                src={item.image}
-                width={128}
-                height={128}
-                alt={displayName}
-                className="h-32 w-32 shrink-0 rounded-sm object-cover"
-                loading="eager"
-                unoptimized
-              ></Image>
-            )}
+            {showImage ? (
+              item.image ? (
+                <Image
+                  src={item.image}
+                  width={128}
+                  height={128}
+                  alt={displayName}
+                  className="h-32 w-32 shrink-0 rounded-sm object-cover"
+                  loading="eager"
+                  unoptimized
+                />
+              ) : (
+                <span
+                  className="flex h-32 w-32 shrink-0 items-center justify-center
+                    rounded-sm bg-black/25 text-white/55"
+                  aria-hidden="true"
+                >
+                  <ImageIcon className="size-6" />
+                </span>
+              )
+            ) : null}
             <div>
               <FontWrapper fontFamily={itemFontFamily}>
                 <div className="flex flex-row gap-3">
@@ -231,50 +244,85 @@ export function ItemView({
                               {displayVariantName}
                             </span>
                           </FontWrapper>
-                          <FontWrapper fontFamily={priceFontFamily}>
-                            <span
-                              style={{
-                                fontFamily: priceFontFamily,
-                                fontSize: `${priceFontSize}px`,
-                                color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
-                                fontWeight: priceFontWeight
-                              }}
-                              className="text-nowrap"
-                            >
-                              {formatPrice(
-                                variant.price,
-                                resolveCurrency(
-                                  (item as unknown as { currency?: string })
-                                    .currency
-                                )
-                              )}
-                            </span>
-                          </FontWrapper>
+                          {typeof variant.price === "number" ? (
+                            <FontWrapper fontFamily={priceFontFamily}>
+                              <span
+                                style={{
+                                  fontFamily: priceFontFamily,
+                                  fontSize:
+                                    variant.price === 0
+                                      ? undefined
+                                      : `${priceFontSize}px`,
+                                  color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
+                                  fontWeight:
+                                    variant.price === 0
+                                      ? "400"
+                                      : priceFontWeight,
+                                  fontStyle:
+                                    variant.price === 0 ? "italic" : undefined
+                                }}
+                                className={cn(
+                                  variant.price === 0
+                                    ? "text-xs leading-tight text-pretty"
+                                    : "text-nowrap"
+                                )}
+                              >
+                                {variant.price === 0
+                                  ? t("ask_waiter_for_price")
+                                  : formatPrice(
+                                      variant.price,
+                                      resolveCurrency(
+                                        (
+                                          item as unknown as {
+                                            currency?: string
+                                          }
+                                        ).currency
+                                      )
+                                    )}
+                              </span>
+                            </FontWrapper>
+                          ) : null}
                         </div>
                       )
                     })}
                   </div>
-                ) : (
+                ) : typeof item.variants[0]?.price === "number" ? (
                   <FontWrapper fontFamily={priceFontFamily}>
                     <span
                       style={{
                         fontFamily: priceFontFamily,
-                        fontSize: `${priceFontSize}px`,
+                        fontSize:
+                          item.variants[0].price === 0
+                            ? undefined
+                            : `${priceFontSize}px`,
                         color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
-                        fontWeight: priceFontWeight
+                        fontWeight:
+                          item.variants[0].price === 0
+                            ? "400"
+                            : priceFontWeight,
+                        fontStyle:
+                          item.variants[0].price === 0 ? "italic" : undefined
                       }}
-                      className="text-nowrap"
+                      className={cn(
+                        item.variants[0].price === 0
+                          ? `max-w-40 text-right text-xs leading-tight
+                            text-pretty`
+                          : "text-nowrap"
+                      )}
                     >
                       {/* If it has decimal values, show them in the price as well with 2 decimal places */}
-                      {formatPrice(
-                        (item.variants[0]?.price ?? 0) as number,
-                        resolveCurrency(
-                          (item as unknown as { currency?: string }).currency
-                        )
-                      )}
+                      {item.variants[0].price === 0
+                        ? t("ask_waiter_for_price")
+                        : formatPrice(
+                            item.variants[0].price,
+                            resolveCurrency(
+                              (item as unknown as { currency?: string })
+                                .currency
+                            )
+                          )}
                     </span>
                   </FontWrapper>
-                )}
+                ) : null}
               </FontWrapper>
             </div>
           </div>

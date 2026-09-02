@@ -300,15 +300,18 @@ function SearchResultRow({
   onSelect: () => void
 }) {
   const firstVariant = item.variants[0]
-  const pricePreview =
-    typeof firstVariant?.price === "number" && firstVariant.price !== 0
-      ? formatPrice(
-          firstVariant.price,
-          resolveCurrency(item.currency ?? undefined)
-        )
-      : null
   const translation = useTranslation()
   const t = translation?.t ?? getUILabels(null)
+  const isPriceUnknown = firstVariant?.price === 0
+  const pricePreview =
+    typeof firstVariant?.price === "number"
+      ? isPriceUnknown
+        ? t("ask_waiter_for_price")
+        : formatPrice(
+            firstVariant.price,
+            resolveCurrency(item.currency ?? undefined)
+          )
+      : null
 
   return (
     <Item
@@ -355,13 +358,20 @@ function SearchResultRow({
             {item.description}
           </ItemDescription>
         )}
-        {pricePreview && (
-          <p className="text-muted-foreground text-xs">
-            {item.variants.length > 1
-              ? `${t("from")} ${pricePreview}`
-              : pricePreview}
+        {pricePreview ? (
+          <p
+            className={cn(
+              "text-muted-foreground text-xs",
+              isPriceUnknown ? "font-normal italic" : null
+            )}
+          >
+            {isPriceUnknown
+              ? pricePreview
+              : item.variants.length > 1
+                ? `${t("from")} ${pricePreview}`
+                : pricePreview}
           </p>
-        )}
+        ) : null}
       </ItemContent>
     </Item>
   )

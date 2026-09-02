@@ -10,6 +10,7 @@ import {
   getActiveOrganization,
   isWaitlistEnabled
 } from "@/server/actions/user/queries"
+import { organizationRoles } from "@/lib/auth-permissions"
 import prisma from "@/lib/prisma"
 import { getBaseUrl, sendOrganizationInvitation } from "@/lib/utils"
 
@@ -192,6 +193,7 @@ export const auth = betterAuth({
   plugins: [
     nextCookies(),
     organization({
+      roles: organizationRoles,
       schema: {
         organization: {
           // Expose selected Prisma Organization scalar fields to better-auth.

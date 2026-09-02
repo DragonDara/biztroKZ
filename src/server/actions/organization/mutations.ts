@@ -6,7 +6,6 @@ import { updateTag } from "next/cache"
 import { headers } from "next/headers"
 import { z } from "zod/v4"
 
-import { getOrganizationBySlug } from "@/server/actions/organization/queries"
 import { auth } from "@/lib/auth"
 import prisma from "@/lib/prisma"
 import { deleteOrganizationAssetsFromR2 } from "@/lib/r2"
@@ -263,33 +262,15 @@ export const updateOrg = authActionClient
           }
         }
       }
-      // Verify if the slug is already taken using Better Auth server API
+      // updateOrganization performs the final atomic uniqueness check.
       if (slug) {
-        let existingSlug: { status?: boolean } | null = null
-        try {
-          existingSlug = await auth.api.checkOrganizationSlug({
-            body: { slug },
-            headers: await headers()
-          })
-        } catch (err) {
-          // If the external API throws (for example, when slug is taken),
-          // don't return early — treat as 'not available' and verify ownership below.
-          console.warn("checkOrganizationSlug failed:", err)
-          Sentry.captureException(err, {
-            tags: { section: "organization-mutations", operation: "checkSlug" },
-            extra: { slug }
-          })
-          existingSlug = null
-        }
+        const organizationWithSlug = await prisma.organization.findUnique({
+          where: { slug },
+          select: { id: true }
+        })
 
-        // checkOrganizationSlug returns status: true when available
-        if (!existingSlug?.status) {
-          // If slug appears taken or check failed, verify it's not taken by this same org
-          const maybeOrg = await getOrganizationBySlug(slug)
-
-          if (maybeOrg && maybeOrg.id !== id) {
-            throw new Error(t("subdomainInUse"))
-          }
+        if (organizationWithSlug && organizationWithSlug.id !== id) {
+          throw new Error(t("subdomainInUse"))
         }
       }
 
@@ -330,7 +311,9 @@ export const updateOrg = authActionClient
       if (typeof error === "string") {
         message = error
       } else if (error instanceof Error) {
-        message = error.message
+        message = /organization slug already taken/i.test(error.message)
+          ? t("subdomainInUse")
+          : error.message
       }
       return {
         failure: {

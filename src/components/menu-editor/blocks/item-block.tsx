@@ -231,30 +231,34 @@ export function ItemView({
                               {displayVariantName}
                             </span>
                           </FontWrapper>
-                          <FontWrapper fontFamily={priceFontFamily}>
-                            <span
-                              style={{
-                                fontFamily: priceFontFamily,
-                                fontSize: `${priceFontSize}px`,
-                                color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
-                                fontWeight: priceFontWeight
-                              }}
-                              className="text-nowrap"
-                            >
-                              {formatPrice(
-                                variant.price,
-                                resolveCurrency(
-                                  (item as unknown as { currency?: string })
-                                    .currency
-                                )
-                              )}
-                            </span>
-                          </FontWrapper>
+                          {typeof variant.price === "number" &&
+                          variant.price !== 0 ? (
+                            <FontWrapper fontFamily={priceFontFamily}>
+                              <span
+                                style={{
+                                  fontFamily: priceFontFamily,
+                                  fontSize: `${priceFontSize}px`,
+                                  color: `rgba(${Object.values(priceColor ?? { r: 0, g: 0, b: 0, a: 1 })})`,
+                                  fontWeight: priceFontWeight
+                                }}
+                                className="text-nowrap"
+                              >
+                                {formatPrice(
+                                  variant.price,
+                                  resolveCurrency(
+                                    (item as unknown as { currency?: string })
+                                      .currency
+                                  )
+                                )}
+                              </span>
+                            </FontWrapper>
+                          ) : null}
                         </div>
                       )
                     })}
                   </div>
-                ) : (
+                ) : typeof item.variants[0]?.price === "number" &&
+                  item.variants[0].price !== 0 ? (
                   <FontWrapper fontFamily={priceFontFamily}>
                     <span
                       style={{
@@ -267,14 +271,14 @@ export function ItemView({
                     >
                       {/* If it has decimal values, show them in the price as well with 2 decimal places */}
                       {formatPrice(
-                        (item.variants[0]?.price ?? 0) as number,
+                        item.variants[0].price,
                         resolveCurrency(
                           (item as unknown as { currency?: string }).currency
                         )
                       )}
                     </span>
                   </FontWrapper>
-                )}
+                ) : null}
               </FontWrapper>
             </div>
           </div>

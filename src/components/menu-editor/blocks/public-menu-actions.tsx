@@ -300,12 +300,13 @@ function SearchResultRow({
   onSelect: () => void
 }) {
   const firstVariant = item.variants[0]
-  const pricePreview = firstVariant
-    ? formatPrice(
-        firstVariant.price,
-        resolveCurrency(item.currency ?? undefined)
-      )
-    : null
+  const pricePreview =
+    typeof firstVariant?.price === "number" && firstVariant.price !== 0
+      ? formatPrice(
+          firstVariant.price,
+          resolveCurrency(item.currency ?? undefined)
+        )
+      : null
   const translation = useTranslation()
   const t = translation?.t ?? getUILabels(null)
 

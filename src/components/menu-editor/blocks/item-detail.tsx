@@ -103,19 +103,21 @@ export function ItemDetail({
           {item.variants.map(variant => (
             <div key={variant.id} className="flex justify-between">
               {item.variants.length > 1 && <span>{variant.name}</span>}
-              <span
-                style={{
-                  fontWeight: priceFontWeight
-                }}
-                className={
-                  item.variants.length === 1 ? "w-full text-left text-lg" : ""
-                }
-              >
-                {formatPrice(
-                  variant.price ?? 0,
-                  resolveCurrency(item.currency ?? undefined)
-                )}
-              </span>
+              {typeof variant.price === "number" && variant.price !== 0 ? (
+                <span
+                  style={{
+                    fontWeight: priceFontWeight
+                  }}
+                  className={
+                    item.variants.length === 1 ? "w-full text-left text-lg" : ""
+                  }
+                >
+                  {formatPrice(
+                    variant.price,
+                    resolveCurrency(item.currency ?? undefined)
+                  )}
+                </span>
+              ) : null}
             </div>
           ))}
         </div>

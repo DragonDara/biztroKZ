@@ -24,6 +24,9 @@ export function getInitials(name: string | undefined | null) {
 }
 
 export const getBaseUrl = (): string => {
+  const rootDomain = process.env.NEXT_PUBLIC_ROOT_DOMAIN
+  if (rootDomain && /^(localhost|127\.0\.0\.1)(:\d+)?$/.test(rootDomain))
+    return `http://${rootDomain}`
   if (process.env.NODE_ENV === "development") return "http://localhost:3000"
   if (
     process.env.NODE_ENV === "production" &&

@@ -19,18 +19,37 @@ const RESERVED_SUBDOMAINS = new Set([
   "es"
 ])
 
-function getSubdomainFromHost(hostname: string) {
-  if (
-    hostname === process.env.NEXT_PUBLIC_ROOT_DOMAIN ||
-    hostname === "localhost"
+function normalizeHostname(host: string) {
+  const firstHost = host.split(",", 1)[0]?.trim().toLowerCase()
+  if (!firstHost) return ""
+
+  try {
+    return new URL(
+      firstHost.includes("://") ? firstHost : `http://${firstHost}`
+    ).hostname
+  } catch {
+    return firstHost.split(":", 1)[0] ?? ""
+  }
+}
+
+function getRequestHostname(request: NextRequest) {
+  return normalizeHostname(
+    request.headers.get("x-forwarded-host") ??
+      request.headers.get("host") ??
+      request.nextUrl.hostname
   )
+}
+
+function getSubdomainFromHost(hostname: string) {
+  const rootDomain = normalizeHostname(
+    process.env.NEXT_PUBLIC_ROOT_DOMAIN ?? ""
+  )
+
+  if (!rootDomain || hostname === rootDomain || hostname === "localhost")
     return null
 
-  if (hostname.endsWith(`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`)) {
-    const subdomain = hostname.slice(
-      0,
-      -`.${process.env.NEXT_PUBLIC_ROOT_DOMAIN}`.length
-    )
+  if (hostname.endsWith(`.${rootDomain}`)) {
+    const subdomain = hostname.slice(0, -`.${rootDomain}`.length)
     return RESERVED_SUBDOMAINS.has(subdomain) ? null : subdomain
   }
 
@@ -84,7 +103,7 @@ function tryPathBasedTenantRewrite(request: NextRequest) {
 
 export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
-  const subdomain = getSubdomainFromHost(request.nextUrl.hostname)
+  const subdomain = getSubdomainFromHost(getRequestHostname(request))
 
   if (subdomain) {
     if (pathname.startsWith("/_next") || pathname.startsWith("/sites/")) {

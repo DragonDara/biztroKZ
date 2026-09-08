@@ -1,0 +1,53 @@
+name: biztrokz-local
+
+services:
+  migrate:
+    image: biztrokz-migrate:local
+    build:
+      context: .
+      target: migrate
+    environment:
+      LOCAL_DATABASE_URL: file:/data/local.db
+    volumes:
+      - database:/data
+    restart: "no"
+
+  app:
+    image: biztrokz:local
+    build:
+      context: .
+      target: runner
+      args:
+        NEXT_PUBLIC_ROOT_DOMAIN: localhost:3000
+    env_file:
+      - .env.docker.local
+    environment:
+      NODE_ENV: production
+      TURSO_DATABASE_URL: file:/data/local.db
+      TURSO_AUTH_TOKEN: local
+      BETTER_AUTH_URL: http://localhost:3000
+      NEXT_PUBLIC_ROOT_DOMAIN: localhost:3000
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - database:/data
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+    init: true
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+        ]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+
+volumes:
+  database:

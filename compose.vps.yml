@@ -1,0 +1,59 @@
+name: biztrokz-vps
+
+services:
+  app:
+    image: biztrokz:production
+
+    build:
+      context: .
+      target: runner
+      args:
+        NEXT_PUBLIC_ROOT_DOMAIN: qrmenu.bron.cafe
+
+    env_file:
+      - .env.vps
+
+    environment:
+      NODE_ENV: production
+      BETTER_AUTH_URL: https://qrmenu.bron.cafe
+      NEXT_PUBLIC_ROOT_DOMAIN: qrmenu.bron.cafe
+
+    expose:
+      - "3000"
+
+    networks:
+      - traefik-public
+
+    init: true
+    restart: unless-stopped
+
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://127.0.0.1:3000/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+        ]
+      interval: 30s
+      timeout: 10s
+      start_period: 30s
+      retries: 3
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-public"
+
+      - "traefik.http.routers.biztrokz.entrypoints=websecure"
+      - 'traefik.http.routers.biztrokz.rule=Host(`qrmenu.bron.cafe`) || HostRegexp(`[a-z0-9-]+\.qrmenu\.bron\.cafe`)'
+
+      - "traefik.http.routers.biztrokz.tls=true"
+      - "traefik.http.routers.biztrokz.tls.certresolver=cloudflare-resolver"
+      - "traefik.http.routers.biztrokz.tls.domains[0].main=qrmenu.bron.cafe"
+      - "traefik.http.routers.biztrokz.tls.domains[0].sans=*.qrmenu.bron.cafe"
+
+      - "traefik.http.services.biztrokz.loadbalancer.server.port=3000"
+
+networks:
+  traefik-public:
+    external: true

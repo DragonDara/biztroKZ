@@ -354,6 +354,41 @@ const labels: Record<string, UILabels> = {
     link_copy_error: "Не удалось скопировать ссылку",
     view_hours: "Показать часы работы",
     open_in_maps: "Открыть адрес в Google Maps"
+  },
+  kk: {
+    information: "Ақпарат",
+    address: "Мекенжай",
+    available_services: "Қолжетімді қызметтер",
+    delivery: "Жеткізу",
+    free: "Тегін",
+    takeout: "Өзімен алып кету",
+    dine_in: "Залда",
+    closed: "Жабық",
+    no_schedule: "Кесте жоқ",
+    open_until_singular: "Ашық — {time} дейін",
+    open_until_plural: "Ашық — {time} дейін",
+    monday: "Дүйсенбі",
+    tuesday: "Сейсенбі",
+    wednesday: "Сәрсенбі",
+    thursday: "Бейсенбі",
+    friday: "Жұма",
+    saturday: "Сенбі",
+    sunday: "Жексенбі",
+    menu_detail: "Мәзір мәліметі",
+    description: "Сипаттама",
+    share: "Бөлісу",
+    search: "Іздеу",
+    search_products: "Тағамдарды іздеу",
+    search_description: "Атауы немесе сипаттамасы бойынша іздеңіз.",
+    search_placeholder: "Пицца, ащы, вегетариандық...",
+    no_results: "Нәтиже жоқ",
+    no_results_description:
+      "Басқа атауды немесе сипаттамадағы сөзді қолданып көріңіз.",
+    from: "Бастап",
+    link_copied: "Сілтеме көшірілді",
+    link_copy_error: "Сілтемені көшіру мүмкін болмады",
+    view_hours: "Жұмыс уақытын көрсету",
+    open_in_maps: "Мекенжайды Google Maps-те ашу"
   }
 }
 

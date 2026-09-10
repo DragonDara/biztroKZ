@@ -1693,6 +1693,7 @@
       "noCurrentOrg": "Could not get the current organization",
       "translationProOnly": "Menu translation is a Pro-only feature",
       "translationApiKeyRequired": "Translation requires configuring an AI Gateway API key",
+      "translationCloudflareRequired": "Translation requires configuring Cloudflare Workers AI (CLOUDFLARE_ACCOUNT_ID and CLOUDFLARE_AI_API_TOKEN)",
       "noActiveProducts": "There are no active products to translate",
       "translationModelFailed": "Could not get the model translation",
       "translationIncomplete": "Could not complete the translation. Please try again.",

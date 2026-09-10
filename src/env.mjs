@@ -38,7 +38,9 @@ export const env = createEnv({
     ),
     POSTHOG_HOST: z.string().url().optional(),
     POSTHOG_API_KEY: z.string().min(1).optional(),
-    AI_GATEWAY_API_KEY: z.string().min(1).optional()
+    AI_GATEWAY_API_KEY: z.string().min(1).optional(),
+    CLOUDFLARE_ACCOUNT_ID: z.string().min(1).optional(),
+    CLOUDFLARE_AI_API_TOKEN: z.string().min(1).optional(),
   },
 
   /**
@@ -88,6 +90,8 @@ export const env = createEnv({
     POSTHOG_HOST: process.env.POSTHOG_HOST,
     POSTHOG_API_KEY: process.env.POSTHOG_API_KEY,
     AI_GATEWAY_API_KEY: process.env.AI_GATEWAY_API_KEY,
+    CLOUDFLARE_ACCOUNT_ID: process.env.CLOUDFLARE_ACCOUNT_ID,
+    CLOUDFLARE_AI_API_TOKEN: process.env.CLOUDFLARE_AI_API_TOKEN,
     NEXT_PUBLIC_ROOT_DOMAIN: process.env.NEXT_PUBLIC_ROOT_DOMAIN
   },
   /**

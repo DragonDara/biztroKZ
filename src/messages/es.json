@@ -1693,6 +1693,7 @@
       "noCurrentOrg": "No se pudo obtener la organización actual",
       "translationProOnly": "La traducción de menú es una función exclusiva del plan Pro",
       "translationApiKeyRequired": "La funcionalidad de traducción requiere configurar una clave de API del AI Gateway",
+      "translationCloudflareRequired": "La traducción requiere configurar Cloudflare Workers AI (CLOUDFLARE_ACCOUNT_ID y CLOUDFLARE_AI_API_TOKEN)",
       "noActiveProducts": "No hay productos activos para traducir",
       "translationModelFailed": "No se pudo obtener la traducción del modelo",
       "translationIncomplete": "No se pudo completar la traducción. Por favor intenta nuevamente.",

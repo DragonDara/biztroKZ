@@ -1693,6 +1693,7 @@
       "noCurrentOrg": "Не удалось получить текущую организацию",
       "translationProOnly": "Перевод меню доступен только в плане Pro",
       "translationApiKeyRequired": "Для перевода нужно настроить API-ключ AI Gateway",
+      "translationCloudflareRequired": "Для перевода нужно настроить Cloudflare Workers AI (CLOUDFLARE_ACCOUNT_ID и CLOUDFLARE_AI_API_TOKEN)",
       "noActiveProducts": "Нет активных продуктов для перевода",
       "translationModelFailed": "Не удалось получить перевод от модели",
       "translationIncomplete": "Не удалось завершить перевод. Попробуйте ещё раз.",

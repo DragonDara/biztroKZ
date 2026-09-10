@@ -1,7 +1,6 @@
 "use server"
 
 import * as Sentry from "@sentry/nextjs"
-import { gateway, generateText, Output } from "ai"
 import { getTranslations } from "next-intl/server"
 import { cacheTag, updateTag } from "next/cache"
 import { z } from "zod/v4"
@@ -14,39 +13,14 @@ import {
   SUPPORTED_LOCALES,
   type SupportedLocaleCode
 } from "@/lib/types/translations"
-import { env } from "@/env.mjs"
+import { isCloudflareWorkersAiConfigured } from "@/lib/ai/cloudflare-workers-ai"
+import {
+  translateMenuPayload,
+  translateSingleItemPayload
+} from "@/lib/ai/menu-translator"
 
 const translateMenuItemsInputSchema = z.object({
   locale: z.enum(SUPPORTED_LOCALE_CODES)
-})
-
-const categoryTranslationSchema = z.object({
-  categoryId: z.string().describe("Original category ID"),
-  name: z.string().describe("Translated category name")
-})
-
-const translationOutputSchema = z.object({
-  items: z.array(
-    z.object({
-      menuItemId: z.string().describe("Original menu item ID"),
-      name: z.string().describe("Translated item name"),
-      description: z
-        .string()
-        .optional()
-        .describe("Translated item description"),
-      variants: z.array(
-        z.object({
-          variantId: z.string().describe("Original variant ID"),
-          name: z.string().describe("Translated variant name"),
-          description: z
-            .string()
-            .optional()
-            .describe("Translated variant description")
-        })
-      )
-    })
-  ),
-  categories: z.array(categoryTranslationSchema)
 })
 
 const translateMenuItemForLocaleInputSchema = z.object({
@@ -54,29 +28,9 @@ const translateMenuItemForLocaleInputSchema = z.object({
   locale: z.enum(SUPPORTED_LOCALE_CODES)
 })
 
-const itemTranslationOutputSchema = z.object({
-  item: z
-    .object({
-      menuItemId: z.string().describe("Original menu item ID"),
-      name: z.string().describe("Translated item name"),
-      description: z.string().optional().describe("Translated item description")
-    })
-    .nullable(),
-  variants: z.array(
-    z.object({
-      variantId: z.string().describe("Original variant ID"),
-      name: z.string().describe("Translated variant name"),
-      description: z
-        .string()
-        .optional()
-        .describe("Translated variant description")
-    })
-  )
-})
-
 /**
  * Bulk-translate all active menu items for the current organization into the
- * specified locale using the AI Gateway.
+ * specified locale using Cloudflare Workers AI.
  */
 export const translateMenuItems = authMemberActionClient
   .inputSchema(translateMenuItemsInputSchema)
@@ -99,12 +53,8 @@ export const translateMenuItems = authMemberActionClient
       }
     }
 
-    if (!env.AI_GATEWAY_API_KEY) {
-      return {
-        failure: {
-          reason: t("translationApiKeyRequired")
-        }
-      }
+    if (!isCloudflareWorkersAiConfigured()) {
+      return { failure: { reason: t("translationCloudflareRequired") } }
     }
 
     // Load all active items with variants
@@ -146,39 +96,17 @@ export const translateMenuItems = authMemberActionClient
     }))
 
     try {
-      const result = await generateText({
-        model: gateway("mistral/mistral-small-latest"),
-        output: Output.object({ schema: translationOutputSchema }),
-        messages: [
-          {
-            role: "user",
-            content: `You are a professional restaurant menu translator. Translate the following menu items and categories from their original language to ${localeName} (locale: ${locale}).
-
-Rules:
-- Translate names and descriptions naturally; preserve proper nouns (brand names, specific ingredient names) when appropriate.
-- If a field is empty or undefined, leave it empty in the output.
-- Return exactly the same IDs (menuItemId, variantId, categoryId) without modification.
-- Keep translations concise and appropriate for a restaurant menu.
-
-Categories to translate:
-${JSON.stringify(categoriesPayload, null, 2)}
-
-Menu items to translate:
-${JSON.stringify(itemsPayload, null, 2)}`
-          }
-        ]
+      const output = await translateMenuPayload({
+        locale,
+        localeName,
+        items: itemsPayload,
+        categories: categoriesPayload
       })
-
-      if (!result.output) {
-        return {
-          failure: { reason: t("translationModelFailed") }
-        }
-      }
 
       // Upsert translations in the database — run all upserts in parallel
       // batches within a single transaction to reduce sequential round-trips.
       await prisma.$transaction(async tx => {
-        const itemUpserts = result.output.items.map(translatedItem =>
+        const itemUpserts = output.items.map(translatedItem =>
           tx.menuItemTranslation.upsert({
             where: {
               menuItemId_locale: {
@@ -199,7 +127,7 @@ ${JSON.stringify(itemsPayload, null, 2)}`
           })
         )
 
-        const variantUpserts = result.output.items.flatMap(translatedItem =>
+        const variantUpserts = output.items.flatMap(translatedItem =>
           translatedItem.variants.map(translatedVariant =>
             tx.variantTranslation.upsert({
               where: {
@@ -222,7 +150,7 @@ ${JSON.stringify(itemsPayload, null, 2)}`
           )
         )
 
-        const categoryUpserts = result.output.categories.map(
+        const categoryUpserts = output.categories.map(
           translatedCategory =>
             tx.categoryTranslation.upsert({
               where: {
@@ -252,12 +180,12 @@ ${JSON.stringify(itemsPayload, null, 2)}`
       return {
         success: {
           locale,
-          count: result.output.items.length
+          count: output.items.length
         }
       }
     } catch (error) {
       Sentry.captureException(error, {
-        tags: { section: "menu-translate" }
+        tags: { section: "menu-translate", provider: "cloudflare" }
       })
       return {
         failure: {
@@ -292,12 +220,8 @@ export const translateMenuItemForLocale = authMemberActionClient
       }
     }
 
-    if (!env.AI_GATEWAY_API_KEY) {
-      return {
-        failure: {
-          reason: t("translationApiKeyRequired")
-        }
-      }
+    if (!isCloudflareWorkersAiConfigured()) {
+      return { failure: { reason: t("translationCloudflareRequired") } }
     }
 
     const item = await prisma.menuItem.findFirst({
@@ -356,34 +280,12 @@ export const translateMenuItemForLocale = authMemberActionClient
     }))
 
     try {
-      const result = await generateText({
-        model: gateway("mistral/mistral-small-latest"),
-        output: Output.object({ schema: itemTranslationOutputSchema }),
-        messages: [
-          {
-            role: "user",
-            content: `You are a professional restaurant menu translator. Translate only the missing content for the following restaurant menu item into ${localeName} (locale: ${locale}).
-
-Rules:
-- Translate names and descriptions naturally; preserve proper nouns when appropriate.
-- If the item payload is null, keep item as null in the response.
-- Return exactly the same IDs (menuItemId, variantId) without modification.
-- If a field is empty or undefined, leave it empty in the output.
-
-Missing item translation to generate:
-${JSON.stringify(itemPayload, null, 2)}
-
-Missing variant translations to generate:
-${JSON.stringify(variantsPayload, null, 2)}`
-          }
-        ]
+      const output = await translateSingleItemPayload({
+        locale,
+        localeName,
+        item: itemPayload,
+        variants: variantsPayload
       })
-
-      if (!result.output) {
-        return {
-          failure: { reason: t("translationModelFailed") }
-        }
-      }
 
       let createdItemTranslation: {
         locale: SupportedLocaleCode
@@ -398,11 +300,11 @@ ${JSON.stringify(variantsPayload, null, 2)}`
       }> = []
 
       const outputVariantsById = new Map(
-        result.output.variants.map(variant => [variant.variantId, variant])
+        output.variants.map(variant => [variant.variantId, variant])
       )
 
       await prisma.$transaction(async tx => {
-        if (itemPayload && result.output.item) {
+        if (itemPayload && output.item) {
           const upserted = await tx.menuItemTranslation.upsert({
             where: {
               menuItemId_locale: {
@@ -413,15 +315,15 @@ ${JSON.stringify(variantsPayload, null, 2)}`
             create: {
               menuItemId: item.id,
               locale,
-              name: result.output.item.name,
-              description: result.output.item.description?.trim()
-                ? result.output.item.description
+              name: output.item.name,
+              description: output.item.description?.trim()
+                ? output.item.description
                 : null
             },
             update: {
-              name: result.output.item.name,
-              description: result.output.item.description?.trim()
-                ? result.output.item.description
+              name: output.item.name,
+              description: output.item.description?.trim()
+                ? output.item.description
                 : null
             }
           })

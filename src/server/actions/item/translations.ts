@@ -508,7 +508,331 @@ const deleteMenuTranslationInputSchema = z.object({
   locale: z.enum(SUPPORTED_LOCALE_CODES)
 })
 
+const menuTranslationCsvTypeSchema = z.enum(["item", "variant", "category"])
+
+const importMenuTranslationsRowSchema = z.object({
+  type: menuTranslationCsvTypeSchema,
+  id: z.string().min(1),
+  translatedName: z.string().min(1),
+  translatedDescription: z.string().optional()
+})
+
+const importMenuTranslationsInputSchema = z.object({
+  locale: z.enum(SUPPORTED_LOCALE_CODES),
+  rows: z.array(importMenuTranslationsRowSchema).min(1).max(5000)
+})
+
+export type ImportMenuTranslationsFailedRow = {
+  type: z.infer<typeof menuTranslationCsvTypeSchema>
+  id: string
+  translatedName: string
+  reason: string
+}
+
 const supportedLocaleCodeSet = new Set<string>(SUPPORTED_LOCALE_CODES)
+
+/**
+ * Export a CSV template of active catalog entities (items, variants, categories)
+ * with stable IDs and source text. Translation columns are left empty for the
+ * user to fill and re-import for a chosen locale.
+ */
+export const exportMenuTranslationsTemplate = authMemberActionClient.action(
+  async ({ ctx: { member } }) => {
+    const t = await getTranslations("errors.actions")
+    const currentOrgId = member.organizationId
+
+    if (!currentOrgId) {
+      return {
+        failure: { reason: t("noCurrentOrg") }
+      }
+    }
+
+    try {
+      const [items, categories] = await Promise.all([
+        prisma.menuItem.findMany({
+          where: { organizationId: currentOrgId, status: "ACTIVE" },
+          include: {
+            variants: {
+              orderBy: { name: "asc" }
+            }
+          },
+          orderBy: { name: "asc" }
+        }),
+        prisma.category.findMany({
+          where: { organizationId: currentOrgId },
+          orderBy: { name: "asc" }
+        })
+      ])
+
+      if (items.length === 0 && categories.length === 0) {
+        return {
+          failure: { reason: t("noActiveProducts") }
+        }
+      }
+
+      const rows: Array<{
+        type: "item" | "variant" | "category"
+        id: string
+        sourceName: string
+        sourceDescription: string
+        translatedName: string
+        translatedDescription: string
+      }> = []
+
+      for (const category of categories) {
+        rows.push({
+          type: "category",
+          id: category.id,
+          sourceName: category.name,
+          sourceDescription: "",
+          translatedName: "",
+          translatedDescription: ""
+        })
+      }
+
+      for (const item of items) {
+        rows.push({
+          type: "item",
+          id: item.id,
+          sourceName: item.name,
+          sourceDescription: item.description ?? "",
+          translatedName: "",
+          translatedDescription: ""
+        })
+
+        for (const variant of item.variants) {
+          rows.push({
+            type: "variant",
+            id: variant.id,
+            sourceName: variant.name,
+            sourceDescription: variant.description ?? "",
+            translatedName: "",
+            translatedDescription: ""
+          })
+        }
+      }
+
+      return { success: { rows } }
+    } catch (error) {
+      Sentry.captureException(error, {
+        tags: { section: "menu-translations-export" },
+        extra: { organizationId: currentOrgId }
+      })
+      return {
+        failure: { reason: t("exportTranslationsError") }
+      }
+    }
+  }
+)
+
+/**
+ * Import filled translation CSV rows for a specific locale. Rows are matched by
+ * type + id and upserted into translation tables. Invalid or foreign IDs are
+ * reported per-row without aborting the whole import.
+ */
+export const importMenuTranslationsFromCsv = authMemberActionClient
+  .inputSchema(importMenuTranslationsInputSchema)
+  .action(async ({ parsedInput: { locale, rows }, ctx: { member } }) => {
+    const t = await getTranslations("errors.actions")
+    const currentOrgId = member.organizationId
+
+    if (!currentOrgId) {
+      return {
+        failure: { reason: t("noCurrentOrg") }
+      }
+    }
+
+    const proMember = await isProMember()
+    if (!proMember) {
+      return {
+        failure: {
+          reason: t("translationProOnly")
+        }
+      }
+    }
+
+    try {
+      const [orgItems, orgCategories] = await Promise.all([
+        prisma.menuItem.findMany({
+          where: { organizationId: currentOrgId },
+          select: {
+            id: true,
+            variants: { select: { id: true } }
+          }
+        }),
+        prisma.category.findMany({
+          where: { organizationId: currentOrgId },
+          select: { id: true }
+        })
+      ])
+
+      const itemIds = new Set(orgItems.map(item => item.id))
+      const variantIds = new Set(
+        orgItems.flatMap(item => item.variants.map(variant => variant.id))
+      )
+      const categoryIds = new Set(orgCategories.map(category => category.id))
+
+      const failedRows: ImportMenuTranslationsFailedRow[] = []
+      const itemUpserts: Array<{
+        id: string
+        name: string
+        description: string | null
+      }> = []
+      const variantUpserts: Array<{
+        id: string
+        name: string
+        description: string | null
+      }> = []
+      const categoryUpserts: Array<{ id: string; name: string }> = []
+
+      for (const row of rows) {
+        const name = row.translatedName.trim()
+        if (!name) continue
+
+        const description = row.translatedDescription?.trim() || null
+
+        if (row.type === "item") {
+          if (!itemIds.has(row.id)) {
+            failedRows.push({
+              type: row.type,
+              id: row.id,
+              translatedName: name,
+              reason: t("translationImportUnknownItem")
+            })
+            continue
+          }
+          itemUpserts.push({ id: row.id, name, description })
+          continue
+        }
+
+        if (row.type === "variant") {
+          if (!variantIds.has(row.id)) {
+            failedRows.push({
+              type: row.type,
+              id: row.id,
+              translatedName: name,
+              reason: t("translationImportUnknownVariant")
+            })
+            continue
+          }
+          variantUpserts.push({ id: row.id, name, description })
+          continue
+        }
+
+        if (!categoryIds.has(row.id)) {
+          failedRows.push({
+            type: row.type,
+            id: row.id,
+            translatedName: name,
+            reason: t("translationImportUnknownCategory")
+          })
+          continue
+        }
+        categoryUpserts.push({ id: row.id, name })
+      }
+
+      if (
+        itemUpserts.length === 0 &&
+        variantUpserts.length === 0 &&
+        categoryUpserts.length === 0
+      ) {
+        return {
+          failure: {
+            reason:
+              failedRows.length > 0
+                ? t("translationImportNoValidRows")
+                : t("translationImportEmpty")
+          },
+          failedRows
+        }
+      }
+
+      await prisma.$transaction(async tx => {
+        await Promise.all([
+          ...itemUpserts.map(item =>
+            tx.menuItemTranslation.upsert({
+              where: {
+                menuItemId_locale: {
+                  menuItemId: item.id,
+                  locale
+                }
+              },
+              update: {
+                name: item.name,
+                description: item.description
+              },
+              create: {
+                menuItemId: item.id,
+                locale,
+                name: item.name,
+                description: item.description
+              }
+            })
+          ),
+          ...variantUpserts.map(variant =>
+            tx.variantTranslation.upsert({
+              where: {
+                variantId_locale: {
+                  variantId: variant.id,
+                  locale
+                }
+              },
+              update: {
+                name: variant.name,
+                description: variant.description
+              },
+              create: {
+                variantId: variant.id,
+                locale,
+                name: variant.name,
+                description: variant.description
+              }
+            })
+          ),
+          ...categoryUpserts.map(category =>
+            tx.categoryTranslation.upsert({
+              where: {
+                categoryId_locale: {
+                  categoryId: category.id,
+                  locale
+                }
+              },
+              update: { name: category.name },
+              create: {
+                categoryId: category.id,
+                locale,
+                name: category.name
+              }
+            })
+          )
+        ])
+      })
+
+      updateTag(`translations-${currentOrgId}`)
+
+      return {
+        success: {
+          locale,
+          count:
+            itemUpserts.length +
+            variantUpserts.length +
+            categoryUpserts.length,
+          itemCount: itemUpserts.length,
+          variantCount: variantUpserts.length,
+          categoryCount: categoryUpserts.length
+        },
+        failedRows
+      }
+    } catch (error) {
+      Sentry.captureException(error, {
+        tags: { section: "menu-translations-import" },
+        extra: { organizationId: currentOrgId, locale }
+      })
+      return {
+        failure: { reason: t("translationImportFailed") }
+      }
+    }
+  })
 
 /**
  * Delete all translations for a given locale for the current organization.
@@ -576,26 +900,51 @@ export async function getAvailableTranslations(organizationId: string) {
 
   cacheTag(`translations-${organizationId}`)
 
-  const rows = await prisma.menuItemTranslation.groupBy({
-    by: ["locale"],
-    where: {
-      menuItem: { organizationId }
-    },
-    _count: { locale: true }
-  })
+  const [itemRows, variantRows, categoryRows] = await Promise.all([
+    prisma.menuItemTranslation.groupBy({
+      by: ["locale"],
+      where: {
+        menuItem: { organizationId }
+      },
+      _count: { locale: true }
+    }),
+    prisma.variantTranslation.groupBy({
+      by: ["locale"],
+      where: {
+        variant: { menuItem: { organizationId } }
+      },
+      _count: { locale: true }
+    }),
+    prisma.categoryTranslation.groupBy({
+      by: ["locale"],
+      where: {
+        category: { organizationId }
+      },
+      _count: { locale: true }
+    })
+  ])
 
   const isSupportedLocaleCode = (
     locale: string
   ): locale is SupportedLocaleCode => supportedLocaleCodeSet.has(locale)
 
-  return rows
-    .filter((row): row is typeof row & { locale: SupportedLocaleCode } =>
-      isSupportedLocaleCode(row.locale)
-    )
-    .map(row => ({
-      locale: row.locale,
-      count: row._count.locale
+  const itemCountByLocale = new Map(
+    itemRows.map(row => [row.locale, row._count.locale])
+  )
+
+  const locales = new Set(
+    [...itemRows, ...variantRows, ...categoryRows]
+      .map(row => row.locale)
+      .filter(isSupportedLocaleCode)
+  )
+
+  return [...locales]
+    .map(locale => ({
+      locale,
+      // Public list and AI flows key off menu item translations.
+      count: itemCountByLocale.get(locale) ?? 0
     }))
+    .toSorted((a, b) => a.locale.localeCompare(b.locale))
 }
 
 /**

@@ -96,6 +96,13 @@ export function LanguageFlag({ locale, className }: LanguageFlagProps) {
           </defs>
         </FlagFrame>
       )
+    case "kk":
+      return (
+        <FlagFrame className={className} label="Флаг Казахстана">
+          <circle cx="12" cy="12" r="12" fill="#00AFCA" />
+          <circle cx="12" cy="12" r="4.5" fill="#FEC50C" />
+        </FlagFrame>
+      )
     case "fr":
       return (
         <FlagFrame className={className} label="Флаг Франции">

@@ -1,19 +1,22 @@
 "use client"
 
-import { useMemo, useState } from "react"
+import { useMemo, useRef, useState } from "react"
 import toast from "react-hot-toast"
 import * as Sentry from "@sentry/nextjs"
 import {
   CircleFadingArrowUp,
+  Download,
   Languages,
   Loader,
   PlusCircle,
   Sparkles,
-  Trash2
+  Trash2,
+  Upload
 } from "lucide-react"
 import { useLocale, useTranslations } from "next-intl"
-import { useOptimisticAction } from "next-safe-action/hooks"
+import { useAction, useOptimisticAction } from "next-safe-action/hooks"
 import { useRouter } from "next/navigation"
+import Papa from "papaparse"
 import { TextMorph } from "torph/react"
 
 import InfoHelper from "@/components/dashboard/info-helper"
@@ -60,8 +63,17 @@ import {
 } from "@/components/ui/select"
 import {
   deleteMenuTranslation,
+  exportMenuTranslationsTemplate,
+  importMenuTranslationsFromCsv,
   translateMenuItems
 } from "@/server/actions/item/translations"
+import {
+  downloadMenuTranslationsCsvFile,
+  normalizeMenuTranslationCsvRow,
+  toLocalizedMenuTranslationCsvRow,
+  type MenuTranslationCsvColumnLabels,
+  type MenuTranslationCsvFields
+} from "@/lib/menu-translations-csv"
 import {
   SUPPORTED_LOCALES,
   type SupportedLocaleCode
@@ -86,10 +98,14 @@ export default function TranslationsManager({
   const locale = useLocale()
   const [selectedLocale, setSelectedLocale] = useState<string>("")
   const [dialogOpen, setDialogOpen] = useState(false)
+  const [importDialogOpen, setImportDialogOpen] = useState(false)
+  const [importLocale, setImportLocale] = useState<string>("")
+  const [importErrors, setImportErrors] = useState<string[]>([])
   const [translatingLocale, setTranslatingLocale] = useState<string | null>(
     null
   )
   const [deletingLocale, setDeletingLocale] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
 
   type TranslationsState = {
@@ -99,6 +115,18 @@ export default function TranslationsManager({
   const languageNames = useMemo(
     () => new Intl.DisplayNames([locale], { type: "language" }),
     [locale]
+  )
+
+  const csvColumnLabels: MenuTranslationCsvColumnLabels = useMemo(
+    () => ({
+      type: t("csvColumns.type"),
+      id: t("csvColumns.id"),
+      sourceName: t("csvColumns.sourceName"),
+      sourceDescription: t("csvColumns.sourceDescription"),
+      translatedName: t("csvColumns.translatedName"),
+      translatedDescription: t("csvColumns.translatedDescription")
+    }),
+    [t]
   )
 
   const { guard: guardTranslation, dialog: upgradeDialog } = useProGuard(
@@ -114,6 +142,99 @@ export default function TranslationsManager({
 
     return languageNames.of(code) ?? code
   }
+
+  const {
+    execute: executeExport,
+    isPending: isExporting,
+    reset: resetExport
+  } = useAction(exportMenuTranslationsTemplate, {
+    onSuccess: response => {
+      if (response.data?.failure) {
+        toast.error(response.data.failure.reason)
+        resetExport()
+        return
+      }
+
+      const rows = response.data?.success?.rows ?? []
+      if (rows.length === 0) {
+        toast.error(t("exportEmpty"))
+        resetExport()
+        return
+      }
+
+      const csvRows = rows.map(row =>
+        toLocalizedMenuTranslationCsvRow(
+          {
+            type: row.type,
+            id: row.id,
+            sourceName: row.sourceName,
+            sourceDescription: row.sourceDescription,
+            translatedName: row.translatedName,
+            translatedDescription: row.translatedDescription
+          },
+          csvColumnLabels
+        )
+      )
+
+      downloadMenuTranslationsCsvFile(csvRows, t("exportFileName"))
+      toast.success(t("exportSuccess", { count: rows.length }))
+      resetExport()
+    },
+    onError: (error: unknown) => {
+      Sentry.captureException(error, {
+        tags: { section: "export-menu-translations" }
+      })
+      toast.error(t("exportError"))
+      resetExport()
+    }
+  })
+
+  const {
+    execute: executeImport,
+    isPending: isImporting,
+    reset: resetImport
+  } = useAction(importMenuTranslationsFromCsv, {
+    onSuccess: response => {
+      if (response.data?.failure) {
+        toast.error(response.data.failure.reason)
+        resetImport()
+        return
+      }
+
+      const failedCount = response.data?.failedRows?.length ?? 0
+      const success = response.data?.success
+      const localeName = getLocaleLabel(success?.locale ?? importLocale)
+
+      if (success) {
+        toast.success(
+          t("importSuccess", {
+            count: success.count,
+            locale: localeName
+          })
+        )
+      }
+
+      if (failedCount > 0) {
+        toast.error(t("importPartialErrors", { count: failedCount }))
+      }
+
+      resetImport()
+      router.refresh()
+      setImportDialogOpen(false)
+      setImportLocale("")
+      setImportErrors([])
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ""
+      }
+    },
+    onError: (error: unknown) => {
+      Sentry.captureException(error, {
+        tags: { section: "import-menu-translations" }
+      })
+      toast.error(t("importError"))
+      resetImport()
+    }
+  })
 
   const {
     execute: executeTranslate,
@@ -244,14 +365,128 @@ export default function TranslationsManager({
     executeTranslate({ locale: selectedLocale as SupportedLocaleCode })
   }
 
+  const handleImportFile = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (!file) return
+
+    if (!importLocale) {
+      setImportErrors([t("importValidation.selectLanguage")])
+      event.target.value = ""
+      return
+    }
+
+    setImportErrors([])
+
+    Papa.parse<Record<string, string | undefined>>(file, {
+      header: true,
+      skipEmptyLines: true,
+      encoding: "utf-8",
+      transformHeader: header =>
+        header
+          .replace(/^\uFEFF/, "")
+          .trim()
+          .toLocaleLowerCase(),
+      complete: results => {
+        if (results.data.length === 0) {
+          setImportErrors([t("importValidation.emptyFile")])
+          return
+        }
+
+        const parseErrors: string[] = []
+        const validRows: Array<{
+          type: MenuTranslationCsvFields["type"]
+          id: string
+          translatedName: string
+          translatedDescription?: string
+        }> = []
+
+        results.data.forEach((rawRow, index) => {
+          const row = normalizeMenuTranslationCsvRow(rawRow, csvColumnLabels)
+          const translatedName = row.translatedName?.trim() ?? ""
+
+          // Empty translation cells are skipped (template rows still unfilled).
+          if (!translatedName) return
+
+          if (!row.type) {
+            parseErrors.push(
+              t("importValidation.invalidType", { row: index + 1 })
+            )
+            return
+          }
+
+          if (!row.id?.trim()) {
+            parseErrors.push(
+              t("importValidation.idRequired", { row: index + 1 })
+            )
+            return
+          }
+
+          validRows.push({
+            type: row.type,
+            id: row.id.trim(),
+            translatedName,
+            translatedDescription: row.translatedDescription?.trim() || undefined
+          })
+        })
+
+        if (parseErrors.length > 0) {
+          setImportErrors(parseErrors.slice(0, 10))
+          return
+        }
+
+        if (validRows.length === 0) {
+          setImportErrors([t("importValidation.noTranslatedRows")])
+          return
+        }
+
+        executeImport({
+          locale: importLocale as SupportedLocaleCode,
+          rows: validRows
+        })
+      },
+      error: error => {
+        setImportErrors([
+          t("importValidation.csvParseError", { message: error.message })
+        ])
+      }
+    })
+  }
+
   return (
     <div className="flex flex-col gap-10">
       <PageSubtitle>
         <PageSubtitle.Icon icon={Languages} />
         <PageSubtitle.Title>{t("title")}</PageSubtitle.Title>
         <PageSubtitle.Description>{t("description")}</PageSubtitle.Description>
-        {availableToAdd.length > 0 && (
-          <PageSubtitle.Actions>
+        <PageSubtitle.Actions>
+          <Button
+            variant="outline"
+            className="gap-2"
+            disabled={isExporting || isImporting || isTranslating}
+            onClick={() => executeExport()}
+          >
+            {isExporting ? (
+              <Loader className="size-4 animate-spin" />
+            ) : (
+              <Download className="size-4" />
+            )}
+            {t("exportCsv")}
+          </Button>
+          <Button
+            variant="outline"
+            className="gap-2"
+            disabled={isExporting || isImporting || isTranslating}
+            onClick={() =>
+              guardTranslation(() => {
+                setImportErrors([])
+                setImportDialogOpen(true)
+              })
+            }
+          >
+            <Upload className="size-4" />
+            {t("importCsv")}
+          </Button>
+          {availableToAdd.length > 0 && (
             <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
               <Button
                 variant="default"
@@ -322,9 +557,93 @@ export default function TranslationsManager({
                 </DialogFooter>
               </DialogContent>
             </Dialog>
-          </PageSubtitle.Actions>
-        )}
+          )}
+        </PageSubtitle.Actions>
       </PageSubtitle>
+
+      <Dialog
+        open={importDialogOpen}
+        onOpenChange={open => {
+          setImportDialogOpen(open)
+          if (!open) {
+            setImportLocale("")
+            setImportErrors([])
+            if (fileInputRef.current) {
+              fileInputRef.current.value = ""
+            }
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>{t("importDialogTitle")}</DialogTitle>
+            <DialogDescription>{t("importDialogDescription")}</DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-4 py-2">
+            <Select
+              value={importLocale}
+              onValueChange={setImportLocale}
+              disabled={isImporting}
+            >
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder={t("selectLanguage")} />
+              </SelectTrigger>
+              <SelectContent>
+                {SUPPORTED_LOCALES.map(item => (
+                  <SelectItem key={item.code} value={item.code}>
+                    <span className="flex items-center gap-2">
+                      <LanguageFlag locale={item.code} />
+                      <span>{getLocaleLabel(item.code)}</span>
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <div className="flex flex-col gap-2">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".csv,text/csv"
+                className="hidden"
+                disabled={isImporting || !importLocale}
+                onChange={handleImportFile}
+              />
+              <Button
+                variant="outline"
+                className="gap-2"
+                disabled={isImporting || !importLocale}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {isImporting ? (
+                  <Loader className="size-4 animate-spin" />
+                ) : (
+                  <Upload className="size-4" />
+                )}
+                {isImporting ? t("importing") : t("chooseCsvFile")}
+              </Button>
+              <p className="text-muted-foreground text-xs">
+                {t("importHint")}
+              </p>
+            </div>
+            {importErrors.length > 0 && (
+              <ul className="text-destructive list-disc space-y-1 pl-4 text-sm">
+                {importErrors.map(error => (
+                  <li key={error}>{error}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              disabled={isImporting}
+              onClick={() => setImportDialogOpen(false)}
+            >
+              {tCommon("cancel")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {!isPro && availableToAdd.length > 0 && (
         <Banner

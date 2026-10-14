@@ -2,7 +2,7 @@
 
 import * as Sentry from "@sentry/nextjs"
 import lz from "lzutf8"
-import { cacheTag } from "next/cache"
+import { cacheLife, cacheTag } from "next/cache"
 
 import { getCurrentMembership } from "@/server/actions/user/queries"
 import prisma from "@/lib/prisma"
@@ -130,12 +130,14 @@ export async function getMenuTitleById(id: string) {
 export async function getActiveMenuByOrganizationSlug(slug: string) {
   "use cache"
   cacheTag(`subdomain-${slug}`)
+  cacheLife("days")
+
   const org = await prisma.organization.findUnique({
     where: { slug },
     select: {
       id: true,
-      activeMenuId: true,
-      status: true
+      status: true,
+      activeMenu: true
     }
   })
 
@@ -150,18 +152,11 @@ export async function getActiveMenuByOrganizationSlug(slug: string) {
     return null
   }
 
-  if (organization.activeMenuId) {
-    const activeMenu = await prisma.menu.findFirst({
-      where: {
-        id: organization.activeMenuId,
-        organizationId: organization.id,
-        status: MenuStatus.PUBLISHED
-      }
-    })
-
-    if (activeMenu) {
-      return activeMenu
-    }
+  if (
+    organization.activeMenu?.organizationId === organization.id &&
+    organization.activeMenu.status === MenuStatus.PUBLISHED
+  ) {
+    return organization.activeMenu
   }
 
   return await prisma.menu.findFirst({

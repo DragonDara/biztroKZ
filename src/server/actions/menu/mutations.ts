@@ -3,10 +3,11 @@
 import { Prisma } from "@/generated/prisma-client/client"
 import * as Sentry from "@sentry/nextjs"
 import { getTranslations } from "next-intl/server"
-import { updateTag } from "next/cache"
+import { revalidatePath, updateTag } from "next/cache"
 import { z } from "zod/v4"
 
 import { getMenuCount } from "@/server/actions/menu/queries"
+import { hydrateMenuSnapshotFromCatalog } from "@/server/actions/menu/sync"
 import {
   getCurrentOrganization,
   isProMember
@@ -161,17 +162,40 @@ export const updateMenuStatus = authActionClient
       parsedInput: { id, status, fontTheme, colorTheme, serialData }
     }) => {
       try {
+        const currentOrg = await getCurrentOrganization()
+        if (!currentOrg) {
+          const t = await getTranslations("errors.actions")
+          return { failure: { reason: t("noCurrentOrg") } }
+        }
+
+        const existingMenu = await prisma.menu.findFirst({
+          where: { id, organizationId: currentOrg.id },
+          select: { id: true }
+        })
+        if (!existingMenu) {
+          const t = await getTranslations("errors.actions")
+          return { failure: { reason: t("menuNotFound") } }
+        }
+
+        const synchronizedSerialData =
+          status === "PUBLISHED"
+            ? await hydrateMenuSnapshotFromCatalog({
+                organizationId: currentOrg.id,
+                snapshot: serialData
+              })
+            : serialData
+
         const menu = await prisma.$transaction(async tx => {
           const updated = await tx.menu.update({
-            where: { id },
+            where: { id, organizationId: currentOrg.id },
             data:
               status === "PUBLISHED"
                 ? {
                     status,
                     fontTheme,
                     colorTheme,
-                    serialData,
-                    publishedData: serialData,
+                    serialData: synchronizedSerialData,
+                    publishedData: synchronizedSerialData,
                     publishedAt: new Date(),
                     publishedFontTheme: fontTheme,
                     publishedColorTheme: colorTheme
@@ -180,7 +204,7 @@ export const updateMenuStatus = authActionClient
                     status,
                     fontTheme,
                     colorTheme,
-                    serialData,
+                    serialData: synchronizedSerialData,
                     publishedData: null,
                     publishedAt: null,
                     publishedFontTheme: null,
@@ -230,6 +254,8 @@ export const updateMenuStatus = authActionClient
         updateTag(`subdomain-${menu.organization.slug}`)
         updateTag(`menu-${menu.id}`)
         updateTag(`menus-${menu.organizationId}`)
+        revalidatePath(`/${menu.organization.slug}`)
+        revalidatePath(`/sites/${menu.organization.slug}`)
         return {
           success: menu
         }

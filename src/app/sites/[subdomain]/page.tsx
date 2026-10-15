@@ -5,6 +5,7 @@ import { getTranslations } from "next-intl/server"
 import { cacheLife, cacheTag } from "next/cache"
 import Link from "next/link"
 import { notFound } from "next/navigation"
+import { connection } from "next/server"
 
 import { PublicMenuProvider } from "@/components/menu-editor/public-menu-context"
 import {
@@ -128,8 +129,6 @@ export async function generateMetadata(
 export default async function SitePage(props: {
   params: Promise<{ subdomain: string }>
 }) {
-  "use cache"
-
   const params = await props.params
 
   if (
@@ -139,8 +138,9 @@ export default async function SitePage(props: {
     return notFound()
   }
 
-  cacheTag(`subdomain-${params.subdomain}`)
-  cacheLife("days")
+  // Keep the React tree request-time: some menu components generate IDs while
+  // rendering. The menu lookup itself is cached and invalidated on publish.
+  await connection()
   const siteMenu = await getActiveMenuByOrganizationSlug(params.subdomain)
 
   if (!params.subdomain || !siteMenu) {
@@ -161,7 +161,6 @@ export default async function SitePage(props: {
     renderData
 
   // Load available translations (cached by org)
-  cacheTag(`translations-${siteMenu.organizationId}`)
   const translationRows = await getAvailableTranslations(
     siteMenu.organizationId
   )

@@ -333,6 +333,41 @@ function rehydrateNodes(nodes: NodeMap, dataSources: CatalogDataSources) {
   return { nodes, changed }
 }
 
+/**
+ * Rebuilds a menu snapshot with the latest catalog data before it is published.
+ * This intentionally reads Prisma directly so publication never depends on
+ * catalog props that may have been cached when the editor was opened.
+ */
+export async function hydrateMenuSnapshotFromCatalog({
+  organizationId,
+  snapshot
+}: {
+  organizationId: string
+  snapshot: string
+}) {
+  const nodes = decodeNodes(snapshot)
+  if (!nodes) return snapshot
+
+  const [organization, location, categories, featuredItems, soloItems] =
+    await Promise.all([
+      getOrganizationWithAssets(organizationId),
+      getDefaultLocationByOrg(organizationId),
+      getCategoriesWithItemsByOrg(organizationId),
+      getFeaturedItemsByOrg(organizationId),
+      getSoloItemsByOrg(organizationId)
+    ])
+
+  const { nodes: hydratedNodes, changed } = rehydrateNodes(nodes, {
+    organization,
+    location,
+    categories,
+    featuredItems,
+    soloItems
+  })
+
+  return changed ? encodeNodes(hydratedNodes) : snapshot
+}
+
 async function rehydrateMenusForOrganization({
   organizationId,
   updateDraft,
